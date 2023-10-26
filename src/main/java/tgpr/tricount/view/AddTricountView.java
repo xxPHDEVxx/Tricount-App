@@ -4,9 +4,11 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import tgpr.framework.Controller;
 import tgpr.framework.Margin;
 import tgpr.framework.Spacing;
 import tgpr.tricount.controller.AddTricountController;
+import tgpr.tricount.model.Security;
 import tgpr.tricount.model.Tricount;
 import tgpr.tricount.model.User;
 
@@ -15,7 +17,6 @@ import java.util.regex.Pattern;
 
 public class AddTricountView extends DialogWindow {
     private final AddTricountController controller;
-
     private final TextBox txtTitle;
     private final TextBox txtDesc;
     private final Label errTitle;
@@ -36,7 +37,6 @@ public class AddTricountView extends DialogWindow {
 
         new Label("Title:").addTo(root);
         txtTitle = new TextBox(new TerminalSize(21, 1)).addTo(root)
-                .setValidationPattern(Pattern.compile("[a-z][a-z\\d]{0,7}"))
                 .setTextChangeListener((txt, byUser) -> validate());
         new EmptySpace().addTo(root);
         errTitle = new Label("").addTo(root)
@@ -44,7 +44,6 @@ public class AddTricountView extends DialogWindow {
 
         new Label("Description:").addTo(root);
         txtDesc = new TextBox(new TerminalSize(31, 3)).addTo(root)
-                .setValidationPattern(Pattern.compile("[a-z][a-z\\d]{0,7}"))
                 .setTextChangeListener((txt, byUser) -> validate());
         new EmptySpace().addTo(root);
         errDesc = new Label("").addTo(root)
@@ -63,8 +62,10 @@ public class AddTricountView extends DialogWindow {
     }
 
     private void create() {
-        Tricount tricount = new Tricount(txtTitle.getText(), txtDesc.getText(), 1);
+        Tricount tricount = new Tricount(txtTitle.getText(), txtDesc.getText(), Security.getLoggedUserId());
         tricount.save();
+        close();
+        //Controller.navigateTo(ViewTricountController());
     }
 
     private void validate() {
