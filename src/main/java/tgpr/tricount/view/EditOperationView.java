@@ -5,10 +5,7 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import com.googlecode.lanterna.input.KeyStroke;
-import tgpr.framework.Error;
 import tgpr.framework.Margin;
-import tgpr.framework.ObjectTable;
-import tgpr.framework.Params;
 import tgpr.tricount.controller.EditOperationController;
 import tgpr.tricount.model.*;
 
@@ -26,12 +23,13 @@ public class EditOperationView extends DialogWindow {
     private TextBox txtDate;
     private ComboBox<String> cboUsers;
     private ComboBox<String> cboTemplates;
-    private final CheckBoxList<String> cklParticipant = new CheckBoxList<>();
+    private final CheckBoxList<String> cklParticipantBalance = new CheckBoxList<>();
     private final Label errTitle = new Label("");
     private final Label errAmount = new Label("");
     private final Label errDate = new Label("");
     private final Label errUsers = new Label("");
     private final Label errTemplates = new Label("");
+    private final Label errParticipantBalance = new Label("");
     private Button btnAddUpdate;
 
     public EditOperationView(EditOperationController controller,Tricount tricount, Operation operation) {
@@ -42,7 +40,7 @@ public class EditOperationView extends DialogWindow {
 
         setHints(List.of(Hint.CENTERED, Hint.FIXED_SIZE));
         setCloseWindowWithEscape(true);
-        setFixedSize(new TerminalSize(67, 17));
+        setFixedSize(new TerminalSize(67, 19));
 
         Panel root = Panel.verticalPanel();
         setComponent(root);
@@ -69,13 +67,14 @@ public class EditOperationView extends DialogWindow {
                 .setForegroundColor(TextColor.ANSI.RED);
         new Label(("Amount:")).addTo(panel);
         txtAmount = new TextBox().sizeTo(10).addTo(panel)
+                .setValidationPattern(Pattern.compile("^[1-9]\\d*(\\.\\d+)?$")) //<-à remplacer par une expression régulière pour les nombres décimaux car celle-ci empêche aussi le'.' et le'-'
                 .setTextChangeListener((txt, byUser) -> validate());
         panel.addEmpty();
         errAmount.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
 
         new Label("Date:").addTo(panel);
         txtDate = new TextBox().sizeTo(11).addTo(panel)
-                .setValidationPattern(Pattern.compile("/\\d]{0,10}"))
+                .setValidationPattern(Pattern.compile("[/\\d]{0,10}"))
                 .setTextChangeListener((txt, byUser) -> validate());
         panel.addEmpty();
         errDate.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
@@ -98,16 +97,14 @@ public class EditOperationView extends DialogWindow {
         panel.addEmpty();
 
         new Label("For whom: \n(weight: ←/→ or -/+)").addTo(panel);
-
         for (String s : participants){
-            cklParticipant.addItem(s);
-            cklParticipant.setChecked(s, true);
+            cklParticipantBalance.addItem(s);
+            cklParticipantBalance.setChecked(s, true);
         }
-        cklParticipant.addListener((idx, isChecked) -> {
-            if(!isChecked && !cklParticipant.isChecked((idx + 1) % 2))
-                cklParticipant.setChecked(cklParticipant.getItemAt((idx + 1) % 2), true);
-            reloadData();
+        cklParticipantBalance.addListener((idx, isChecked) -> {
         }).addTo(panel);
+        panel.addEmpty();
+        errParticipantBalance.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
 
         return panel;
 
@@ -147,10 +144,19 @@ public class EditOperationView extends DialogWindow {
                 txtDate.getText(),
                 cboTemplates.getText()
         );
-    }
+    }/*txtDate.getText());*/
 
     private void validate() {
+        var errors = controller.validate(
+                txtTitle.getText(),
+                txtAmount.getText(),
+                txtDate.getText(),
+                cklParticipantBalance.getCheckedItems());
 
+        errTitle.setText(errors.getFirstErrorMessage(Operation.Fields.Title));
+        errAmount.setText(errors.getFirstErrorMessage(Operation.Fields.Amount));
+        errDate.setText(errors.getFirstErrorMessage(Operation.Fields.OperationDate));
+        errParticipantBalance.setText(errors.getFirstErrorMessage(Operation.Fields.Repartition));
 
     }
 
@@ -178,3 +184,6 @@ public class EditOperationView extends DialogWindow {
 
 
 }
+
+
+
