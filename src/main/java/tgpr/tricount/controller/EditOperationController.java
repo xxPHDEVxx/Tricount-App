@@ -5,10 +5,7 @@ import com.googlecode.lanterna.gui2.Window;
 import tgpr.framework.Controller;
 import tgpr.framework.Error;
 import tgpr.framework.ErrorList;
-import tgpr.tricount.model.Operation;
-import tgpr.tricount.model.OperationValidator;
-import tgpr.tricount.model.Security;
-import tgpr.tricount.model.Tricount;
+import tgpr.tricount.model.*;
 import tgpr.tricount.view.EditOperationView;
 
 import java.time.LocalDateTime;
@@ -47,7 +44,7 @@ public class EditOperationController extends Controller {
 
 
     }
-    public ErrorList validate(String title, String amount, String date, List<String> participant){
+    public ErrorList validate(String title, String amount, String date, List<Repartition> repartition){
         var errors = new ErrorList();
 
             errors.add(OperationValidator.isValidTitle(title));
@@ -55,7 +52,7 @@ public class EditOperationController extends Controller {
             if(!date.isBlank() && !date.isValidDate())
                 errors.add("invalid date", Operation.Fields.OperationDate);
             errors.add(OperationValidator.isvalidDate(date.toDate()));
-            errors.add(OperationValidator.isValideCklParticipantBalance(participant));
+            errors.add(OperationValidator.isValideCklParticipantBalance(repartition));
         return errors;
 
     }

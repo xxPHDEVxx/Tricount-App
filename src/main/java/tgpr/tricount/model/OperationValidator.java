@@ -34,7 +34,7 @@ public abstract class OperationValidator {
             return new Error("amount must be positive", Operation.Fields.Amount);
         return Error.NOERROR;
     }
-    public static Error isValideCklParticipantBalance(List<String> ParticipantBalance){
+    public static Error isValideCklParticipantBalance(List<Repartition> ParticipantBalance){
        if(ParticipantBalance.isEmpty())
            return new Error("you must select at least one", Operation.Fields.Repartition);
        return Error.NOERROR;

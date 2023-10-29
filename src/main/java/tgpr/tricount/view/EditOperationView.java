@@ -5,6 +5,7 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.input.KeyType;
 import tgpr.framework.Margin;
 import tgpr.tricount.controller.EditOperationController;
 import tgpr.tricount.model.*;
@@ -23,13 +24,13 @@ public class EditOperationView extends DialogWindow {
     private TextBox txtDate;
     private ComboBox<String> cboUsers;
     private ComboBox<String> cboTemplates;
-    private final CheckBoxList<String> cklParticipantBalance = new CheckBoxList<>();
+    private final CheckBoxList<Repartition> cklRepartitions = new CheckBoxList<>();
     private final Label errTitle = new Label("");
     private final Label errAmount = new Label("");
     private final Label errDate = new Label("");
     private final Label errUsers = new Label("");
     private final Label errTemplates = new Label("");
-    private final Label errParticipantBalance = new Label("");
+    private final Label errRepartitions = new Label("");
     private Button btnAddUpdate;
 
     public EditOperationView(EditOperationController controller,Tricount tricount, Operation operation) {
@@ -97,18 +98,64 @@ public class EditOperationView extends DialogWindow {
         panel.addEmpty();
 
         new Label("For whom: \n(weight: ←/→ or -/+)").addTo(panel);
-        for (String s : participants){
-            cklParticipantBalance.addItem(s);
-            cklParticipantBalance.setChecked(s, true);
+        for (var rep : lsRepartitions()){
+            cklRepartitions.addItem(rep, rep.getWeight() > 0);
+            cklRepartitions.setChecked(rep, true);
+
         }
-        cklParticipantBalance.addListener((idx, isChecked) -> {
+        cklRepartitions.addListener((idx, isChecked) -> {
+
+
         }).addTo(panel);
         panel.addEmpty();
-        errParticipantBalance.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
+        errRepartitions.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
+
+        addKeyboardListener(
+                cklRepartitions,
+                this::handleWeightKeyStroke);
+
 
         return panel;
 
     }
+    private Boolean handleWeightKeyStroke(KeyStroke keyStroke) {
+
+
+        Character character = keyStroke.getCharacter();
+        KeyType type = keyStroke.getKeyType();
+
+
+
+
+            if (character != null) {
+                int idx = cklRepartitions.getSelectedIndex();
+                Repartition rep = cklRepartitions.getItemAt(idx);
+                int weight = rep.getWeight();
+
+
+                    boolean changement = false;
+
+
+                if (character == '+' || type == KeyType.ArrowRight) {
+                    ++weight;
+                    changement = true;
+                }
+                if (character == '-' || type == KeyType.ArrowLeft) {
+                    --weight;
+                    changement = true;
+                }
+                if (changement) {
+                    rep.setWeight(weight);
+                    cklRepartitions.invalidate();
+                }
+            }
+
+
+        return true;
+
+    }
+
+
 
     private void reloadData() {
     }
@@ -151,12 +198,12 @@ public class EditOperationView extends DialogWindow {
                 txtTitle.getText(),
                 txtAmount.getText(),
                 txtDate.getText(),
-                cklParticipantBalance.getCheckedItems());
+                cklRepartitions.getCheckedItems());
 
         errTitle.setText(errors.getFirstErrorMessage(Operation.Fields.Title));
         errAmount.setText(errors.getFirstErrorMessage(Operation.Fields.Amount));
         errDate.setText(errors.getFirstErrorMessage(Operation.Fields.OperationDate));
-        errParticipantBalance.setText(errors.getFirstErrorMessage(Operation.Fields.Repartition));
+        errRepartitions.setText(errors.getFirstErrorMessage(Operation.Fields.Repartition));
 
     }
 
@@ -168,6 +215,17 @@ public class EditOperationView extends DialogWindow {
             ls.add(user.getFullName());
         }
         return ls;
+    }
+    public List<Repartition> lsRepartitions(){
+        List<Repartition> lsRepartitions = new ArrayList<>();
+        for (User participant : tricount.getParticipants()
+             ) {
+            Repartition repartition = new Repartition (0, participant.getId(), 1);
+            lsRepartitions.add(repartition);
+
+        }
+        return lsRepartitions;
+
     }
 
     public List<String> templatesTitle() {
