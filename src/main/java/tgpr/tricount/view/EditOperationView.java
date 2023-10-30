@@ -32,6 +32,7 @@ public class EditOperationView extends DialogWindow {
     private final Label errRepartitions = new Label("");
     private Button btnAddUpdate;
     private Button btnApplay;
+    private Button btnSaveRepAtTemplate;
 
     public EditOperationView(EditOperationController controller,Tricount tricount, Operation operation) {
         super((operation == null ? "Add " : "Update ") + "Operation");
@@ -158,11 +159,19 @@ public class EditOperationView extends DialogWindow {
         var panel = Panel.horizontalPanel().center();
 
         btnAddUpdate = new Button("save", this::add).addTo(panel).setEnabled(false);
+        btnSaveRepAtTemplate = new Button("save repartition as template", this::saveRepAsTemp).addTo(panel).setEnabled(false);
         new Button("Cancel", this::close).addTo(panel);
-
         addShortcut(btnAddUpdate, KeyStroke.fromString(operation == null ? "<A-a>" : "<A-u>"));
 
+
         return panel;
+    }
+
+    private void saveRepAsTemp() {
+        List<Repartition> repartitions = cklRepartitions.getCheckedItems();
+        controller.saveRepAsTemp(repartitions);
+
+
     }
 
     private void refresh() {
@@ -174,9 +183,10 @@ public class EditOperationView extends DialogWindow {
                 txtTitle.getText(),
                 txtAmount.getText(),
                 txtDate.getText(),
-                cboUsers.getText()
+                cboUsers.getText(),
+                cklRepartitions.getCheckedItems()
         );
-        controller.saveRepartition(cklRepartitions.getCheckedItems());
+
     }
     private void applayTemplate(){
         Template template = cboTemplates.getSelectedItem();
@@ -204,6 +214,7 @@ public class EditOperationView extends DialogWindow {
         errDate.setText(errors.getFirstErrorMessage(Operation.Fields.OperationDate));
         errRepartitions.setText(errors.getFirstErrorMessage(Operation.Fields.Repartition));
         btnApplay.setEnabled(true);
+        btnSaveRepAtTemplate.setEnabled(true);
         btnAddUpdate.setEnabled(errors.isEmpty());
 
     }

@@ -39,24 +39,30 @@ public class EditOperationController extends Controller {
     public Tricount getTricount() {return tricount; }
 
 
-    public void save(String title, String amount, String date, String user) {
+    public void save(String title, String amount, String date, String user, List<Repartition> repartitions) {
         var errors = validate(title, amount, date);
         if(errors.isEmpty()) {
             LocalDateTime createdAt = LocalDateTime.now();
             operation = new Operation(title, tricount.getId(), Double.parseDouble(amount), date.toDate(), User.getByFullName(user).getId(), createdAt);
-            operation.save();
-
-
+            Operation saved = operation.save();
+            var error = OperationValidator.isValideRepartitions(repartitions);
+            if (error == null) {
+                for (var rep : repartitions) {
+                    Repartition repartition = new Repartition(saved.getId(), rep.getUserId(), rep.getWeight());
+                    repartition.save();
+                }
+            }
+            showError(error);
             view.close();
         }else
             showErrors(errors);
 
     }
-    public void saveRepartition(List<Repartition> repartitions){
+    /*public void saveRepartition(List<Repartition> repartitions){
         var error = validRepartition(repartitions);
         if (error == null) {
             for (var rep : repartitions) {
-                Repartition repartition = new Repartition(7, rep.getUserId(), rep.getWeight());
+                Repartition repartition = new Repartition(operation, rep.getUserId(), rep.getWeight());
                 repartition.save();
             }
             view.close();
@@ -64,7 +70,7 @@ public class EditOperationController extends Controller {
         else
             showError(error);
 
-    }
+    }*/
     public ErrorList validate(String title, String amount, String date){
         var errors = new ErrorList();
 
@@ -79,5 +85,10 @@ public class EditOperationController extends Controller {
     }
     public Error validRepartition(List<Repartition> repartitions){
         return OperationValidator.isValideRepartitions(repartitions);
+    }
+
+    public void saveRepAsTemp(List<Repartition> repartitions) {
+
+
     }
 }
