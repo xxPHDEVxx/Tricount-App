@@ -22,16 +22,16 @@ public class EditOperationView extends DialogWindow {
     private TextBox txtTitle;
     private TextBox txtAmount;
     private TextBox txtDate;
-    private ComboBox<String> cboUsers;
-    private ComboBox<String> cboTemplates;
+    private ComboBox<User> cboUsers;
+    private ComboBox<Template> cboTemplates;
     private final CheckBoxList<Repartition> cklRepartitions = new CheckBoxList<>();
     private final Label errTitle = new Label("");
     private final Label errAmount = new Label("");
     private final Label errDate = new Label("");
     private final Label errUsers = new Label("");
-    private final Label errTemplates = new Label("");
     private final Label errRepartitions = new Label("");
     private Button btnAddUpdate;
+    private Button btnApplay;
 
     public EditOperationView(EditOperationController controller,Tricount tricount, Operation operation) {
         super((operation == null ? "Add " : "Update ") + "Operation");
@@ -41,7 +41,7 @@ public class EditOperationView extends DialogWindow {
 
         setHints(List.of(Hint.CENTERED, Hint.FIXED_SIZE));
         setCloseWindowWithEscape(true);
-        setFixedSize(new TerminalSize(67, 19));
+        setFixedSize(new TerminalSize(70, 20));
 
         Panel root = Panel.verticalPanel();
         setComponent(root);
@@ -68,7 +68,7 @@ public class EditOperationView extends DialogWindow {
                 .setForegroundColor(TextColor.ANSI.RED);
         new Label(("Amount:")).addTo(panel);
         txtAmount = new TextBox().sizeTo(10).addTo(panel)
-                .setValidationPattern(Pattern.compile("^[1-9]\\d*(\\.\\d+)?$")) //<-à remplacer par une expression régulière pour les nombres décimaux car celle-ci empêche aussi le'.' et le'-'
+                .setValidationPattern(Pattern.compile("-?\\d*(,\\d*)?"))
                 .setTextChangeListener((txt, byUser) -> validate());
         panel.addEmpty();
         errAmount.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
@@ -81,19 +81,22 @@ public class EditOperationView extends DialogWindow {
         errDate.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
 
         new Label("Paid by:").addTo(panel);
-        List<String> participants = participantsName();
-        cboUsers = new ComboBox<>(participants).addTo(panel).sizeTo(11);
-        assert operation != null;
-        cboUsers.setSelectedItem(Security.getLoggedUser().getFullName());
+        cboUsers = new ComboBox<>(tricount.getParticipants()).addTo(panel).sizeTo(11);
+        cboUsers.setSelectedItem(Security.getLoggedUser());
         cboUsers.addListener((selectedIndex, previousSelection, changedByUserInteraction) -> validate());
         panel.addEmpty();
+
         errUsers.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
 
+
         new Label("Use a repartition \ntemplate (optional):").addTo(panel);
-        List<String> templatesTitle = templatesTitle();
-        cboTemplates = new ComboBox<>(templatesTitle).addTo(panel).sizeTo(35);
-        cboTemplates.setSelectedItem(Template.DUMMY.getTitle());
-        cboUsers.addListener((selectedIndex, previousSelection, changedByUserInteraction) -> validate());
+        var templatePanel = Panel.horizontalPanel().addTo(panel);
+        List<Template> templates = templates();
+        cboTemplates = new ComboBox<>(templates).addTo(templatePanel).sizeTo(35);
+        cboTemplates.setSelectedItem(Template.DUMMY);
+        cboTemplates.addListener((selectedIndex, previousSelection, changedByUserInteraction) -> validate());
+
+        btnApplay = new Button("Apply", this::applayTemplate).addTo(templatePanel).setEnabled(false);
         panel.addEmpty();
         panel.addEmpty();
 
@@ -104,8 +107,6 @@ public class EditOperationView extends DialogWindow {
 
         }
         cklRepartitions.addListener((idx, isChecked) -> {
-
-
         }).addTo(panel);
         panel.addEmpty();
         errRepartitions.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
@@ -119,69 +120,53 @@ public class EditOperationView extends DialogWindow {
 
     }
     private Boolean handleWeightKeyStroke(KeyStroke keyStroke) {
-
-
         Character character = keyStroke.getCharacter();
         KeyType type = keyStroke.getKeyType();
-
-
-
-
+        int idx = cklRepartitions.getSelectedIndex();
+        Repartition rep = cklRepartitions.getItemAt(idx);
+        int weight = rep.getWeight();
+        boolean changement = false;
             if (character != null) {
-                int idx = cklRepartitions.getSelectedIndex();
-                Repartition rep = cklRepartitions.getItemAt(idx);
-                int weight = rep.getWeight();
-
-
-                    boolean changement = false;
-
-
-                if (character == '+' || type == KeyType.ArrowRight) {
+                if (character == '+') {
                     ++weight;
                     changement = true;
                 }
-                if (character == '-' || type == KeyType.ArrowLeft) {
+                if (character == '-')  {
                     --weight;
                     changement = true;
                 }
-                if (changement) {
-                    rep.setWeight(weight);
-                    cklRepartitions.invalidate();
+            }else {
+                if (type == KeyType.ArrowRight) {
+                    ++weight;
+                    changement = true;
+                }
+                if (type == KeyType.ArrowLeft) {
+                    --weight;
+                    changement = true;
                 }
             }
-
-
-        return true;
-
+            if (changement) {
+                rep.setWeight(weight);
+                cklRepartitions.invalidate();
+            }
+            return true;
     }
-
-
-
     private void reloadData() {
     }
 
     private Panel createButtonsPanel() {
         var panel = Panel.horizontalPanel().center();
 
-        btnAddUpdate = new Button(operation == null ? "Add" : "Update", this::add).addTo(panel).setEnabled(false);
+        btnAddUpdate = new Button("save", this::add).addTo(panel).setEnabled(false);
         new Button("Cancel", this::close).addTo(panel);
 
         addShortcut(btnAddUpdate, KeyStroke.fromString(operation == null ? "<A-a>" : "<A-u>"));
+
         return panel;
     }
 
     private void refresh() {
-        if (operation != null) {
-            txtTitle.setText(operation.getTitle());
-            txtAmount.setText(((String.valueOf(operation.getAmount()))));
-            for (String s : templatesTitle()){
-                cboTemplates.addItem(s);
-            }
-            for (String userName : participantsName()) {
-                cboUsers.addItem(userName);
 
-            }
-        }
     }
 
     private void add() {
@@ -189,33 +174,40 @@ public class EditOperationView extends DialogWindow {
                 txtTitle.getText(),
                 txtAmount.getText(),
                 txtDate.getText(),
-                cboTemplates.getText()
+                cboUsers.getText()
         );
-    }/*txtDate.getText());*/
+        controller.saveRepartition(cklRepartitions.getCheckedItems());
+    }
+    private void applayTemplate(){
+        Template template = cboTemplates.getSelectedItem();
+        List<TemplateItem> templateItems = template.getTemplateItems();
+        for (var rep : cklRepartitions.getItems()) {
+            int i = 0;
+            while(i < templateItems.size() && !rep.getUser().equals(templateItems[i].getUser())) {
+                ++i;
+            }
+            if( i < templateItems.size())
+                rep.setWeight(templateItems[i].getWeight());
+            else rep.setWeight(0);
+        }
+    }
 
     private void validate() {
         var errors = controller.validate(
                 txtTitle.getText(),
                 txtAmount.getText(),
-                txtDate.getText(),
-                cklRepartitions.getCheckedItems());
+                txtDate.getText());
+        errors.add(OperationValidator.isValideRepartitions(cklRepartitions.getCheckedItems()));
 
         errTitle.setText(errors.getFirstErrorMessage(Operation.Fields.Title));
         errAmount.setText(errors.getFirstErrorMessage(Operation.Fields.Amount));
         errDate.setText(errors.getFirstErrorMessage(Operation.Fields.OperationDate));
         errRepartitions.setText(errors.getFirstErrorMessage(Operation.Fields.Repartition));
+        btnApplay.setEnabled(true);
+        btnAddUpdate.setEnabled(errors.isEmpty());
 
     }
 
-    public List<String> participantsName() {
-        List<String> ls = new ArrayList<>();
-
-        for (User user :
-                tricount.getParticipants()) {
-            ls.add(user.getFullName());
-        }
-        return ls;
-    }
     public List<Repartition> lsRepartitions(){
         List<Repartition> lsRepartitions = new ArrayList<>();
         for (User participant : tricount.getParticipants()
@@ -228,18 +220,12 @@ public class EditOperationView extends DialogWindow {
 
     }
 
-    public List<String> templatesTitle() {
-        List<String> ls = new ArrayList<>();
-        ls.add(Template.DUMMY.getTitle());
-
-        for (Template template :
-                tricount.getTemplates()) {
-            ls.add(template.getTitle());
-        }
+    public List<Template> templates() {
+        List<Template> ls = new ArrayList<>();
+        ls.add(Template.DUMMY);
+        ls.addAll(tricount.getTemplates());
         return ls;
     }
-
-
 
 }
 

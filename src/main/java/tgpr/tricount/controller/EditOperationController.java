@@ -1,6 +1,5 @@
 package tgpr.tricount.controller;
 
-import com.googlecode.lanterna.gui2.CheckBoxList;
 import com.googlecode.lanterna.gui2.Window;
 import tgpr.framework.Controller;
 import tgpr.framework.Error;
@@ -40,11 +39,33 @@ public class EditOperationController extends Controller {
     public Tricount getTricount() {return tricount; }
 
 
-    public void save(String text, String text1, String text2, String text3) {
+    public void save(String title, String amount, String date, String user) {
+        var errors = validate(title, amount, date);
+        if(errors.isEmpty()) {
+            LocalDateTime createdAt = LocalDateTime.now();
+            operation = new Operation(title, tricount.getId(), Double.parseDouble(amount), date.toDate(), User.getByFullName(user).getId(), createdAt);
+            operation.save();
 
+
+            view.close();
+        }else
+            showErrors(errors);
 
     }
-    public ErrorList validate(String title, String amount, String date, List<Repartition> repartition){
+    public void saveRepartition(List<Repartition> repartitions){
+        var error = validRepartition(repartitions);
+        if (error == null) {
+            for (var rep : repartitions) {
+                Repartition repartition = new Repartition(7, rep.getUserId(), rep.getWeight());
+                repartition.save();
+            }
+            view.close();
+        }
+        else
+            showError(error);
+
+    }
+    public ErrorList validate(String title, String amount, String date){
         var errors = new ErrorList();
 
             errors.add(OperationValidator.isValidTitle(title));
@@ -52,8 +73,11 @@ public class EditOperationController extends Controller {
             if(!date.isBlank() && !date.isValidDate())
                 errors.add("invalid date", Operation.Fields.OperationDate);
             errors.add(OperationValidator.isvalidDate(date.toDate()));
-            errors.add(OperationValidator.isValideCklParticipantBalance(repartition));
+
         return errors;
 
+    }
+    public Error validRepartition(List<Repartition> repartitions){
+        return OperationValidator.isValideRepartitions(repartitions);
     }
 }

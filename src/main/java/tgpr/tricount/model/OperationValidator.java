@@ -1,11 +1,9 @@
 package tgpr.tricount.model;
 
-import com.googlecode.lanterna.gui2.CheckBoxList;
 import tgpr.framework.Error;
 import tgpr.framework.ErrorList;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -34,8 +32,8 @@ public abstract class OperationValidator {
             return new Error("amount must be positive", Operation.Fields.Amount);
         return Error.NOERROR;
     }
-    public static Error isValideCklParticipantBalance(List<Repartition> ParticipantBalance){
-       if(ParticipantBalance.isEmpty())
+    public static Error isValideRepartitions(List<Repartition> repartitions){
+       if(repartitions.isEmpty())
            return new Error("you must select at least one", Operation.Fields.Repartition);
        return Error.NOERROR;
     }
