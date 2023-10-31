@@ -20,13 +20,13 @@ public abstract class OperationValidator {
     public static Error isValidTitle(String title) {
         if(title == null || title.isBlank())
             return new Error("Title required", Operation.Fields.Title);
-        if(!Pattern.matches("[a-zA-Z][a-zA-Z0-9]{2,256}", title))
-            return new Error("invalid title", Operation.Fields.Title);
+        if(!Pattern.matches("^[A-Za-z0-9\\s]{3,256}", title))
+            return new Error("minimum 3 chars", Operation.Fields.Title);
         return Error.NOERROR;
     }
     public static Error isValidAmount(String amount) {
-        if(amount == null)
-            return new Error("amount is required");
+        if(amount == null || amount.isBlank())
+            return new Error("amount is required", Operation.Fields.Amount);
 
         if(!Pattern.matches("^[1-9]\\d*(\\.\\d+)?$", amount))
             return new Error("amount must be positive", Operation.Fields.Amount);
@@ -42,6 +42,7 @@ public abstract class OperationValidator {
         errors.add(isValidTitle(operation.getTitle()));
         errors.add(isValidAmount(Double.toString(operation.getAmount())));
         errors.add(isvalidDate(operation.getOperationDate()));
+        errors.add(isValideRepartitions(operation.getRepartitions()));
         return errors;
     }
 

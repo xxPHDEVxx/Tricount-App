@@ -42,7 +42,7 @@ public class EditOperationView extends DialogWindow {
 
         setHints(List.of(Hint.CENTERED, Hint.FIXED_SIZE));
         setCloseWindowWithEscape(true);
-        setFixedSize(new TerminalSize(70, 20));
+        setFixedSize(new TerminalSize(67, 19));
 
         Panel root = Panel.verticalPanel();
         setComponent(root);
@@ -61,7 +61,7 @@ public class EditOperationView extends DialogWindow {
 
         new Label("Title:").addTo(panel);
         txtTitle = new TextBox().sizeTo(33).addTo(panel)
-                .setValidationPattern(Pattern.compile("[a-z][a-z\\d]{0,7}"))
+                .setValidationPattern(Pattern.compile("^[A-Za-z0-9\\s]+$"))
                 .setTextChangeListener((txt, byUser) -> validate())
                 .setReadOnly(operation != null);
         panel.addEmpty();
@@ -159,7 +159,7 @@ public class EditOperationView extends DialogWindow {
         var panel = Panel.horizontalPanel().center();
 
         btnAddUpdate = new Button("save", this::add).addTo(panel).setEnabled(false);
-        btnSaveRepAtTemplate = new Button("save repartition as template", this::saveRepAsTemp).addTo(panel).setEnabled(false);
+        btnSaveRepAtTemplate = new Button("save Repartition as Template", this::saveRepAsTemp).addTo(panel).setEnabled(false);
         new Button("Cancel", this::close).addTo(panel);
         addShortcut(btnAddUpdate, KeyStroke.fromString(operation == null ? "<A-a>" : "<A-u>"));
 
@@ -206,8 +206,8 @@ public class EditOperationView extends DialogWindow {
         var errors = controller.validate(
                 txtTitle.getText(),
                 txtAmount.getText(),
-                txtDate.getText());
-        errors.add(OperationValidator.isValideRepartitions(cklRepartitions.getCheckedItems()));
+                txtDate.getText(),
+                cklRepartitions.getCheckedItems());
 
         errTitle.setText(errors.getFirstErrorMessage(Operation.Fields.Title));
         errAmount.setText(errors.getFirstErrorMessage(Operation.Fields.Amount));

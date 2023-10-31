@@ -21,7 +21,7 @@ public class AddTemplateController extends Controller {
     }
     public static Error isValidTitle(String title) {
         if (title != null && !title.trim().isEmpty())
-            return null;
+            return Error.NOERROR;
         return new Error("Title is required", Template.Fields.Title);
     }
     public ErrorList validate(String title) {
@@ -30,8 +30,12 @@ public class AddTemplateController extends Controller {
         return errors;
     }
     public void create(String title){
+        var error = isValidTitle(title);
         Template template = new Template(title, tricountId);
-        template.save();
+        if(error == Error.NOERROR)
+            template.save();
+        else
+            showError(error);
         for (var rep: repartitions) {
             TemplateItem templateItem = new TemplateItem();
             templateItem.setUserId(rep.getUserId());

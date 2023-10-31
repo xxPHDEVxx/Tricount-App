@@ -40,38 +40,21 @@ public class EditOperationController extends Controller {
 
 
     public void save(String title, String amount, String date, String user, List<Repartition> repartitions) {
-        var errors = validate(title, amount, date);
+        var errors = validate(title, amount, date, repartitions);
         if(errors.isEmpty()) {
             LocalDateTime createdAt = LocalDateTime.now();
             operation = new Operation(title, tricount.getId(), Double.parseDouble(amount), date.toDate(), User.getByFullName(user).getId(), createdAt);
             Operation saved = operation.save();
-            var error = OperationValidator.isValideRepartitions(repartitions);
-            if (error == null) {
-                for (var rep : repartitions) {
-                    Repartition repartition = new Repartition(saved.getId(), rep.getUserId(), rep.getWeight());
-                    repartition.save();
-                }
-            }
-            showError(error);
-            view.close();
-        }else
-            showErrors(errors);
-
-    }
-    /*public void saveRepartition(List<Repartition> repartitions){
-        var error = validRepartition(repartitions);
-        if (error == null) {
             for (var rep : repartitions) {
-                Repartition repartition = new Repartition(operation, rep.getUserId(), rep.getWeight());
+                Repartition repartition = new Repartition(saved.getId(), rep.getUserId(), rep.getWeight());
                 repartition.save();
             }
             view.close();
-        }
-        else
-            showError(error);
+        }else
+            showErrors(errors);
+    }
 
-    }*/
-    public ErrorList validate(String title, String amount, String date){
+    public ErrorList validate(String title, String amount, String date, List<Repartition> repartitions){
         var errors = new ErrorList();
 
             errors.add(OperationValidator.isValidTitle(title));
@@ -79,6 +62,7 @@ public class EditOperationController extends Controller {
             if(!date.isBlank() && !date.isValidDate())
                 errors.add("invalid date", Operation.Fields.OperationDate);
             errors.add(OperationValidator.isvalidDate(date.toDate()));
+            errors.add(OperationValidator.isValideRepartitions(repartitions));
 
         return errors;
 
@@ -88,6 +72,10 @@ public class EditOperationController extends Controller {
     }
 
     public void saveRepAsTemp(List<Repartition> repartitions) {
+        if(OperationValidator.isValideRepartitions(repartitions) == Error.NOERROR)
+            navigateTo(new AddTemplateController(repartitions, tricount.getId()));
+        else
+            showError(OperationValidator.isValideRepartitions(repartitions));
 
 
     }
