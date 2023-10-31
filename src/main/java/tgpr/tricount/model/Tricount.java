@@ -69,6 +69,7 @@ public class Tricount extends Model {
                         where tricount=:id
                         """,
                 new Params("id", id));
+
     }
 
     private String title;
