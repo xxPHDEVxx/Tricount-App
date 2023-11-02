@@ -185,6 +185,7 @@ public class EditOperationView extends DialogWindow {
                 txtDate.getText(),
                 cboUsers.getSelectedItem().getFullName(),
                 cklRepartitions.getCheckedItems()
+
         );
 
     }

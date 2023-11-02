@@ -9,11 +9,13 @@ import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import com.googlecode.lanterna.input.KeyStroke;
 import tgpr.framework.ColumnSpec;
+import tgpr.framework.Controller;
 import tgpr.framework.ObjectTable;
 import tgpr.tricount.controller.DisplayOperationController;
 import tgpr.tricount.model.Operation;
 import tgpr.tricount.model.Repartition;
 
+import javax.naming.ldap.Control;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,32 +100,44 @@ public class DisplayOperationView extends DialogWindow {
     }
 
     private void down() {
+        List<Operation> operations = operation.getTricount().getOperations();
+        int i = 0;
+        while(i < operations.size() && !operations[i].equals(operation))
+            ++i;
+        if(i < operations.size() - 1 && operations[i + 1] != null)
+            Controller.navigateTo(new DisplayOperationController(operations[i + 1]));
+
     }
 
     private void up() {
+        List<Operation> operations = operation.getTricount().getOperations();
+        int i = 0;
+        while(i < operations.size() && !operations[i].equals(operation))
+            ++i;
+
+        if(i  > 0 && operations[i - 1] != null)
+            Controller.navigateTo(new DisplayOperationController(operations[i - 1]));
     }
+
 
     private void refresh(){
         if(operation != null) {
             lblTitle.setText(operation.getTitle());
-            lblAmount.setText(Double.toString(operation.getAmount()) + " €");
+            DecimalFormat decimalFormat = new DecimalFormat("#0.00");
+            lblAmount.setText(decimalFormat.format(operation.getAmount()) + " €");
             lblDate.setText(operation.getOperationDate().asIsoString());
             lblPaidBy.setText(operation.getInitiator().getFullName());
             repartitionTable.clear();
             var repartitions = controller.getRepartitions();
             repartitionTable.add(repartitions);
+            btnUp.setEnabled(true);
+            btnDown.setEnabled(true);
+            btnEdit.setEnabled(true);
         }
     }
 
 
-    public List<Double> amount(List<Repartition> repartitions) {
-        List<Double> amounts = new ArrayList<>();
-        for (var rep : repartitions) {
-            double amount = rep.getWeight() * operation.getAmount() / repartitions.size();
-            amounts.add(amount);
-        }
-        return amounts;
-    }
+
 
 
 }

@@ -26,9 +26,6 @@ public class DisplayOperationController extends Controller {
         return view;
     }
 
-    public Operation getOperation() {
-        return operation;
-    }
     public List<Repartition> getRepartitions(){
         return operation.getRepartitions();
     }
