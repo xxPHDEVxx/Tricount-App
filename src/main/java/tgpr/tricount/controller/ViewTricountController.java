@@ -9,14 +9,9 @@ import tgpr.tricount.view.ViewTricountView;
 
 public class ViewTricountController extends Controller {
     ViewTricountView view = new ViewTricountView(this);
-    Tricount tricount = Tricount.getByKey(4);
     @Override
     public Window getView() {
         return view;
-    }
-
-    public Tricount getTricount() {
-        return tricount;
     }
 
     public User getUser() {

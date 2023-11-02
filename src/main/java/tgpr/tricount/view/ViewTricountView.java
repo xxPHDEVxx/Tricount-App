@@ -17,6 +17,7 @@ import tgpr.tricount.model.Security;
 import tgpr.tricount.model.Tricount;
 
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.List;
 
 public class ViewTricountView extends DialogWindow {
@@ -78,7 +79,8 @@ public class ViewTricountView extends DialogWindow {
             new Label(operations.get(i-1).getTitle()).addTo(panelOperation);
             new Label((double) Math.round(operations.get(i-1).getAmount() *100)/100 + " €").addTo(panelOperation);
             new Label(operations.get(i-1).getInitiator().getFullName()).addTo(panelOperation);
-            new Label(operations.get(i-1).getOperationDate().toString()).addTo(panelOperation);
+            LocalDate date = operations.get(i-1).getOperationDate();
+            new Label(date.getDayOfMonth() + "/" + date.getMonthValue() + "/" + date.getYear()).addTo(panelOperation);
         }
 
         new EmptySpace().addTo(root);
