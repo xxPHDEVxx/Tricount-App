@@ -49,7 +49,6 @@ public class EditTricountView extends DialogWindow {
             }
         }
 
-        System.out.println(lstDepense);
         setHints(List.of(Hint.CENTERED, Hint.FIXED_SIZE));
         setCloseWindowWithEscape(true);
         setFixedSize(new TerminalSize(60, 20));

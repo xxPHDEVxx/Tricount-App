@@ -5,9 +5,9 @@ import tgpr.framework.ErrorList;
 
 import java.util.List;
 
-public abstract interface TricountValidator {
+public abstract class TricountValidator {
     public static Error isValidTitle(String title) {
-        if (title == null || title.length() < 4)  {
+        if (title == null || title.length() <3)  {
             return new Error("must be longer than 3");
         } else  {
             return Error.NOERROR;
@@ -16,7 +16,7 @@ public abstract interface TricountValidator {
 
     }
     public static Error isValidDescription(String description) {
-        if (description != null && description.length() < 4)  {
+        if (description != null && description.length() < 3)  {
             return new Error("must be longer than 3");
         } else  {
             return Error.NOERROR;

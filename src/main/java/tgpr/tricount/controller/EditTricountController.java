@@ -12,23 +12,26 @@ import tgpr.tricount.view.EditTricountView;
 public class EditTricountController extends Controller {
     private final EditTricountView view ;
     private Tricount tricount;
+    private Integer idTricount;
     private final boolean isNew;
 
-    public EditTricountController(){
-        Tricount tric = Tricount.getByKey(4);
-        this.tricount = tric;
-        isNew = tric == null;
+    public EditTricountController(Tricount tricount){
+        this.tricount = tricount;
+        this.idTricount = tricount.getId();
+        isNew = tricount == null;
         view = new EditTricountView(this, tricount);
     }
 
     public void save(String title, String description) {
-      /*  var errors = validate(title, description);
-        if (errors.isEmpty()) {*/
-            tricount = new Tricount(title, description, 1);
+        var errors = validate(title, description);
+        if (errors.isEmpty()) {
+            tricount = new Tricount( title, description, 1);
+            tricount.setId(idTricount);
+
             tricount.save();
-            view.close();
-       /* } else
-            showErrors(errors);*/
+            //view.close();
+       } else
+            showErrors(errors);
     }
     public ErrorList validate(String title, String description) {
         var errors = new ErrorList();
