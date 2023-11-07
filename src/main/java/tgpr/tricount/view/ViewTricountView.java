@@ -9,6 +9,8 @@ import com.googlecode.lanterna.gui2.GridLayout;
 import com.googlecode.lanterna.gui2.Label;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import tgpr.framework.ColumnSpec;
+import tgpr.framework.ObjectTable;
 import tgpr.tricount.TricountApp;
 import tgpr.tricount.controller.ViewTricountController;
 import tgpr.tricount.model.Operation;
@@ -48,41 +50,33 @@ public class ViewTricountView extends DialogWindow {
         new Label("Date:").addTo(description);
         new Label(tricount.getCreatedAt().toString().replace("T", "  ")).setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);
 
-        List<Operation> operations = tricount.getOperations();
-        double totalExpense = 0, myExpenses = 0,myBalance = 0, weight = 0, myPaid = 0;
-        for (Operation operation : operations) {
-            if (operation.getTricountId() == tricount.getId()) {
-                totalExpense += operation.getAmount();
-                if (operation.getInitiator().equals(Security.getLoggedUser()))
-                    myPaid += operation.getAmount();
-                List<Repartition> repartitions = operation.getRepartitions();
-                int userWeight =0;
-                for (int i = 0; i<repartitions.size();i++) {
-                    weight += repartitions.get(i).getWeight();
-                    if (repartitions.get(i).getUser().equals(Security.getLoggedUser()))
-                        userWeight = i;
-                }
-                myExpenses += operation.getAmount()*(repartitions.get(userWeight).getWeight()/weight);
-                weight=0;
-            }
-        }
-        myBalance = myPaid - myExpenses;
-
         new Label("Total Expense:").addTo(description);
-        new Label((double) Math.round(totalExpense *100)/100 + " €").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);
+        new Label((double) Math.round(controller.getMyExpenses(tricount).get(0) *100)/100 + " €").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);
         new Label("My Expense:").addTo(description);
-        new Label((double) Math.round(myExpenses *100)/100 + " €").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);
+        new Label((double) Math.round(controller.getMyExpenses(tricount).get(1) *100)/100 + " €").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);
         new Label("My Balance:").addTo(description);
-        TextColor balanceColor = myBalance < 0 ? TextColor.ANSI.RED : TextColor.ANSI.GREEN;
-        new Label((double) Math.round(myBalance *100)/100 + " €").setForegroundColor(balanceColor).addTo(description);
+        TextColor balanceColor = controller.getMyExpenses(tricount).get(2) < 0 ? TextColor.ANSI.RED : TextColor.ANSI.GREEN;
+        new Label((double) Math.round(controller.getMyExpenses(tricount).get(2) *100)/100 + " €").setForegroundColor(balanceColor).addTo(description);
 
         Panel panelOperation = new Panel();
         panelOperation.addTo(root);
         panelOperation.setLayoutManager(new GridLayout(4).setTopMarginSize(1));
+        /*COMMENT CA MARCHE ???
+        ObjectTable<Operation> tbl = new ObjectTable<>(
+                new ColumnSpec<>("Operation", Operation::getTitle),
+                new ColumnSpec<>("Amount", Operation::getAmount),
+                new ColumnSpec<>("Paid By", Operation::getInitiator),
+                new ColumnSpec<>("Role", Operation::getOperationDate)
+        );
+        tbl.add(tricount.getOperations());
+        */
+
         new Label("Operation\t\t\t\t").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addStyle(SGR.UNDERLINE).setLabelWidth(500).addTo(panelOperation);
         new Label("\tAmount").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addStyle(SGR.UNDERLINE).addTo(panelOperation);
         new Label("Paid By\t\t").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addStyle(SGR.UNDERLINE).addTo(panelOperation);
         new Label("Date").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addStyle(SGR.UNDERLINE).addTo(panelOperation);
+        List<Operation> operations = tricount.getOperations();
+        ObjectTable<Operation> operationObjectTable;
         for (int i = operations.size(); i>0; i--) {
             new Label(operations.get(i-1).getTitle()).addTo(panelOperation);
             new Label((double) Math.round(operations.get(i-1).getAmount() *100)/100 + " €").addTo(panelOperation);
