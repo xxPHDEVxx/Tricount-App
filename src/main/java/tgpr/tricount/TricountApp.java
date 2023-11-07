@@ -2,6 +2,7 @@ package tgpr.tricount;
 
 import tgpr.framework.Controller;
 import tgpr.framework.Model;
+import tgpr.tricount.controller.EditTricountController;
 import tgpr.tricount.controller.TestController;
 
 public class TricountApp {
@@ -11,7 +12,8 @@ public class TricountApp {
         if (!Model.checkDb(DATABASE_SCRIPT_FILE))
             Controller.abort("Database is not available!");
         else {
-            Controller.navigateTo(new TestController());
+
+            Controller.navigateTo(new EditTricountController());
         }
     }
 }
