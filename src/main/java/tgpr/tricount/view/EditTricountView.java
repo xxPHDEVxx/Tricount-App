@@ -40,7 +40,7 @@ public class EditTricountView extends DialogWindow {
 
         setHints(List.of(Hint.CENTERED, Hint.FIXED_SIZE));
         setCloseWindowWithEscape(true);
-        setFixedSize(new TerminalSize(70, 20));
+        setFixedSize(new TerminalSize(60, 20));
 
 
 
@@ -48,7 +48,7 @@ public class EditTricountView extends DialogWindow {
         setComponent(root);
         createFieldsGrid().addTo(root);
         listAddParticipants().addTo(root);
-
+        root.addEmpty();
         createButtonsPanel().addTo(root);
 
 

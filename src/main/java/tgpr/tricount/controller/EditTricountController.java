@@ -15,7 +15,7 @@ public class EditTricountController extends Controller {
     private final boolean isNew;
 
     public EditTricountController(){
-        Tricount tric = Tricount.getByKey(1);
+        Tricount tric = Tricount.getByKey(4);
         this.tricount = tric;
         isNew = tric == null;
         view = new EditTricountView(this, tricount);
