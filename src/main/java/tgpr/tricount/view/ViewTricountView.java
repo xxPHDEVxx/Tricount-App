@@ -49,16 +49,24 @@ public class ViewTricountView extends DialogWindow {
         new Label(tricount.getCreatedAt().toString().replace("T", "  ")).setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);
 
         List<Operation> operations = tricount.getOperations();
-        double totalExpense = 0;
-        double myExpenses = 0;
-        double myBalance = 0;
+        double totalExpense = 0, myExpenses = 0,myBalance = 0, weight = 0, myPaid = 0;
         for (Operation operation : operations) {
             if (operation.getTricountId() == tricount.getId()) {
                 totalExpense += operation.getAmount();
                 if (operation.getInitiator().equals(Security.getLoggedUser()))
-                    myExpenses += operation.getAmount();
+                    myPaid += operation.getAmount();
+                List<Repartition> repartitions = operation.getRepartitions();
+                int userWeight =0;
+                for (int i = 0; i<repartitions.size();i++) {
+                    weight += repartitions.get(i).getWeight();
+                    if (repartitions.get(i).getUser().equals(Security.getLoggedUser()))
+                        userWeight = i;
+                }
+                myExpenses += operation.getAmount()*(repartitions.get(userWeight).getWeight()/weight);
+                weight=0;
             }
         }
+        myBalance = myPaid - myExpenses;
 
         new Label("Total Expense:").addTo(description);
         new Label((double) Math.round(totalExpense *100)/100 + " €").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);

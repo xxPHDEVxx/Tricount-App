@@ -14,7 +14,7 @@ public class TricountApp {
         if (!Model.checkDb(DATABASE_SCRIPT_FILE))
             Controller.abort("Database is not available!");
         else {
-            Security.login(User.getByKey(3));
+            Security.login(User.getByKey(1));
             Controller.navigateTo(new ViewTricountController());
         }
     }
