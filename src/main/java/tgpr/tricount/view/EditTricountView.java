@@ -71,13 +71,17 @@ public class EditTricountView extends DialogWindow {
         var panel = Panel.gridPanel(2, Margin.of(1));
 
         new Label("Title:").addTo(panel);
-        txtTitle = new TextBox().sizeTo(19).addTo(panel);
+        txtTitle = new TextBox().sizeTo(19).addTo(panel)
+                .setTextChangeListener((txt, byUser) -> validate());
+        ;
         panel.addEmpty();
         errTitle.addTo(panel)
                 .setForegroundColor(TextColor.ANSI.RED);
 
         new Label("Description:").addTo(panel);
-        txtDescription = new TextBox().sizeTo(30 ,9).addTo(panel);
+        txtDescription = new TextBox().sizeTo(30 ,9).addTo(panel)
+                .setTextChangeListener((txt, byUser) -> validate());
+        ;
         panel.addEmpty();
         errDescription.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
         new Label("Subscribers:").addTo(panel);
@@ -144,14 +148,7 @@ public class EditTricountView extends DialogWindow {
     }
 
     private String star(User user) {
-        String ast = "";
-        if (lstDepense.contains(user)) {
-            ast = " (*)";
-        } else {
-            ast ="";
-        }
-
-        return ast;
+        return lstDepense.contains(user)? "(*)" : "";
 
 
 
