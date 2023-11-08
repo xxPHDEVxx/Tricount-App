@@ -147,7 +147,7 @@ public class EditTricountView extends DialogWindow {
     }
 
     private String star(User user) {
-        return lstDepense.contains(user)? "(*)" : "";
+        return lstDepense.contains(user) || grpSubscribers.contains(user)? "(*)" : "";
 
 
 
