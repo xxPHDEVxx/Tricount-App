@@ -4,10 +4,13 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import tgpr.framework.Error;
+import tgpr.framework.ErrorList;
 import tgpr.framework.Margin;
 import tgpr.framework.Tools;
 import tgpr.tricount.controller.EditTricountController;
 import tgpr.tricount.model.Operation;
+import tgpr.tricount.model.Subscription;
 import tgpr.tricount.model.Tricount;
 import tgpr.tricount.model.User;
 
@@ -24,6 +27,7 @@ public class EditTricountView extends DialogWindow {
     private TextBox txtDescription;
     private final Label errTitle = new Label("");
     private final Label errDescription = new Label("");
+    private final Label errDelParticipant = new Label("");
 
     private List<User> grpSubscribers;
     private ActionListBox lstSubscriber = new ActionListBox();
@@ -38,6 +42,7 @@ public class EditTricountView extends DialogWindow {
         super("Edit tricount");
         this.controller = controller;
         this.tricount = tricount;
+        this.grpSubscribers = tricount.getParticipants();
 
         //liste des utilisateurs qui sont impliqué au tricount
         for (Operation op: tricount.getOperations()
@@ -83,16 +88,9 @@ public class EditTricountView extends DialogWindow {
         panel.addEmpty();
         errDescription.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
         new Label("Subscribers:").addTo(panel);
+        comboBoxSub().addTo(panel);
 
-        grpSubscribers = tricount.getParticipants();
-        for (var parti : grpSubscribers) {
-            lstSubscriber.addItem(parti.getFullName() + star(parti)
 
-                    , () -> doSomethingWithUser(parti));
-
-        }
-
-        lstSubscriber.addTo(panel);
         return panel;
     }
 
@@ -122,15 +120,50 @@ public class EditTricountView extends DialogWindow {
         return panel;
     }
 
-    private void doSomethingWithUser(User parti) {
-        System.out.println(parti.getFullName());
+    private Panel comboBoxSub() {
+        var panel = new Panel();
+        grpSubscribers = tricount.getParticipants();
+        for (var parti : grpSubscribers) {
+            lstSubscriber.addItem(parti.getFullName() + star(parti)
+
+                    , () -> deleteLstParticipant(parti));
+        }
+
+        lstSubscriber.addTo(panel);
+        return panel;
+    }
+
+    private void deleteLstParticipant(User parti) {
+        var errors = new ErrorList();
+        if (lstDepense.contains(parti) || parti.getId() == tricount.getCreatorId()) {
+            errors.add(new Error("You may not remove this participant " +
+                    "because he is the creator or he is implied in one more expenses"));
+        } else {
+            Subscription delSub = Subscription.getByKey(tricount.getId(), parti.getId());
+            delSub.delete();
+            //supprime de l'actionList
+            lstSubscriber.removeItem(lstSubscriber.getSelectedIndex());
+
+        }
+
+        if (!errors.isEmpty()) {
+            controller.showErrors(errors);
+        }
+
+
+
     }
     private void refresh() {
         if (tricount != null) {
             txtTitle.setText(tricount.getTitle());
             txtDescription.setText(Tools.ifNull(tricount.getDescription(), ""));
+
         }
 
+    }
+
+    private void refreshSub() {
+        grpSubscribers = tricount.getParticipants();
     }
 
     private void add() {
@@ -139,7 +172,6 @@ public class EditTricountView extends DialogWindow {
                 txtDescription.getText(),
                 lstNvParticipants);
 
-        System.out.println(lstNvParticipants);
 
     }
 
@@ -148,7 +180,7 @@ public class EditTricountView extends DialogWindow {
         lstNvParticipants.add(selected);
         lstSubscriber.addItem(selected.getFullName()
 
-                , () -> doSomethingWithUser(selected));
+                , () -> deleteLstParticipant(selected));
         cbAddParticipant.removeItem(cbAddParticipant.getSelectedItem());
         // remettre le premier item
         cbAddParticipant.setSelectedIndex(0);
