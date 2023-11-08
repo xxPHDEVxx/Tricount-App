@@ -21,14 +21,14 @@ public class TricountApp {
 
         else {
 
-            //Controller.navigateTo(new EditTricountController(Tricount.getByKey(1)));
+            Controller.navigateTo(new EditTricountController(Tricount.getByKey(1)));
 
            /* Tricount tricount = Tricount.getByKey(4);
             User Xavier =  User.getByFullName("Xavier");
             Security.login(Xavier);
             Controller.navigateTo(new EditOperationController(tricount, null));*/
 
-            Controller.navigateTo(new DisplayOperationController(Operation.getByKey(5)));
+            //Controller.navigateTo(new DisplayOperationController(Operation.getByKey(5)));
 
         }
     }
