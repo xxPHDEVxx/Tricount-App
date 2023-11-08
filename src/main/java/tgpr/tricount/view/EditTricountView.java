@@ -136,13 +136,21 @@ public class EditTricountView extends DialogWindow {
     private void add() {
         controller.save(
                 txtTitle.getText(),
-                txtDescription.getText());
+                txtDescription.getText(),
+                lstNvParticipants);
 
 
     }
 
     private void addParticipant() {
         User selected = user.getByFullName(cbAddParticipant.getSelectedItem());
+        lstNvParticipants.add(selected);
+        lstSubscriber.addItem(selected.getFullName()
+
+                , () -> doSomethingWithUser(selected));
+        cbAddParticipant.removeItem(cbAddParticipant.getSelectedItem());
+        // remettre le premier item
+        cbAddParticipant.setSelectedIndex(0);
 
     }
 
