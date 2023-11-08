@@ -77,7 +77,7 @@ public class EditTricountView extends DialogWindow {
                 .setForegroundColor(TextColor.ANSI.RED);
 
         new Label("Description:").addTo(panel);
-        txtDescription = new TextBox().sizeTo(30 ,9).addTo(panel)
+        txtDescription = new TextBox().sizeTo(25 ,9).addTo(panel)
                 .setTextChangeListener((txt, byUser) -> validate());
         ;
         panel.addEmpty();
