@@ -77,7 +77,7 @@ public class EditTricountView extends DialogWindow {
                 .setForegroundColor(TextColor.ANSI.RED);
 
         new Label("Description:").addTo(panel);
-        txtDescription = new TextBox().sizeTo(30 ,9).addTo(panel)
+        txtDescription = new TextBox().sizeTo(25 ,9).addTo(panel)
                 .setTextChangeListener((txt, byUser) -> validate());
         ;
         panel.addEmpty();
@@ -136,13 +136,21 @@ public class EditTricountView extends DialogWindow {
     private void add() {
         controller.save(
                 txtTitle.getText(),
-                txtDescription.getText());
+                txtDescription.getText(),
+                lstNvParticipants);
 
 
     }
 
     private void addParticipant() {
         User selected = user.getByFullName(cbAddParticipant.getSelectedItem());
+        lstNvParticipants.add(selected);
+        lstSubscriber.addItem(selected.getFullName()
+
+                , () -> doSomethingWithUser(selected));
+        cbAddParticipant.removeItem(cbAddParticipant.getSelectedItem());
+        // remettre le premier item
+        cbAddParticipant.setSelectedIndex(0);
 
     }
 
