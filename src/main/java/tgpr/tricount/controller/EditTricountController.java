@@ -25,6 +25,7 @@ public class EditTricountController extends Controller {
     public void save(String title, String description) {
         var errors = validate(title, description);
         if (errors.isEmpty()) {
+            // rajouter l'user id de l'utilisateur connecté
             tricount = new Tricount( title, description, 1);
             tricount.setId(idTricount);
 
