@@ -4,19 +4,15 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
-import com.googlecode.lanterna.input.KeyStroke;
 import tgpr.framework.Margin;
 import tgpr.framework.Tools;
 import tgpr.tricount.controller.EditTricountController;
 import tgpr.tricount.model.Operation;
-import tgpr.tricount.model.Subscription;
 import tgpr.tricount.model.Tricount;
 import tgpr.tricount.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.regex.Pattern;
 
 public class EditTricountView extends DialogWindow {
     private final EditTricountController controller;
@@ -30,9 +26,11 @@ public class EditTricountView extends DialogWindow {
     private final Label errDescription = new Label("");
 
     private List<User> grpSubscribers;
-    private ActionListBox lst = new ActionListBox();
-    private ComboBox<String> cb2 = new ComboBox<>();
+    private ActionListBox lstSubscriber = new ActionListBox();
+    private ComboBox<String> cbAddParticipant = new ComboBox<>();
     private List<User> lstDepense = new ArrayList<>() ;
+
+    private List<User> lstNvParticipants = new ArrayList<>();
 
 
 
@@ -41,6 +39,7 @@ public class EditTricountView extends DialogWindow {
         this.controller = controller;
         this.tricount = tricount;
 
+        //liste des utilisateurs qui sont impliqué au tricount
         for (Operation op: tricount.getOperations()
              ) {
             User us = User.getByKey(op.getInitiatorId());
@@ -87,25 +86,25 @@ public class EditTricountView extends DialogWindow {
 
         grpSubscribers = tricount.getParticipants();
         for (var parti : grpSubscribers) {
-            lst.addItem(parti.getFullName() + star(parti)
+            lstSubscriber.addItem(parti.getFullName() + star(parti)
 
                     , () -> doSomethingWithUser(parti));
 
         }
 
-        lst.addTo(panel);
+        lstSubscriber.addTo(panel);
         return panel;
     }
 
     private Panel listAddParticipants() {
         var panel = Panel.horizontalPanel().center();
         var users = User.getAll();
-        cb2.addItem("-- Select a User -- ");
+        cbAddParticipant.addItem("-- Select a User -- ");
         for (User user : users)
             if (!grpSubscribers.contains(user)) {
-                cb2.addItem(user.getFullName());
+                cbAddParticipant.addItem(user.getFullName());
                 }
-            cb2.addTo(panel);
+            cbAddParticipant.addTo(panel);
 
         var btnAdd = new Button("Add", this::addParticipant);
         btnAdd.addTo(panel);
@@ -137,17 +136,26 @@ public class EditTricountView extends DialogWindow {
     private void add() {
         controller.save(
                 txtTitle.getText(),
-                txtDescription.getText());
+                txtDescription.getText(),
+                lstNvParticipants);
+
+        System.out.println(lstNvParticipants);
 
     }
 
     private void addParticipant() {
-        User selected = user.getByFullName( cb2.getSelectedItem());
-        System.out.println(selected.getId());
+        User selected = user.getByFullName(cbAddParticipant.getSelectedItem());
+        lstNvParticipants.add(selected);
+        lstSubscriber.addItem(selected.getFullName()
+
+                , () -> doSomethingWithUser(selected));
+        cbAddParticipant.removeItem(cbAddParticipant.getSelectedItem());
+        // remettre le premier item
+        cbAddParticipant.setSelectedIndex(0);
     }
 
     private String star(User user) {
-        return lstDepense.contains(user) || grpSubscribers.contains(user)? "(*)" : "";
+        return lstDepense.contains(user) || tricount.getCreatorId() == user.getId()? "(*)" : "";
 
 
 
