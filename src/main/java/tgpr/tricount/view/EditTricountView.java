@@ -184,6 +184,7 @@ public class EditTricountView extends DialogWindow {
         cbAddParticipant.removeItem(cbAddParticipant.getSelectedItem());
         // remettre le premier item
         cbAddParticipant.setSelectedIndex(0);
+
     }
 
     private String star(User user) {
