@@ -3,13 +3,23 @@ package tgpr.tricount.controller;
 import com.googlecode.lanterna.gui2.Window;
 import tgpr.framework.Controller;
 import tgpr.tricount.model.*;
+import tgpr.tricount.view.TestView;
 import tgpr.tricount.view.ViewTricountView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ViewTricountController extends Controller {
-    ViewTricountView view = new ViewTricountView(this);
+    private final ViewTricountView view;
+    private Tricount tricount;
+
+    public ViewTricountController(Tricount tricount) {
+        this.tricount = tricount;
+        view = new ViewTricountView(this, tricount);
+    }
+
+
+
     @Override
     public Window getView() {
         return view;
@@ -43,5 +53,25 @@ public class ViewTricountController extends Controller {
         result.add(myExpenses);
         result.add(myPaid - myExpenses);
         return result;
+    }
+
+    public void openOperation(Operation operation) {
+        //Controller.navigateTo(new DisplayOperationView(DisplayOperationController, operation));
+        TestController.navigateTo(new TestController());
+    }
+
+    public void editTricount() {
+        //Controller.navigateTo(new EditTricountView(EditTricountController, tricount));
+        TestController.navigateTo(new TestController());
+    }
+
+    public void newExpense() {
+        //Controller.navigateTo(new AddOpperationView(AddOpperationController, tricount));
+        TestController.navigateTo(new TestController());
+    }
+
+    public void balance() {
+        //Controller.navigateTo(new ViewBalanceView(ViewBalanceController, tricount));
+        TestController.navigateTo(new TestController());
     }
 }

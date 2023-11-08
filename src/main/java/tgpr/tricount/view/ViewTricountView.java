@@ -10,6 +10,7 @@ import com.googlecode.lanterna.gui2.Label;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.framework.ColumnSpec;
+import tgpr.framework.Controller;
 import tgpr.framework.ObjectTable;
 import tgpr.tricount.TricountApp;
 import tgpr.tricount.controller.ViewTricountController;
@@ -19,7 +20,11 @@ import tgpr.tricount.model.Security;
 import tgpr.tricount.model.Tricount;
 
 import java.awt.*;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 
 public class ViewTricountView extends DialogWindow {
@@ -27,13 +32,16 @@ public class ViewTricountView extends DialogWindow {
     private final Button btnBalance;
     private final Button btnNewExpense;
     private final Button btnEditTricount;
+    private final Tricount tricount;
 
-    public ViewTricountView(ViewTricountController controller) {
+    public ViewTricountView(ViewTricountController controller, Tricount tricount) {
         super("View Tricount Detail");
+        this.tricount = tricount;
         setHints(List.of(Hint.CENTERED));
 
         this.controller = controller;
-        Tricount tricount = Tricount.getByKey(4);
+        DecimalFormat decimalFormat = new DecimalFormat("#0.00");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
 
         Panel root = new Panel().setLayoutManager(new LinearLayout(Direction.VERTICAL));
         Panel description = new Panel();
@@ -51,59 +59,48 @@ public class ViewTricountView extends DialogWindow {
         new Label(tricount.getCreatedAt().toString().replace("T", "  ")).setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);
 
         new Label("Total Expense:").addTo(description);
-        new Label((double) Math.round(controller.getMyExpenses(tricount).get(0) *100)/100 + " €").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);
+        new Label(decimalFormat.format(controller.getMyExpenses(tricount).get(0)) + " €").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);
         new Label("My Expense:").addTo(description);
-        new Label((double) Math.round(controller.getMyExpenses(tricount).get(1) *100)/100 + " €").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);
+        new Label(decimalFormat.format(controller.getMyExpenses(tricount).get(1)) + " €").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);
         new Label("My Balance:").addTo(description);
         TextColor balanceColor = controller.getMyExpenses(tricount).get(2) < 0 ? TextColor.ANSI.RED : TextColor.ANSI.GREEN;
-        new Label((double) Math.round(controller.getMyExpenses(tricount).get(2) *100)/100 + " €").setForegroundColor(balanceColor).addTo(description);
+        new Label(decimalFormat.format(controller.getMyExpenses(tricount).get(2)) + " €").setForegroundColor(balanceColor).addTo(description);
+
+        new EmptySpace().addTo(root);
 
         Panel panelOperation = new Panel();
         panelOperation.addTo(root);
-        panelOperation.setLayoutManager(new GridLayout(4).setTopMarginSize(1));
-        /*COMMENT CA MARCHE ???
-        ObjectTable<Operation> tbl = new ObjectTable<>(
-                new ColumnSpec<>("Operation", Operation::getTitle),
-                new ColumnSpec<>("Amount", Operation::getAmount),
-                new ColumnSpec<>("Paid By", Operation::getInitiator),
-                new ColumnSpec<>("Role", Operation::getOperationDate)
-        );
-        tbl.add(tricount.getOperations());
-        */
 
-        new Label("Operation\t\t\t\t").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addStyle(SGR.UNDERLINE).setLabelWidth(500).addTo(panelOperation);
-        new Label("\tAmount").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addStyle(SGR.UNDERLINE).addTo(panelOperation);
-        new Label("Paid By\t\t").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addStyle(SGR.UNDERLINE).addTo(panelOperation);
-        new Label("Date").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addStyle(SGR.UNDERLINE).addTo(panelOperation);
+        ObjectTable<Operation> tbl = new ObjectTable<>(
+                new ColumnSpec<>("Operation", Operation::getTitle).setWidth(30),
+                new ColumnSpec<>("Amount", Operation::getAmount).setFormat("%.2f €").setWidth(10).alignRight(),
+                new ColumnSpec<>("Paid By", Operation::getInitiator).setWidth(10),
+                new ColumnSpec<>("Date", operation -> {
+                    LocalDate date = operation.getOperationDate();
+                    return date.getDayOfMonth() + "/" + date.getMonthValue() + "/" + date.getYear();
+                })
+        );
         List<Operation> operations = tricount.getOperations();
-        ObjectTable<Operation> operationObjectTable;
-        for (int i = operations.size(); i>0; i--) {
-            new Label(operations.get(i-1).getTitle()).addTo(panelOperation);
-            new Label((double) Math.round(operations.get(i-1).getAmount() *100)/100 + " €").addTo(panelOperation);
-            new Label(operations.get(i-1).getInitiator().getFullName()).addTo(panelOperation);
-            LocalDate date = operations.get(i-1).getOperationDate();
-            new Label(date.getDayOfMonth() + "/" + date.getMonthValue() + "/" + date.getYear()).addTo(panelOperation);
+        for (int i = operations.size(); i > 0; i--) {
+            tbl.add(operations.get(i - 1));
         }
 
-        new EmptySpace().addTo(root);
+        tbl.setSelectAction(() -> {
+            Operation operation = tbl.getSelected();
+            controller.openOperation(operation);
+        });
+
+        tbl.addTo(panelOperation);
+
         new EmptySpace().addTo(root);
 
         var buttons = new Panel().addTo(root).setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
         buttons.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
-        btnBalance = new Button("Balance", this::balance).addTo(buttons);
-        btnNewExpense = new Button("New Expense", this::newExpense).addTo(buttons);
-        btnEditTricount = new Button("Edit Tricount", this::editTricount).addTo(buttons);
+        btnBalance = new Button("Balance", controller::balance).addTo(buttons);
+        btnNewExpense = new Button("New Expense", controller::newExpense).addTo(buttons);
+        btnEditTricount = new Button("Edit Tricount", controller::editTricount).addTo(buttons);
         new Button("Close", this::close).addTo(buttons);
 
         setComponent(root);
-    }
-
-    private void editTricount() {
-    }
-
-    private void newExpense() {
-    }
-
-    private void balance() {
     }
 }
