@@ -224,7 +224,7 @@ public class User extends Model {
     }
     public static User checkCredentials(String mail, String password) {
         var user = User.getByMail(mail);
-        if (user != null && user.getHashedPassword.equals(Tools.hash(password)))
+        if (user != null && user.getHashedPassword().equals(Tools.hash(password)))
             return user;
         return null;
     }

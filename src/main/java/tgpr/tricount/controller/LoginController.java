@@ -2,8 +2,8 @@ package tgpr.tricount.controller;
 
 import com.googlecode.lanterna.gui2.Window;
 import tgpr.tricount.TricountApp;
+import tgpr.tricount.model.Tricount;
 import tgpr.tricount.model.User;
-import tgpr.tricount.model.MemberValidator;
 import tgpr.tricount.model.Security;
 import tgpr.tricount.view.LoginView;
 import tgpr.framework.Controller;
@@ -20,14 +20,15 @@ public class LoginController extends Controller {
 
     public List<Error> login(String pseudo, String password) {
         var errors = new ErrorList();
-        errors.add(MemberValidator.isValidPseudo(pseudo));
-        errors.add(MemberValidator.isValidPassword(password));
+        //errors.add(MemberValidator.isValidPseudo(pseudo));
+        //errors.add(MemberValidator.isValidPassword(password));
 
         if (errors.isEmpty()) {
             var member = User.checkCredentials(pseudo, password);
             if (member != null) {
                 Security.login(member);
-                navigateTo(new MemberListController());
+                Tricount tricount = Tricount.getByKey(4);
+                navigateTo(new EditOperationController(tricount, null));
             } else
                 showError(new Error("invalid credentials"));
         } else
