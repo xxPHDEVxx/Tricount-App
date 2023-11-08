@@ -56,22 +56,18 @@ public class ViewTricountController extends Controller {
     }
 
     public void openOperation(Operation operation) {
-        //Controller.navigateTo(new DisplayOperationView(DisplayOperationController, operation));
-        TestController.navigateTo(new TestController());
+        Controller.navigateTo(new DisplayOperationController(operation));
     }
 
     public void editTricount() {
-        //Controller.navigateTo(new EditTricountView(EditTricountController, tricount));
-        TestController.navigateTo(new TestController());
+        Controller.navigateTo(new EditTricountController(tricount));
     }
 
     public void newExpense() {
         //Controller.navigateTo(new AddOpperationView(AddOpperationController, tricount));
-        TestController.navigateTo(new TestController());
     }
 
     public void balance() {
         //Controller.navigateTo(new ViewBalanceView(ViewBalanceController, tricount));
-        TestController.navigateTo(new TestController());
     }
 }
