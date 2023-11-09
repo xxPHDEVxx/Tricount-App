@@ -1,11 +1,9 @@
 package tgpr.tricount.view;
 
 import com.googlecode.lanterna.gui2.*;
-import com.googlecode.lanterna.input.KeyStroke;
 import tgpr.tricount.controller.LoginController;
 import tgpr.framework.Configuration;
 import tgpr.framework.Layouts;
-import tgpr.framework.ViewManager;
 
 import java.util.List;
 
@@ -44,7 +42,7 @@ public class LoginView extends BasicWindow {
         Button btnSeedData = new Button("Reset Database", this::seedData);
         Panel debug = Panel.verticalPanel(LinearLayout.Alignment.Center,
                 new Button("Login as default admin", this::logAsDefaultAdmin),
-                new Button("Login as default member", this::logAsDefaultMember),
+                new Button("Login as boverhaegen@epfc.eu", this::logAsDefaultMember),
                 btnSeedData
         );
         debug.withBorder(Borders.singleLine(" For debug purpose ")).addTo(root);
@@ -69,10 +67,10 @@ public class LoginView extends BasicWindow {
     }
 
     private void logAsDefaultAdmin() {
-        controller.login(Configuration.get("default.admin.pseudo"), Configuration.get("default.admin.password"));
+        controller.login(Configuration.get("default.admin.mail"), Configuration.get("default.admin.password"));
     }
 
     private void logAsDefaultMember() {
-        controller.login(Configuration.get("default.member.pseudo"), Configuration.get("default.member.password"));
+        controller.login(Configuration.get("default.user.mail"), Configuration.get("default.user.password"));
     }
 }
