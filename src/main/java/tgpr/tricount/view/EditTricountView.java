@@ -135,8 +135,7 @@ public class EditTricountView extends DialogWindow {
     private void deleteLstParticipant(User parti) {
         var errors = new ErrorList();
         if (lstDepense.contains(parti) || parti.getId() == tricount.getCreatorId()) {
-            errors.add(new Error("You may not remove this participant " +
-                    "because he is the creator or he is implied in one more expenses"));
+            errors.add(new Error("You may not remove this participant because \nhe is the creator or he is implied in one or\nmore expenses"));
         } else {
             Subscription delSub = Subscription.getByKey(tricount.getId(), parti.getId());
             delSub.delete();
