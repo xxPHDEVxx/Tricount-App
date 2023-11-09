@@ -27,7 +27,6 @@ public class EditTricountView extends DialogWindow {
     private TextBox txtDescription;
     private final Label errTitle = new Label("");
     private final Label errDescription = new Label("");
-    private final Label errDelParticipant = new Label("");
 
     private List<User> grpSubscribers;
     private ActionListBox lstSubscriber = new ActionListBox();
@@ -162,9 +161,6 @@ public class EditTricountView extends DialogWindow {
 
     }
 
-    private void refreshSub() {
-        grpSubscribers = tricount.getParticipants();
-    }
 
     private void add() {
         controller.save(
