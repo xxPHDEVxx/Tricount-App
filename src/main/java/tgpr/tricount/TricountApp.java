@@ -4,7 +4,6 @@ import tgpr.framework.Controller;
 import tgpr.framework.Model;
 
 import tgpr.tricount.controller.EditTricountController;
-import tgpr.tricount.controller.TestController;
 import tgpr.tricount.model.Tricount;
 
 
