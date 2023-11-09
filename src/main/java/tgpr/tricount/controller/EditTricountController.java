@@ -61,4 +61,11 @@ public class EditTricountController extends Controller {
     public Window getView() {
         return view;
     }
+
+    public void delete() {
+        if (askConfirmation("You're about to delete this tricount.\n" +
+                "Do you confirm ! ", "Delete tricount")) {
+            tricount.delete();
+        }
+    }
 }

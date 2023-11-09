@@ -110,7 +110,7 @@ public class EditTricountView extends DialogWindow {
     private Panel createButtonsPanel() {
         var panel = Panel.horizontalPanel().center();
 
-        new Button("Delete").addTo(panel);
+        new Button("Delete", this::delete).addTo(panel);
         new Button("Save", this::add).addTo(panel);
         new Button("Templates").addTo(panel);
         new Button("Cancel", this::close).addTo(panel);
@@ -160,6 +160,10 @@ public class EditTricountView extends DialogWindow {
 
     }
 
+
+    private void delete() {
+        controller.delete();
+    }
 
     private void add() {
         controller.save(
