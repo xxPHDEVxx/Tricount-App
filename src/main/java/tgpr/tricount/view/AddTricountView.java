@@ -7,7 +7,9 @@ import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.framework.Controller;
 import tgpr.framework.Margin;
 import tgpr.framework.Spacing;
+import tgpr.framework.Tools;
 import tgpr.tricount.controller.AddTricountController;
+import tgpr.tricount.model.Operation;
 import tgpr.tricount.model.Security;
 import tgpr.tricount.model.Tricount;
 import tgpr.tricount.model.User;
@@ -19,8 +21,8 @@ public class AddTricountView extends DialogWindow {
     private final AddTricountController controller;
     private final TextBox txtTitle;
     private final TextBox txtDesc;
-    private final Label errTitle;
-    private final Label errDesc;
+    private final Label errTitle = new Label("");
+    private final Label errDesc = new Label("");
     private final Button btnCreate;
 
 
@@ -39,14 +41,14 @@ public class AddTricountView extends DialogWindow {
         txtTitle = new TextBox(new TerminalSize(21, 1)).addTo(root)
                 .setTextChangeListener((txt, byUser) -> validate());
         new EmptySpace().addTo(root);
-        errTitle = new Label("").addTo(root)
+        errTitle.addTo(root)
                 .setForegroundColor(TextColor.ANSI.RED);
 
         new Label("Description:").addTo(root);
         txtDesc = new TextBox(new TerminalSize(31, 3)).addTo(root)
                 .setTextChangeListener((txt, byUser) -> validate());
         new EmptySpace().addTo(root);
-        errDesc = new Label("").addTo(root)
+        errDesc.addTo(root)
                 .setForegroundColor(TextColor.ANSI.RED);
 
         new EmptySpace().addTo(root);
@@ -63,11 +65,15 @@ public class AddTricountView extends DialogWindow {
 
     private void create() {
         Tricount tricount = new Tricount(txtTitle.getText(), txtDesc.getText(), Security.getLoggedUserId());
-        tricount.save();
-        close();
-        //Controller.navigateTo(ViewTricountController());
+        controller.createTricount(tricount);
     }
 
     private void validate() {
+        var errors = controller.validate(
+                txtTitle.getText(),
+                txtDesc.getText()
+        );
+        errTitle.setText(errors.getFirstErrorMessage(Operation.Fields.Title));
+        errDesc.setText(errors.getFirstErrorMessage(Operation.Fields.Amount));
     }
 }
