@@ -10,9 +10,6 @@ import java.util.List;
 
 public class DisplayOperationController extends Controller {
     private final DisplayOperationView view;
-
-
-
     private final Operation operation;
 
     public DisplayOperationController(Operation operation) {
@@ -25,7 +22,9 @@ public class DisplayOperationController extends Controller {
     public Window getView() {
         return view;
     }
-
+    public Operation getOperation() {
+        return operation;
+    }
     public List<Repartition> getRepartitions(){
         return operation.getRepartitions();
     }
