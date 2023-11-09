@@ -1,6 +1,7 @@
 package tgpr.tricount.view;
 
 import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.gui2.ActionListBox;
 import com.googlecode.lanterna.gui2.ComboBox;
 import com.googlecode.lanterna.gui2.Label;
 import com.googlecode.lanterna.gui2.Panel;
@@ -8,6 +9,7 @@ import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.framework.Margin;
 import tgpr.framework.Spacing;
 import tgpr.tricount.controller.TestController;
+import tgpr.tricount.model.Security;
 import tgpr.tricount.model.User;
 
 import java.util.List;
@@ -15,21 +17,24 @@ import java.util.List;
 public class TestView extends DialogWindow {
     private final TestController controller;
     // la première combo contient des objets de type User
-    private final ComboBox<User> cbo1;
+    /*private final ComboBox<User> cbo1;
     // la seconde combo contient des strings car on y mélange des objets User et un string pour la première entrée
     private final ComboBox<String> cbo2;
-    private final Label lbl;
+    private final Label lbl;*/
 
+    private User  user;
     public TestView(TestController controller) {
         super("Test");
         setHints(List.of(Hint.EXPANDED));
 
         this.controller = controller;
+        this.user = User.getByKey(1);
+
 
         var root = Panel.gridPanel(1, Margin.of(1), Spacing.of(1));
         setComponent(root);
 
-        cbo1 = new ComboBox<User>()
+       /* cbo1 = new ComboBox<User>()
                 .sizeTo(25)
                 .addTo(root)
                 // On ajoute un listener sous la forme d'une méthode lambda qui sera appelée lorsque la valeur
@@ -56,12 +61,24 @@ public class TestView extends DialogWindow {
         lbl = new Label("")
                 .addTo(root);
 
-        cbo1.takeFocus();
+        cbo1.takeFocus();*/
 
         // refresh initial
-        refresh();
+        ActionListBox lst = new ActionListBox();
+
+        List<User> members = User.getAll();
+        for (var parti : members) {
+            lst.addItem(parti.getFullName(), () -> doSomething(parti));
+        }
+
+        lst.addTo(root);
+        System.out.println(user.getSubscriptions());
+    }
+    private void doSomething(User parti) {
+        System.out.println(parti.getFullName() + "has been pressed");
     }
 
+    /*
     private void refresh() {
         refreshCbo1();
         refreshCbo2();
@@ -107,5 +124,5 @@ public class TestView extends DialogWindow {
         String fullName = cbo2.getSelectedItem();
         if (fullName == null) return null;
         return User.getByFullName(fullName);
-    }
+    }*/
 }
