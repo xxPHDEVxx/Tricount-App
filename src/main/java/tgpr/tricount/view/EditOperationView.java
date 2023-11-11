@@ -34,6 +34,8 @@ public class EditOperationView extends DialogWindow {
     private Button btnApplay;
     private Button btnSaveRepAtTemplate;
 
+    private Button buttonDelete;
+
     public EditOperationView(EditOperationController controller,Tricount tricount, Operation operation) {
         super((operation == null ? "Add " : "Edit ") + "Operation");
         this.operation = operation;
@@ -158,6 +160,7 @@ public class EditOperationView extends DialogWindow {
     private Panel createButtonsPanel() {
         var panel = Panel.horizontalPanel().center();
 
+        buttonDelete = new Button("delete", this::delete).addTo(panel).setEnabled(operation != null);
         btnAddUpdate = new Button("save", this::add).addTo(panel).setEnabled(false);
         btnSaveRepAtTemplate = new Button("save Repartition as Template", this::saveRepAsTemp).addTo(panel).setEnabled(false);
         new Button("Cancel", this::close).addTo(panel);
@@ -178,6 +181,20 @@ public class EditOperationView extends DialogWindow {
 
     }
 
+    private void delete() {
+        if (operation != null) {
+
+           // if (confirmDelete()) {
+                controller.deleteOperation(operation);
+                this.close();
+            //}
+        }
+    }
+
+   /* private boolean confirmDelete() {
+
+    }
+*/
     private void add() {
         controller.save(
                 txtTitle.getText(),

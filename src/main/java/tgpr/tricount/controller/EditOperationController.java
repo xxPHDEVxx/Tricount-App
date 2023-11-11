@@ -54,6 +54,12 @@ public class EditOperationController extends Controller {
             showErrors(errors);
     }
 
+    // Gère la supression d'une opération.
+    public void deleteOperation(Operation operation){
+        if (operation != null)
+            operation.delete();
+    }
+
     public ErrorList validate(String title, String amount, String date, List<Repartition> repartitions){
         var errors = new ErrorList();
 
