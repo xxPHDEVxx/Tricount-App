@@ -163,9 +163,9 @@ public class EditOperationView extends DialogWindow {
     private Panel createButtonsPanel() {
         var panel = Panel.horizontalPanel().center();
 
-        buttonDelete = new Button("delete", this::delete).addTo(panel).setEnabled(operation != null);
-        btnAddUpdate = new Button("save", this::add).addTo(panel).setEnabled(false);
-        btnSaveRepAtTemplate = new Button("save Repartition as Template", this::saveRepAsTemp).addTo(panel).setEnabled(false);
+        buttonDelete = new Button("Delete", this::delete).addTo(panel).setEnabled(operation != null);
+        btnAddUpdate = new Button("Save", this::add).addTo(panel).setEnabled(false);
+        btnSaveRepAtTemplate = new Button("Save Repartition as Template", this::saveRepAsTemp).addTo(panel).setEnabled(false);
         new Button("Cancel", this::close).addTo(panel);
         addShortcut(btnAddUpdate, KeyStroke.fromString(operation == null ? "<A-a>" : "<A-u>"));
 
@@ -190,7 +190,7 @@ public class EditOperationView extends DialogWindow {
             txtTitle.setText(operation.getTitle());
             txtAmount.setText(String.valueOf((operation.getAmount())).replace('.', ','));
             txtDate.setText(localDateToString(operation.getOperationDate()).replace('-', '/'));
-            // Autres champs à initialiser
+            cboUsers.setSelectedItem(Security.getLoggedUser()); // pas nécessaire en théorie, à tester
         }
     }
 
