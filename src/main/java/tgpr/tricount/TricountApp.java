@@ -33,7 +33,7 @@ public class TricountApp {
             Controller.navigateTo(new EditTricountController(Tricount.getByKey(1)));*/
 
 
-            Controller.navigateTo(new DisplayOperationController(Operation.getByKey(5)));
+            Controller.navigateTo(new ViewTemplatesController());
 
         }
     }
