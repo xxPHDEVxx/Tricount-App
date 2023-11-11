@@ -11,8 +11,8 @@ public class ViewTemplatesController extends Controller {
 
     private final ViewTemplatesView view;
     public ViewTemplatesController(){
-
         view = new ViewTemplatesView(this);
+
     }
     @Override
     public Window getView() {
