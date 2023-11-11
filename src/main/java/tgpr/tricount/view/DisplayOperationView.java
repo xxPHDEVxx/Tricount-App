@@ -2,11 +2,9 @@ package tgpr.tricount.view;
 
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.gui2.Button;
-import com.googlecode.lanterna.gui2.GridLayout;
-import com.googlecode.lanterna.gui2.Label;
-import com.googlecode.lanterna.gui2.Panel;
+import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import com.googlecode.lanterna.gui2.table.TableCellRenderer;
 import com.googlecode.lanterna.input.KeyStroke;
 import tgpr.framework.ColumnSpec;
 import tgpr.framework.Controller;
@@ -66,8 +64,8 @@ public class DisplayOperationView extends DialogWindow {
          fields.addComponent(new Label("For whom:"));
 
          repartitionTable = new ObjectTable<>(
-                 new ColumnSpec<>("Participant   ", r -> r.getUser().getFullName()),
-                 new ColumnSpec<>("Weight   ", Repartition::getWeight),
+                 new ColumnSpec<>("Participant  ", r -> r.getUser().getFullName()),
+                 new ColumnSpec<>("Weight   ", Repartition::getWeight).alignRight(),
                  new ColumnSpec<>("Amount", repartition -> {
                      int weight = repartition.getWeight();
                      double operationAmount = operation.getAmount();
@@ -81,13 +79,17 @@ public class DisplayOperationView extends DialogWindow {
                  })
 
          ).addTo(fields);
+
          root.addEmpty();
          createButtonPanel().addTo(root);
 
          refresh();
     }
     private Panel createButtonPanel(){
-        var panel= Panel.horizontalPanel().center();
+        var panel= new Panel()
+                .setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
+                .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.End));
+
 
         btnUp = new Button("Up", this::up).addTo(panel).setEnabled(false);
         btnDown = new Button("Down", this::down).addTo(panel).setEnabled(false);
@@ -104,8 +106,11 @@ public class DisplayOperationView extends DialogWindow {
         int i = 0;
         while(i < operations.size() && !operations[i].equals(operation))
             ++i;
-        if(i < operations.size() - 1 && operations[i + 1] != null)
+        if(i < operations.size() - 1 && operations[i + 1] != null) {
+            close();
             Controller.navigateTo(new DisplayOperationController(operations[i + 1]));
+
+        }
 
     }
 
@@ -115,8 +120,10 @@ public class DisplayOperationView extends DialogWindow {
         while(i < operations.size() && !operations[i].equals(operation))
             ++i;
 
-        if(i  > 0 && operations[i - 1] != null)
+        if(i  > 0 && operations[i - 1] != null) {
+            close();
             Controller.navigateTo(new DisplayOperationController(operations[i - 1]));
+        }
     }
 
 
@@ -125,7 +132,7 @@ public class DisplayOperationView extends DialogWindow {
             lblTitle.setText(operation.getTitle());
             DecimalFormat decimalFormat = new DecimalFormat("#0.00");
             lblAmount.setText(decimalFormat.format(operation.getAmount()) + " €");
-            lblDate.setText(operation.getOperationDate().asIsoString());
+            lblDate.setText(operation.getOperationDate().asString());
             lblPaidBy.setText(operation.getInitiator().getFullName());
             repartitionTable.clear();
             var repartitions = controller.getRepartitions();
@@ -135,9 +142,4 @@ public class DisplayOperationView extends DialogWindow {
             btnEdit.setEnabled(true);
         }
     }
-
-
-
-
-
 }
