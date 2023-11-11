@@ -35,7 +35,7 @@ public class EditOperationView extends DialogWindow {
     private Button btnSaveRepAtTemplate;
 
     public EditOperationView(EditOperationController controller,Tricount tricount, Operation operation) {
-        super((operation == null ? "Add " : "Update ") + "Operation");
+        super((operation == null ? "Add " : "Edit ") + "Operation");
         this.operation = operation;
         this.controller = controller;
         this.tricount = tricount;
