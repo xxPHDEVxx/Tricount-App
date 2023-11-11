@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static tgpr.tricount.model.DateUtils.localDateToString;
 
 public class EditOperationView extends DialogWindow {
     private final EditOperationController controller;
@@ -51,6 +52,8 @@ public class EditOperationView extends DialogWindow {
 
         createFieldsGrid().addTo(root);
         createButtonsPanel().addTo(root);
+
+        populateFields();
 
         refresh();
 
@@ -180,6 +183,17 @@ public class EditOperationView extends DialogWindow {
     private void refresh() {
 
     }
+
+    // Définis les champs de texte avec les données de l'opération concernée.
+    private void populateFields() {
+        if (operation != null) {
+            txtTitle.setText(operation.getTitle());
+            txtAmount.setText(String.valueOf((operation.getAmount())).replace('.', ','));
+            txtDate.setText(localDateToString(operation.getOperationDate()).replace('-', '/'));
+            // Autres champs à initialiser
+        }
+    }
+
 
     private void delete() {
         if (operation != null) {
