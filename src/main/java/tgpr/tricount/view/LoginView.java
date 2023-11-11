@@ -43,6 +43,7 @@ public class LoginView extends BasicWindow {
         Panel debug = Panel.verticalPanel(LinearLayout.Alignment.Center,
                 new Button("Login as default admin", this::logAsDefaultAdmin),
                 new Button("Login as boverhaegen@epfc.eu", this::logAsDefaultMember),
+                new Button("Login as bepenelle@epfc.eu", this::logAsDefaultMember2),
                 btnSeedData
         );
         debug.withBorder(Borders.singleLine(" For debug purpose ")).addTo(root);
@@ -72,5 +73,9 @@ public class LoginView extends BasicWindow {
 
     private void logAsDefaultMember() {
         controller.login(Configuration.get("default.user.mail"), Configuration.get("default.user.password"));
+    }
+
+    private void logAsDefaultMember2() {
+        controller.login(Configuration.get("default.user2.mail"), Configuration.get("default.user2.password"));
     }
 }
