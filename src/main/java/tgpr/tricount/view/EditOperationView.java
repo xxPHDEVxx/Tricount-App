@@ -4,6 +4,7 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import com.googlecode.lanterna.gui2.dialogs.MessageDialogButton;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import tgpr.framework.Margin;
@@ -34,7 +35,6 @@ public class EditOperationView extends DialogWindow {
     private Button btnAddUpdate;
     private Button btnApplay;
     private Button btnSaveRepAtTemplate;
-
     private Button buttonDelete;
 
     public EditOperationView(EditOperationController controller,Tricount tricount, Operation operation) {
@@ -197,18 +197,15 @@ public class EditOperationView extends DialogWindow {
 
     private void delete() {
         if (operation != null) {
+            MessageDialogButton result = EditOperationController.showMessage("Voulez-vous vraiment supprimer cette opération ?", "Confirmation de supression", MessageDialogButton.OK, MessageDialogButton.Cancel);
 
-           // if (confirmDelete()) {
+            if (result == MessageDialogButton.OK) {
                 controller.deleteOperation(operation);
                 this.close();
-            //}
+            }
         }
     }
 
-   /* private boolean confirmDelete() {
-
-    }
-*/
     private void add() {
         controller.save(
                 txtTitle.getText(),
