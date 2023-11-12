@@ -193,6 +193,31 @@ public class EditOperationView extends DialogWindow {
             txtAmount.setText(String.valueOf((operation.getAmount())).replace('.', ','));
             txtDate.setText(localDateToString(operation.getOperationDate()).replace('-', '/'));
             cboUsers.setSelectedItem(Security.getLoggedUser()); // pas nécessaire en théorie, à tester
+            updateRepartitionsView();
+        }
+    }
+
+    // Récupère la répartition de poid de l'opération
+    private void updateRepartitionsView() {
+        if (operation != null) {
+            List<Repartition> operationRepartitions = operation.getRepartitions();
+
+            for (var rep : cklRepartitions.getItems()) {
+                boolean found = false;
+
+                for (var operationRep : operationRepartitions) {
+                    if (rep.getUser().getId() == operationRep.getUser().getId()) {
+                        rep.setWeight(operationRep.getWeight());
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    rep.setWeight(0);
+                }
+
+                cklRepartitions.invalidate();
+            }
         }
     }
 
