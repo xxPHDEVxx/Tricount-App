@@ -4,6 +4,7 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import com.googlecode.lanterna.gui2.dialogs.MessageDialogButton;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import tgpr.framework.Margin;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static tgpr.tricount.model.DateUtils.localDateToString;
 
 public class EditOperationView extends DialogWindow {
     private final EditOperationController controller;
@@ -33,9 +35,10 @@ public class EditOperationView extends DialogWindow {
     private Button btnAddUpdate;
     private Button btnApplay;
     private Button btnSaveRepAtTemplate;
+    private Button buttonDelete;
 
     public EditOperationView(EditOperationController controller,Tricount tricount, Operation operation) {
-        super((operation == null ? "Add " : "Update ") + "Operation");
+        super((operation == null ? "Add " : "Edit ") + "Operation");
         this.operation = operation;
         this.controller = controller;
         this.tricount = tricount;
@@ -49,6 +52,8 @@ public class EditOperationView extends DialogWindow {
 
         createFieldsGrid().addTo(root);
         createButtonsPanel().addTo(root);
+
+        populateFields();
 
         refresh();
 
@@ -158,8 +163,9 @@ public class EditOperationView extends DialogWindow {
     private Panel createButtonsPanel() {
         var panel = Panel.horizontalPanel().center();
 
-        btnAddUpdate = new Button("save", this::add).addTo(panel).setEnabled(false);
-        btnSaveRepAtTemplate = new Button("save Repartition as Template", this::saveRepAsTemp).addTo(panel).setEnabled(false);
+        buttonDelete = new Button("Delete", this::delete).addTo(panel).setEnabled(operation != null);
+        btnAddUpdate = new Button("Save", this::add).addTo(panel).setEnabled(false);
+        btnSaveRepAtTemplate = new Button("Save Repartition as Template", this::saveRepAsTemp).addTo(panel).setEnabled(false);
         new Button("Cancel", this::close).addTo(panel);
         addShortcut(btnAddUpdate, KeyStroke.fromString(operation == null ? "<A-a>" : "<A-u>"));
 
@@ -176,6 +182,28 @@ public class EditOperationView extends DialogWindow {
 
     private void refresh() {
 
+    }
+
+    // Définis les champs de texte avec les données de l'opération concernée.
+    private void populateFields() {
+        if (operation != null) {
+            txtTitle.setText(operation.getTitle());
+            txtAmount.setText(String.valueOf((operation.getAmount())).replace('.', ','));
+            txtDate.setText(localDateToString(operation.getOperationDate()).replace('-', '/'));
+            cboUsers.setSelectedItem(Security.getLoggedUser()); // pas nécessaire en théorie, à tester
+        }
+    }
+
+
+    private void delete() {
+        if (operation != null) {
+            MessageDialogButton result = EditOperationController.showMessage("Voulez-vous vraiment supprimer cette opération ?", "Confirmation de supression", MessageDialogButton.OK, MessageDialogButton.Cancel);
+
+            if (result == MessageDialogButton.OK) {
+                controller.deleteOperation(operation);
+                this.close();
+            }
+        }
     }
 
     private void add() {

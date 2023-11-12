@@ -13,6 +13,7 @@ import tgpr.tricount.model.Operation;
 import tgpr.tricount.model.Security;
 import tgpr.tricount.model.Tricount;
 import tgpr.tricount.model.User;
+import tgpr.tricount.view.EditOperationView;
 
 
 public class TricountApp {
@@ -33,7 +34,7 @@ public class TricountApp {
             Controller.navigateTo(new EditTricountController(Tricount.getByKey(1)));*/
 
 
-            Controller.navigateTo(new DisplayOperationController(Operation.getByKey(5)));
+            Controller.navigateTo(new EditOperationController(Tricount.getByKey(4),Operation.getByKey(6)));
 
         }
     }
