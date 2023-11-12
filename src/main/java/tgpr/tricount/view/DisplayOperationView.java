@@ -10,6 +10,8 @@ import tgpr.framework.ColumnSpec;
 import tgpr.framework.Controller;
 import tgpr.framework.ObjectTable;
 import tgpr.tricount.controller.DisplayOperationController;
+import tgpr.tricount.controller.EditOperationController;
+import tgpr.tricount.controller.EditTricountController;
 import tgpr.tricount.model.Operation;
 import tgpr.tricount.model.Repartition;
 
@@ -28,9 +30,9 @@ public class DisplayOperationView extends DialogWindow {
     private final Label lblPaidBy;
     private final ObjectTable<Repartition> repartitionTable;
     private Button btnUp;
-    private  Button btnDown;
-    private  Button btnEdit;
-    
+    private Button btnDown;
+    private Button btnEdit;
+
 
     public DisplayOperationView(DisplayOperationController controller, Operation operation) {
         super("View Expense Detail");
@@ -47,46 +49,47 @@ public class DisplayOperationView extends DialogWindow {
 
         Panel fields = new Panel().setLayoutManager(new GridLayout(2).setTopMarginSize(1)).addTo(root);
 
-         fields.addComponent(new Label("Title:"));
-         lblTitle = new Label("").addTo(fields).addStyle(SGR.BOLD);
+        fields.addComponent(new Label("Title:"));
+        lblTitle = new Label("").addTo(fields).addStyle(SGR.BOLD);
 
-         fields.addComponent(new Label("Amount:"));
-         lblAmount = new Label("").addTo(fields).addStyle(SGR.BOLD);
+        fields.addComponent(new Label("Amount:"));
+        lblAmount = new Label("").addTo(fields).addStyle(SGR.BOLD);
 
-         fields.addComponent(new Label("Date:"));
-         lblDate = new Label("").addTo(fields).addStyle(SGR.BOLD);
+        fields.addComponent(new Label("Date:"));
+        lblDate = new Label("").addTo(fields).addStyle(SGR.BOLD);
 
-         fields.addComponent(new Label("Paid by:"));
-         lblPaidBy = new Label("").addTo(fields).addStyle(SGR.BOLD);
-         fields.addEmpty();
-         fields.addEmpty();
+        fields.addComponent(new Label("Paid by:"));
+        lblPaidBy = new Label("").addTo(fields).addStyle(SGR.BOLD);
+        fields.addEmpty();
+        fields.addEmpty();
 
-         fields.addComponent(new Label("For whom:"));
+        fields.addComponent(new Label("For whom:"));
 
-         repartitionTable = new ObjectTable<>(
-                 new ColumnSpec<>("Participant  ", r -> r.getUser().getFullName()),
-                 new ColumnSpec<>("Weight   ", Repartition::getWeight).alignRight(),
-                 new ColumnSpec<>("Amount", repartition -> {
-                     int weight = repartition.getWeight();
-                     double operationAmount = operation.getAmount();
-                     int sommeWeight = 0;
-                     for (var rep :  operation.getRepartitions()) {
-                         sommeWeight += rep.getWeight();
-                     }
-                     double calculedAmount =  (weight * operationAmount) / sommeWeight;
-                     DecimalFormat decimalFormat = new DecimalFormat("#0.00");
-                     return decimalFormat.format(calculedAmount) + " €";
-                 })
+        repartitionTable = new ObjectTable<>(
+                new ColumnSpec<>("Participant  ", r -> r.getUser().getFullName()),
+                new ColumnSpec<>("Weight   ", Repartition::getWeight).alignRight(),
+                new ColumnSpec<>("Amount", repartition -> {
+                    int weight = repartition.getWeight();
+                    double operationAmount = operation.getAmount();
+                    int sommeWeight = 0;
+                    for (var rep : operation.getRepartitions()) {
+                        sommeWeight += rep.getWeight();
+                    }
+                    double calculedAmount = (weight * operationAmount) / sommeWeight;
+                    DecimalFormat decimalFormat = new DecimalFormat("#0.00");
+                    return decimalFormat.format(calculedAmount) + " €";
+                })
 
-         ).addTo(fields);
+        ).addTo(fields);
 
-         root.addEmpty();
-         createButtonPanel().addTo(root);
+        root.addEmpty();
+        createButtonPanel().addTo(root);
 
-         refresh();
+        refresh();
     }
-    private Panel createButtonPanel(){
-        var panel= new Panel()
+
+    private Panel createButtonPanel() {
+        var panel = new Panel()
                 .setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
                 .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.End));
 
@@ -99,14 +102,15 @@ public class DisplayOperationView extends DialogWindow {
     }
 
     private void edit() {
+        Controller.navigateTo(new EditOperationController(operation.getTricount(), operation));
     }
 
     private void down() {
         List<Operation> operations = operation.getTricount().getOperations();
         int i = 0;
-        while(i < operations.size() && !operations[i].equals(operation))
+        while (i < operations.size() && !operations[i].equals(operation))
             ++i;
-        if(i < operations.size() - 1 && operations[i + 1] != null) {
+        if (i < operations.size() - 1 && operations[i + 1] != null) {
             close();
             Controller.navigateTo(new DisplayOperationController(operations[i + 1]));
 
@@ -117,18 +121,18 @@ public class DisplayOperationView extends DialogWindow {
     private void up() {
         List<Operation> operations = operation.getTricount().getOperations();
         int i = 0;
-        while(i < operations.size() && !operations[i].equals(operation))
+        while (i < operations.size() && !operations[i].equals(operation))
             ++i;
 
-        if(i  > 0 && operations[i - 1] != null) {
+        if (i > 0 && operations[i - 1] != null) {
             close();
             Controller.navigateTo(new DisplayOperationController(operations[i - 1]));
         }
     }
 
 
-    private void refresh(){
-        if(operation != null) {
+    private void refresh() {
+        if (operation != null) {
             lblTitle.setText(operation.getTitle());
             DecimalFormat decimalFormat = new DecimalFormat("#0.00");
             lblAmount.setText(decimalFormat.format(operation.getAmount()) + " €");
