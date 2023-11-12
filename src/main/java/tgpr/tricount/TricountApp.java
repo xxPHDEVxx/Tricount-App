@@ -26,16 +26,10 @@ public class TricountApp {
         else {
 
 
-           /* Tricount tricount = Tricount.getByKey(4);
-            User Boris =  User.getByFullName("Boris");
+            Tricount tricount = Tricount.getByKey(4);
+            User Boris = User.getByFullName("Boris");
             Security.login(Boris);
-            //Controller.navigateTo(new EditOperationController(tricount, null));
-
-            Controller.navigateTo(new EditTricountController(Tricount.getByKey(1)));*/
-
-
-            Controller.navigateTo(new EditOperationController(Tricount.getByKey(4),Operation.getByKey(6)));
-
+            Controller.navigateTo(new ViewTricountController(tricount));
         }
     }
 }

@@ -15,11 +15,12 @@ public class EditOperationController extends Controller {
     private Operation operation;
     private Tricount tricount;
     private final boolean isNew;
-    public EditOperationController(Tricount tricount){
+
+    public EditOperationController(Tricount tricount) {
         this(tricount, null);
     }
 
-    public EditOperationController(Tricount tricount, Operation operation){
+    public EditOperationController(Tricount tricount, Operation operation) {
         this.tricount = tricount;
         this.operation = operation;
         isNew = operation == null;
@@ -27,21 +28,23 @@ public class EditOperationController extends Controller {
     }
 
 
-
-
     @Override
-    public Window getView(){
+    public Window getView() {
         return view;
     }
-    public Operation getOperation(){
+
+    public Operation getOperation() {
         return operation;
     }
-    public Tricount getTricount() {return tricount; }
+
+    public Tricount getTricount() {
+        return tricount;
+    }
 
 
     public void save(String title, String amount, String date, String user, List<Repartition> repartitions) {
         var errors = validate(title, amount, date, repartitions);
-        if(errors.isEmpty()) {
+        if (errors.isEmpty()) {
             LocalDateTime createdAt = LocalDateTime.now();
             operation = new Operation(title, tricount.getId(), Double.parseDouble(amount), date.toDate(), User.getByFullName(user).getId(), createdAt);
             Operation saved = operation.save();
@@ -50,35 +53,36 @@ public class EditOperationController extends Controller {
                 repartition.save();
             }
             view.close();
-        }else
+        } else
             showErrors(errors);
     }
 
     // Gère la supression d'une opération.
-    public void deleteOperation(Operation operation){
+    public void deleteOperation(Operation operation) {
         if (operation != null)
             operation.delete();
     }
 
-    public ErrorList validate(String title, String amount, String date, List<Repartition> repartitions){
+    public ErrorList validate(String title, String amount, String date, List<Repartition> repartitions) {
         var errors = new ErrorList();
 
-            errors.add(OperationValidator.isValidTitle(title));
-            errors.add(OperationValidator.isValidAmount(amount));
-            if(!date.isBlank() && !date.isValidDate())
-                errors.add("invalid date", Operation.Fields.OperationDate);
-            errors.add(OperationValidator.isvalidDate(date.toDate()));
-            errors.add(OperationValidator.isValideRepartitions(repartitions));
+        errors.add(OperationValidator.isValidTitle(title));
+        errors.add(OperationValidator.isValidAmount(amount));
+        if (!date.isBlank() && !date.isValidDate())
+            errors.add("invalid date", Operation.Fields.OperationDate);
+        errors.add(OperationValidator.isvalidDate(date.toDate()));
+        errors.add(OperationValidator.isValideRepartitions(repartitions));
 
         return errors;
 
     }
-    public Error validRepartition(List<Repartition> repartitions){
+
+    public Error validRepartition(List<Repartition> repartitions) {
         return OperationValidator.isValideRepartitions(repartitions);
     }
 
     public void saveRepAsTemp(List<Repartition> repartitions) {
-        if(OperationValidator.isValideRepartitions(repartitions) == Error.NOERROR)
+        if (OperationValidator.isValideRepartitions(repartitions) == Error.NOERROR)
             navigateTo(new AddTemplateController(repartitions, tricount.getId()));
         else
             showError(OperationValidator.isValideRepartitions(repartitions));

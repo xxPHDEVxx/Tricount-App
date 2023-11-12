@@ -37,7 +37,7 @@ public class EditOperationView extends DialogWindow {
     private Button btnSaveRepAtTemplate;
     private Button buttonDelete;
 
-    public EditOperationView(EditOperationController controller,Tricount tricount, Operation operation) {
+    public EditOperationView(EditOperationController controller, Tricount tricount, Operation operation) {
         super((operation == null ? "Add " : "Edit ") + "Operation");
         this.operation = operation;
         this.controller = controller;
@@ -107,7 +107,7 @@ public class EditOperationView extends DialogWindow {
         panel.addEmpty();
 
         new Label("For whom: \n(weight: ←/→ or -/+)").addTo(panel);
-        for (var rep : lsRepartitions()){
+        for (var rep : lsRepartitions()) {
             cklRepartitions.addItem(rep, rep.getWeight() > 0);
             cklRepartitions.setChecked(rep, true);
 
@@ -125,6 +125,7 @@ public class EditOperationView extends DialogWindow {
         return panel;
 
     }
+
     private Boolean handleWeightKeyStroke(KeyStroke keyStroke) {
         Character character = keyStroke.getCharacter();
         KeyType type = keyStroke.getKeyType();
@@ -132,31 +133,32 @@ public class EditOperationView extends DialogWindow {
         Repartition rep = cklRepartitions.getItemAt(idx);
         int weight = rep.getWeight();
         boolean changement = false;
-            if (character != null) {
-                if (character == '+') {
-                    ++weight;
-                    changement = true;
-                }
-                if (character == '-')  {
-                    --weight;
-                    changement = true;
-                }
-            }else {
-                if (type == KeyType.ArrowRight) {
-                    ++weight;
-                    changement = true;
-                }
-                if (type == KeyType.ArrowLeft) {
-                    --weight;
-                    changement = true;
-                }
+        if (character != null) {
+            if (character == '+') {
+                ++weight;
+                changement = true;
             }
-            if (changement) {
-                rep.setWeight(weight);
-                cklRepartitions.invalidate();
+            if (character == '-') {
+                --weight;
+                changement = true;
             }
-            return true;
+        } else {
+            if (type == KeyType.ArrowRight) {
+                ++weight;
+                changement = true;
+            }
+            if (type == KeyType.ArrowLeft) {
+                --weight;
+                changement = true;
+            }
+        }
+        if (changement) {
+            rep.setWeight(weight);
+            cklRepartitions.invalidate();
+        }
+        return true;
     }
+
     private void reloadData() {
     }
 
@@ -197,7 +199,7 @@ public class EditOperationView extends DialogWindow {
 
     private void delete() {
         if (operation != null) {
-            MessageDialogButton result = EditOperationController.showMessage("Voulez-vous vraiment supprimer cette opération ?", "Confirmation de supression", MessageDialogButton.OK, MessageDialogButton.Cancel);
+            MessageDialogButton result = EditOperationController.showMessage("Voulez-vous vraiment supprimer cette opération ?", "Confirmation", MessageDialogButton.OK, MessageDialogButton.Cancel);
 
             if (result == MessageDialogButton.OK) {
                 controller.deleteOperation(operation);
@@ -217,15 +219,16 @@ public class EditOperationView extends DialogWindow {
         );
 
     }
-    private void applayTemplate(){
+
+    private void applayTemplate() {
         Template template = cboTemplates.getSelectedItem();
         List<TemplateItem> templateItems = template.getTemplateItems();
         for (var rep : cklRepartitions.getItems()) {
             int i = 0;
-            while(i < templateItems.size() && !rep.getUser().equals(templateItems[i].getUser())) {
+            while (i < templateItems.size() && !rep.getUser().equals(templateItems[i].getUser())) {
                 ++i;
             }
-            if( i < templateItems.size())
+            if (i < templateItems.size())
                 rep.setWeight(templateItems[i].getWeight());
             else rep.setWeight(0);
         }
@@ -248,11 +251,11 @@ public class EditOperationView extends DialogWindow {
 
     }
 
-    public List<Repartition> lsRepartitions(){
+    public List<Repartition> lsRepartitions() {
         List<Repartition> lsRepartitions = new ArrayList<>();
         for (User participant : tricount.getParticipants()
-             ) {
-            Repartition repartition = new Repartition (0, participant.getId(), 1);
+        ) {
+            Repartition repartition = new Repartition(0, participant.getId(), 1);
             lsRepartitions.add(repartition);
 
         }
