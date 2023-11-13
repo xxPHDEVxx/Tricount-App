@@ -5,6 +5,7 @@ import tgpr.framework.Model;
 
 import tgpr.tricount.controller.EditTricountController;
 import tgpr.tricount.controller.TestController;
+import tgpr.tricount.controller.ViewBalanceController;
 import tgpr.tricount.model.Tricount;
 
 
@@ -21,7 +22,7 @@ public class TricountApp {
 
         else {
 
-            Controller.navigateTo(new EditTricountController(Tricount.getByKey(1)));
+            Controller.navigateTo(new ViewBalanceController(Tricount.getByKey(4)));
 
            /* Tricount tricount = Tricount.getByKey(4);
             User Xavier =  User.getByFullName("Xavier");

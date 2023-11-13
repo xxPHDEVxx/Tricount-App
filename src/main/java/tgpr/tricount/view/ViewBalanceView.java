@@ -41,28 +41,40 @@ public class ViewBalanceView extends DialogWindow {
         }
         for (int i = 0; i < users.size(); ++i) {
             Double userBalance = controller.getBalance(tricount, users.get(i));
-            System.out.println((int) Math.round((balanceMax/userBalance)*-100));
-            System.out.println((int) Math.round((balanceMax/userBalance)*100));
+            TerminalSize terminalSize = new TerminalSize(30,1);
+            int numberOfSpacing = (int) Math.round((balanceMax/userBalance)*10);
+            if (numberOfSpacing < 0) numberOfSpacing *= -1;
+            String spacing = " ".repeat(Math.max(0, numberOfSpacing));
             if (userBalance < 0) {
                 if (i == indexMax)
-                    new Label(decimalFormat.format(userBalance) + " €").setBackgroundColor(new TextColor.RGB(255, 0, 0)).setLabelWidth(100).addTo(balance);
+                    new Label(decimalFormat.format(userBalance) + " €               ")
+                            .setBackgroundColor(new TextColor.RGB(255, 0, 0))
+                            .setPreferredSize(terminalSize).addTo(balance);
                 else
-                    new Label(decimalFormat.format(userBalance) + " €").setBackgroundColor(new TextColor.RGB(255, 0, 0)).setLabelWidth((int) Math.round((balanceMax/userBalance)*-100)).addTo(balance);
+                    new Label(decimalFormat.format(userBalance) + " €" + spacing)
+                            .setBackgroundColor(new TextColor.RGB(255, 0, 0))
+                            .setPreferredSize(terminalSize).addTo(balance);
                 new Label("|").addTo(balance);
                 if (users.get(i).equals(Security.getLoggedUser()))
-                    new Label(users.get(i).getFullName() + " (me)").setForegroundColor(new TextColor.RGB(0, 0, 255)).addTo(balance);
+                    new Label(users.get(i).getFullName() + " (me)")
+                            .setForegroundColor(new TextColor.RGB(0, 0, 255)).addTo(balance);
                 else
                     new Label(users.get(i).getFullName()).addTo(balance);
             } else {
                 if (users.get(i).equals(Security.getLoggedUser()))
-                    new Label(users.get(i).getFullName() + " (me)").setForegroundColor(new TextColor.RGB(0, 0, 255)).addTo(balance);
+                    new Label(users.get(i).getFullName() + " (me)")
+                            .setForegroundColor(new TextColor.RGB(0, 0, 255)).addTo(balance);
                 else
                     new Label(users.get(i).getFullName()).addTo(balance);
                 new Label("|").addTo(balance);
                 if (i == indexMax)
-                    new Label(decimalFormat.format(userBalance) + " €").setBackgroundColor(new TextColor.RGB(0, 255, 0)).setLabelWidth(100).addTo(balance);
+                    new Label(decimalFormat.format(userBalance) + " €               ")
+                            .setBackgroundColor(new TextColor.RGB(0, 255, 0))
+                            .setPreferredSize(terminalSize).addTo(balance);
                 else
-                    new Label(decimalFormat.format(userBalance) + " €").setBackgroundColor(new TextColor.RGB(0, 255, 0)).setLabelWidth((int) Math.round((balanceMax/userBalance)*100)).addTo(balance);
+                    new Label(decimalFormat.format(userBalance) + " €" + spacing)
+                            .setBackgroundColor(new TextColor.RGB(0, 255, 0))
+                            .setPreferredSize(terminalSize).addTo(balance);
             }
         }
 
