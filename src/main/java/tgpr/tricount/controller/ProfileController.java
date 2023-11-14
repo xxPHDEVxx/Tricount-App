@@ -23,7 +23,7 @@ public class ProfileController extends Controller {
         return user.getMail();
     }
     public void editProfile() {
-        //EditProfileController(user);
+        navigateTo(new EditProfileController(user));
     }
     public void changePasswrd() {
         //ChangePasswordController(user);
