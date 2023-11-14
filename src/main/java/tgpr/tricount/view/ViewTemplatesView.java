@@ -1,38 +1,64 @@
 package tgpr.tricount.view;
 
 import com.googlecode.lanterna.SGR;
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.input.KeyType;
 import tgpr.framework.ColumnSpec;
 import tgpr.framework.ObjectTable;
 import tgpr.tricount.controller.ViewTemplatesController;
 import tgpr.tricount.model.Repartition;
 import tgpr.tricount.model.Template;
+import tgpr.tricount.model.TemplateItem;
+import tgpr.tricount.model.Tricount;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ViewTemplatesView extends DialogWindow {
     private final ViewTemplatesController controller;
+    private final ObjectTable<Template> tmpTable;
+    private final Label errRepartitions = new Label("");
+
+    private final CheckBoxList<TemplateItem> tmpItem = new CheckBoxList<>();
 
     public ViewTemplatesView(ViewTemplatesController controller) {
         super("Tricount Repartition Templates");
-        setHints(List.of(Hint.CENTERED));
+
         this.controller = controller;
 
-        Panel root = new Panel().setLayoutManager(new LinearLayout(Direction.VERTICAL));
-        Panel templates = new Panel().asGridPanel(1);
+        setHints(List.of(Hint.CENTERED));
+        setCloseWindowWithEscape(true);
 
-        ObjectTable<Template> tbl = new ObjectTable<>(
-                new ColumnSpec<>("Templates:",Template::getTemplateItems)
+        Panel root = new Panel().setLayoutManager(new LinearLayout(Direction.VERTICAL));
+        Panel panelGrid = new Panel().asGridPanel(1);
+
+        tmpTable = new ObjectTable<>(
+                new ColumnSpec<>("Templates:", Template::getTitle)
         );
 
-        tbl.addTo(root);
+        tmpTable.addTo(root);
 
         new EmptySpace().addTo(root);
 
         Label labelRepartitions = new Label("Repartition:").addTo(root);
         labelRepartitions.addStyle(SGR.BOLD).addStyle(SGR.UNDERLINE);
+        var templates = controller.getTemplates();
+        for (var temp : getTemplatesItem()) {
+            tmpItem.addItem(temp, temp.getWeight() > 0);
+            tmpItem.setChecked(temp, true);
+        }
+
+        tmpItem.addListener((idx, isChecked) -> {
+        }).addTo(root);
+        panelGrid.addEmpty();
+        errRepartitions.addTo(panelGrid).setForegroundColor(TextColor.ANSI.RED);
+
+        addKeyboardListener(
+                tmpItem,
+                this::handleWeightKeyStroke);
 
         new EmptySpace().addTo(root);
 
@@ -41,13 +67,61 @@ public class ViewTemplatesView extends DialogWindow {
         Button btnEditTitle = new Button("Edit Title").addTo(panelButtons);
         Button btnDelete = new Button("Delete").addTo(panelButtons);
         Button btnSave = new Button("Save").addTo(panelButtons);
-        new Button("Close",this::close).addTo(panelButtons);
+        new Button("Close", this::close).addTo(panelButtons);
 
-
-        templates.addTo(root);
+        panelGrid.addTo(root);
         panelButtons.addTo(root);
         setComponent(root);
+        refresh();
+    }
 
+    public void refresh() {
+        tmpTable.clear();
+        var templates = controller.getTemplates();
+        tmpTable.add(templates);
+
+    }
+    public List<TemplateItem> getTemplatesItem(){
+        List<TemplateItem> tmpItem = new ArrayList<>();
+        for (Template temp: controller.getTricount().getTemplates()){
+            for(var tmpItem2 : temp.getTemplateItems()){
+            tmpItem.add(tmpItem2);
+        }
+      }
+        return tmpItem;
+    }
+
+    private Boolean handleWeightKeyStroke(KeyStroke keyStroke) {
+        Character character = keyStroke.getCharacter();
+        KeyType type = keyStroke.getKeyType();
+        int idx = tmpItem.getSelectedIndex();
+        TemplateItem rep = tmpItem.getItemAt(idx);
+        int weight = rep.getWeight();
+        boolean changement = false;
+        if (character != null) {
+            if (character == '+') {
+                ++weight;
+                changement = true;
+            }
+            if (character == '-')  {
+                --weight;
+                changement = true;
+            }
+        }else {
+            if (type == KeyType.ArrowRight) {
+                ++weight;
+                changement = true;
+            }
+            if (type == KeyType.ArrowLeft) {
+                --weight;
+                changement = true;
+            }
+        }
+        if (changement) {
+            rep.setWeight(weight);
+            tmpItem.invalidate();
+        }
+        return true;
     }
 
 }
