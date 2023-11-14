@@ -6,11 +6,13 @@ import tgpr.framework.Model;
 import tgpr.tricount.controller.EditTricountController;
 import tgpr.tricount.controller.TestController;
 import tgpr.tricount.controller.ViewBalanceController;
+import tgpr.tricount.model.Security;
 import tgpr.tricount.model.Tricount;
 
 
 import tgpr.tricount.controller.DisplayOperationController;
 import tgpr.tricount.model.Operation;
+import tgpr.tricount.model.User;
 
 
 public class TricountApp {
@@ -21,7 +23,7 @@ public class TricountApp {
             Controller.abort("Database is not available!");
 
         else {
-
+            Security.login(User.getByKey(1));
             Controller.navigateTo(new ViewBalanceController(Tricount.getByKey(4)));
 
            /* Tricount tricount = Tricount.getByKey(4);
