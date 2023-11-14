@@ -14,7 +14,7 @@ public class TricountApp {
             Controller.abort("Database is not available!");
         else {
 
-            Controller.navigateTo(new EditTricountController(Tricount.getByKey(1)));
+            Controller.navigateTo(new EditTricountController(Tricount.getByKey(4)));
         }
     }
 }

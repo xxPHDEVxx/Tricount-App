@@ -49,8 +49,7 @@ public class EditTricountView extends DialogWindow {
         }
 
         setHints(List.of(Hint.CENTERED, Hint.FIXED_SIZE));
-        setCloseWindowWithEscape(true);
-        setFixedSize(new TerminalSize(60, 20));
+        setFixedSize(new TerminalSize(60, 25));
 
 
 
@@ -70,14 +69,14 @@ public class EditTricountView extends DialogWindow {
 
         new Label("Title:").addTo(panel);
         txtTitle = new TextBox().sizeTo(19).addTo(panel)
-                .setTextChangeListener((txt, byUser) -> validate());
+                .setTextChangeListener((txt, byUser)->validate());
         ;
         panel.addEmpty();
         errTitle.addTo(panel)
                 .setForegroundColor(TextColor.ANSI.RED);
 
         new Label("Description:").addTo(panel);
-        txtDescription = new TextBox().sizeTo(30 ,9).addTo(panel)
+        txtDescription = new TextBox().sizeTo(30 ,10).addTo(panel)
                 .setTextChangeListener((txt, byUser) -> validate());
         ;
         panel.addEmpty();
