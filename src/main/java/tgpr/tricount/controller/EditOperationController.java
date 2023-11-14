@@ -6,6 +6,7 @@ import tgpr.framework.Error;
 import tgpr.framework.ErrorList;
 import tgpr.tricount.model.*;
 import tgpr.tricount.view.EditOperationView;
+import tgpr.tricount.view.ViewTricountView;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -62,8 +63,9 @@ public class EditOperationController extends Controller {
     public void deleteOperation(Operation operation) {
         if (operation != null) {
             operation.delete();
-            reloadData();
+            Controller.navigateTo(new ViewTricountController(tricount));
         }
+
     }
 
     public ErrorList validate(String title, String amount, String date, List<Repartition> repartitions) {
@@ -93,6 +95,7 @@ public class EditOperationController extends Controller {
 
     }
 
+    // Gère la mise à jour des données
     public void reloadData(){
         view.reloadData();
     }
