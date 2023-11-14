@@ -26,8 +26,8 @@ public class EditProfileController extends Controller{
             user.setMail(mail);
             user.setFullName(fullname);
             user.setIban(iban);
+            user.save();
             view.close();
-            // Ajouter modifications Bases de Données
         } else
             showErrors(errors);
     }
