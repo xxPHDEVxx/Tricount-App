@@ -19,8 +19,8 @@ import static tgpr.tricount.model.DateUtils.localDateToString;
 
 public class EditOperationView extends DialogWindow {
     private final EditOperationController controller;
-    private final Operation operation;
-    private final Tricount tricount;
+    private Operation operation;
+    private Tricount tricount;
     private TextBox txtTitle;
     private TextBox txtAmount;
     private TextBox txtDate;
@@ -159,7 +159,13 @@ public class EditOperationView extends DialogWindow {
         return true;
     }
 
-    private void reloadData() {
+    public void reloadData() {
+        if (controller.getOperation() != null) {
+            operation = controller.getOperation();
+            tricount = controller.getTricount();
+        }
+        populateFields();
+        updateRepartitionsView();
     }
 
     private Panel createButtonsPanel() {

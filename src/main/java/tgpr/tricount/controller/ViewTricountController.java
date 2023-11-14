@@ -57,6 +57,7 @@ public class ViewTricountController extends Controller {
 
     public void openOperation(Operation operation) {
         Controller.navigateTo(new DisplayOperationController(operation));
+        view.updateOperationsTable();
     }
 
     public void editTricount() {

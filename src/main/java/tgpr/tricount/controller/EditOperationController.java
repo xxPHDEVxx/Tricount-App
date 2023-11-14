@@ -52,6 +52,7 @@ public class EditOperationController extends Controller {
                 Repartition repartition = new Repartition(saved.getId(), rep.getUserId(), rep.getWeight());
                 repartition.save();
             }
+            reloadData();
             view.close();
         } else
             showErrors(errors);
@@ -59,8 +60,10 @@ public class EditOperationController extends Controller {
 
     // Gère la supression d'une opération.
     public void deleteOperation(Operation operation) {
-        if (operation != null)
+        if (operation != null) {
             operation.delete();
+            reloadData();
+        }
     }
 
     public ErrorList validate(String title, String amount, String date, List<Repartition> repartitions) {
@@ -88,5 +91,9 @@ public class EditOperationController extends Controller {
             showError(OperationValidator.isValideRepartitions(repartitions));
 
 
+    }
+
+    public void reloadData(){
+        view.reloadData();
     }
 }

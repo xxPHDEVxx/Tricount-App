@@ -23,7 +23,8 @@ public class TricountApp {
 
             Tricount tricount = Tricount.getByKey(4);
             User Xavier =  User.getByFullName("Xavier");
-            Controller.navigateTo(new ProfileController(Xavier));
+            Controller.navigateTo(new ViewTricountController(tricount));
+            //Controller.navigateTo(new LoginController());
         }
     }
 }
