@@ -2,6 +2,7 @@ package tgpr.tricount.controller;
 
 import com.googlecode.lanterna.gui2.Window;
 import tgpr.framework.Controller;
+import tgpr.tricount.model.Security;
 import tgpr.tricount.model.Tricount;
 import tgpr.tricount.view.EditOperationView;
 import tgpr.tricount.view.ListTricountsView;
@@ -14,6 +15,14 @@ public class ListTricountsController extends Controller {
     public ListTricountsController(Tricount tricount) {
         this.tricount = tricount;
         view = new ListTricountsView(this, tricount);
+    }
+    /*public void logout() {
+        Security.logout();
+        navigateTo(new LoginController());
+    }*/
+
+    public void exit() {
+        System.exit(0);
     }
     @Override
     public Window getView() {
