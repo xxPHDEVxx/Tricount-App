@@ -6,6 +6,7 @@ import com.googlecode.lanterna.gui2.menu.Menu;
 import com.googlecode.lanterna.gui2.menu.MenuBar;
 import com.googlecode.lanterna.gui2.menu.MenuItem;
 import com.googlecode.lanterna.input.KeyStroke;
+import tgpr.framework.Paginator;
 import tgpr.tricount.controller.ListTricountsController;
 import tgpr.tricount.controller.ViewTricountController;
 import tgpr.tricount.model.Security;
@@ -14,51 +15,51 @@ import tgpr.tricount.model.Tricount;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListTricountsView extends BasicWindow {
     private final ListTricountsController controller;
-    private final Tricount tricount;
+    private List<Tricount> listTricounts = new ArrayList<>();
     private final Menu menuFile = new Menu("File");
 
-    public ListTricountsView (ListTricountsController controller, Tricount tricount) {
+    public ListTricountsView (ListTricountsController controller, List<Tricount> listTricounts) {
         //super("Tricount");
-        this.tricount = tricount;
+        this.listTricounts = listTricounts;
         this.controller = controller;
 
         setTitle(getTitleWithUser());
-        setHints(List.of(Hint.CENTERED));
+        setHints(List.of(Hint.EXPANDED));
 
         Panel mainPanel = new Panel().setLayoutManager(new LinearLayout(Direction.VERTICAL));
         setComponent(mainPanel);
         createMenu().addTo(mainPanel);
 
         Panel filtre = new Panel().setLayoutManager(new GridLayout(2));
-        filtre.addTo(mainPanel);
-        Label labelFiltre = new Label("Filtrer : ").addTo(filtre);
-        TextBox textBoxFiltre = new TextBox().addTo(filtre);
+        Label labelFiltre = new Label("Filtrer : ");
+        TextBox textBoxFiltre = new TextBox();
+        filtre.addComponent(labelFiltre);
+        filtre.addComponent(textBoxFiltre);
+        mainPanel.addComponent(filtre);
+        GridLayout gridTricount = new GridLayout(3);
+        Panel tricountContainer = new Panel(gridTricount);
+        //tricountContainer.withBorder(Borders.singleLine());
+        int i=0;
+        for (Tricount tricount : this.listTricounts) {
+            if (i < 12) {
+                tricountContainer.addComponent(cardTricount(tricount));
+                i++;
+            }
+        }
+        mainPanel.addComponent(tricountContainer);
+
+        Panel bottom = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL)).addTo(mainPanel);
+        Button newButton = new Button("Create a new Tricount", () -> controller.addTricount()).addTo(bottom); //ajouter action sur le button
+        Paginator paginator = new Paginator(this, 12,this::pageChanged);
+        paginator.addTo(bottom).setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.End));
+        bottom.addComponent(paginator, BorderLayout.Location.RIGHT);
 
 
-
-
-        /*Panel menuPanel = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
-        setComponent(menuPanel);
-        createMenu().addTo(menuPanel);*/
-
-        /*Panel root = new Panel().setLayoutManager(new GridLayout(3)
-                .setHorizontalSpacing(0).setVerticalSpacing(0));
-        createMenu().addTo(root);
-        createCell(1).addTo(root);
-        createCell(2).addTo(root);
-        createCell(3).addTo(root);
-        createCell(4).addTo(root);
-        createCell(5).addTo(root);
-        createCell(6).addTo(root);
-        createCell(7).addTo(root);
-        createCell(8).addTo(root);
-        createCell(9).addTo(root);
-        createCell(10).addTo(root);
-        setComponent(root.withBorder(Borders.singleLine()));*/
     }
     private Border createCell (int i){
         return new Panel().addComponent(new Label(String.valueOf(i))).withBorder(Borders.singleLine());
@@ -66,18 +67,28 @@ public class ListTricountsView extends BasicWindow {
     private String getTitleWithUser() {
         return "Tricount (" + Security.getLoggedUser() + " - " + (Security.isAdmin() ? "Admin" : "Member") + ")";
     }
-    private Panel createBody() {
-        Panel panel = new Panel().setLayoutManager(new LinearLayout(Direction.VERTICAL));
-        return panel;
+    private Border cardTricount(Tricount tricount) {
+        Panel panel = new Panel();
+        panel.addComponent(new Label(tricount.getTitle()));
+        panel.addComponent(new Label((tricount.getDescription() != null) ? tricount.getDescription() : "pas de description"));
+        panel.addComponent(new Label(tricount.getCreator().getFullName()));
+        String numberParticipants = String.valueOf(tricount.getParticipants().size()-1);
+        panel.addComponent(new Label("with " + ((!numberParticipants.equals("0")) ? numberParticipants : "no") + " friends"));
+        panel.addComponent(new Button("Open", () -> {controller.openTricount(tricount);}));
+
+        return panel.withBorder(Borders.singleLine());
     }
     private MenuBar createMenu() {
         MenuBar menuBar = new MenuBar();
         menuBar.add(menuFile);
-        addShortcut(menuFile, KeyStroke.fromString("<A-f>"));
+        //addShortcut(menuFile, KeyStroke.fromString("<A-f>"));
         //MenuItem menuLogout = new MenuItem("Logout", controller::logout);
         //menuFile.add(menuLogout);
         MenuItem menuExit = new MenuItem("Exit", controller::exit);
         menuFile.add(menuExit);
         return menuBar;
+    }
+    private void pageChanged(int page){
+
     }
 }

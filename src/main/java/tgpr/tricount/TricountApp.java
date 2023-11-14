@@ -22,10 +22,10 @@ public class TricountApp {
 
         else {
 
-            //Tricount tricount = Tricount.getByKey(4);
-            //User Xavier =  User.getByFullName("Xavier");
-            //Security.login(Xavier);
-            //Controller.navigateTo(new ViewTricountController(tricount));
+            /*Tricount tricount = Tricount.getByKey(4);
+            User Xavier =  User.getByFullName("Xavier");
+            Security.login(Xavier);
+            Controller.navigateTo(new ViewTricountController(tricount));*/
             Controller.navigateTo(new LoginController()); //Comment this si pas besoin de login
 
             //Controller.navigateTo(new DisplayOperationController(Operation.getByKey(5)));
