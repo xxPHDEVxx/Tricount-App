@@ -65,7 +65,7 @@ public class DisplayOperationView extends DialogWindow {
 
          repartitionTable = new ObjectTable<>(
                  new ColumnSpec<>("Participant  ", r -> r.getUser().getFullName()),
-                 new ColumnSpec<>("Weight   ", Repartition::getWeight).alignRight(),
+                 new ColumnSpec<Repartition>("Weight   ", Repartition::getWeight).setWidth(5).alignRight(),
                  new ColumnSpec<>("Amount", repartition -> {
                      int weight = repartition.getWeight();
                      double operationAmount = operation.getAmount();

@@ -108,6 +108,7 @@ public class EditOperationView extends DialogWindow {
 
         }
         cklRepartitions.addListener((idx, isChecked) -> {
+            validate();
         }).addTo(panel);
         panel.addEmpty();
         errRepartitions.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
