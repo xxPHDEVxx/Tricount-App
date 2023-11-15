@@ -143,10 +143,14 @@ public class EditTricountView extends DialogWindow {
             errors.add(new Error("You may not remove this participant because \nhe is the creator or he is implied in one or\nmore expenses"));
         } else {
             Subscription delSub = Subscription.getByKey(tricount.getId(), parti.getId());
-            delSub.delete();
+            if (delSub != null) {
+                delSub.delete();
+            }
+
             //supprime de l'actionList
             lstSubscriber.removeItem(lstSubscriber.getSelectedIndex());
-
+            // remettre le nom dans la comboBox
+            cbAddParticipant.addItem(parti.getFullName());
         }
 
         if (!errors.isEmpty()) {
