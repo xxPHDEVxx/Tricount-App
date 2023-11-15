@@ -23,8 +23,7 @@ public class TricountApp {
             Controller.abort("Database is not available!");
 
         else {
-            Security.login(User.getByKey(1));
-            Controller.navigateTo(new ViewBalanceController(Tricount.getByKey(4)));
+            Controller.navigateTo(new EditTricountController(Tricount.getByKey(1)));
 
            /* Tricount tricount = Tricount.getByKey(4);
             User Xavier =  User.getByFullName("Xavier");
