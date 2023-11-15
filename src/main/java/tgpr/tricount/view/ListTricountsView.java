@@ -42,29 +42,44 @@ public class ListTricountsView extends BasicWindow {
         TextBox textBoxFiltre = new TextBox();
         filtre.addComponent(labelFiltre);
         filtre.addComponent(textBoxFiltre);
-        textBoxFiltre.takeFocus().setTextChangeListener((txt, byUser) -> reloadData());                       //ajout listener
+        textBoxFiltre.takeFocus().setTextChangeListener((txt, byUser) -> reloadData(txt));                       //ajout listener
         mainPanel.addComponent(filtre);
 
 
         GridLayout gridTricount = new GridLayout(3);
-        this.tricountContainer = new Panel(gridTricount);
+        this.tricountContainer = new Panel(gridTricount).setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
         loadTricountContainer(0);
         //this.tricountContainer.withBorder(Borders.singleLine());
         mainPanel.addComponent(this.tricountContainer);
 
 
-        Panel bottom = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL)).addTo(mainPanel);
+        Panel bottom = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
+        bottom.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
         Button newButton = new Button("Create a new Tricount", () -> controller.addTricount()).addTo(bottom); //ajouter action sur le button
         this.paginator = new Paginator(this, 12,this::pageChanged);
         this.paginator.setCount(this.listTricounts.size());
-        this.paginator.addTo(bottom).setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.End));
-        bottom.addComponent(this.paginator, BorderLayout.Location.RIGHT);
+        //this.paginator.addTo(bottom).setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.End));
+        bottom.addComponent(this.paginator.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.End)));
+        mainPanel.addComponent(bottom);
 
 
     }
 
-    private void reloadData() {
-
+    /*private void reloadData(String txt) {
+        this.listTricounts=new ArrayList<>();
+        System.out.println("1 tes ici");
+        for (Tricount tricount : this.controller.getSearch(txt)){
+            listTricounts.add(tricount);
+            System.out.println("test2");
+        }
+        loadTricountContainer(0);
+    }*/
+    private void reloadData(String txt) {
+        this.listTricounts=new ArrayList<>();
+        for (Tricount tricount : this.controller.getSearch(txt)){
+            listTricounts.add(tricount);
+        }
+        loadTricountContainer(0);
     }
 
     private Border createCell (int i){
@@ -74,7 +89,9 @@ public class ListTricountsView extends BasicWindow {
         return "Tricount (" + Security.getLoggedUser() + " - " + (Security.isAdmin() ? "Admin" : "Member") + ")";
     }
     private Border cardTricount(Tricount tricount) {
-        Panel panel = new Panel();
+        GridLayout.Alignment horizontalAlignment = GridLayout.Alignment.FILL;
+        GridLayout.Alignment verticalAlignment = GridLayout.Alignment.FILL;
+        Panel panel = new Panel().setLayoutData((GridLayout.createLayoutData(horizontalAlignment, verticalAlignment, true, true)));
         panel.addComponent(new Label(tricount.getTitle()).center());
         panel.addComponent(new Label((tricount.getDescription() != null) ? tricount.getDescription() : "pas de description").center());
         panel.addComponent(new Label(tricount.getCreator().getFullName()).center());
