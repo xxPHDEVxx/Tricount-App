@@ -8,14 +8,14 @@ import tgpr.tricount.controller.AddTemplateController;
 import tgpr.tricount.model.Template;
 
 import java.util.List;
-
+import java.util.regex.Pattern;
 
 
 public class AddTemplateView extends DialogWindow {
     private final AddTemplateController controller;
     private final TextBox txtTitle;
     private final Button btnCreate;
-    private final Label errTitle;
+    private final Label errTitle = new Label("");
     public AddTemplateView(AddTemplateController controller) {
         super("create a new template");
         this.controller = controller;
@@ -29,18 +29,19 @@ public class AddTemplateView extends DialogWindow {
         Panel fields = new Panel().setLayoutManager(new GridLayout(2).setTopMarginSize(1)).addTo(root);
 
         new Label("Title: ").addTo(fields);
-        txtTitle = new TextBox(new TerminalSize(25, 1), "", TextBox.Style.MULTI_LINE)
+        txtTitle = new TextBox().sizeTo(25)
                 .addTo(fields).takeFocus();
         new EmptySpace().addTo(fields);
-        errTitle = new Label("").setForegroundColor(TextColor.ANSI.RED).addTo(fields);
+        errTitle.addTo(fields).setForegroundColor(TextColor.ANSI.RED).addTo(fields);
         txtTitle.setTextChangeListener((txt, byUser) -> validate());
+
         new EmptySpace().addTo(fields);
         Panel buttons = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
-        btnCreate = new Button("Create", this::create).addTo(buttons);
+        btnCreate = new Button("Create", this::create).addTo(buttons).setEnabled(false);
         new Button("Cancel", this::close).addTo(buttons);
         root.addComponent(buttons, LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
 
-        validate();
+
     }
 
     private void validate() {
