@@ -86,8 +86,10 @@ public class EditOperationController extends Controller {
     }
 
     public void saveRepAsTemp(List<Repartition> repartitions) {
-        if (OperationValidator.isValideRepartitions(repartitions) == Error.NOERROR)
-            navigateTo(new AddTemplateController(repartitions, tricount.getId()));
+
+        if(OperationValidator.isValideRepartitions(repartitions) == Error.NOERROR)
+            navigateTo(new AddTemplateController(repartitions, tricount.getId(),null));
+
         else
             showError(OperationValidator.isValideRepartitions(repartitions));
 
