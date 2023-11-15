@@ -8,6 +8,7 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import tgpr.framework.ColumnSpec;
 import tgpr.framework.ObjectTable;
+import tgpr.tricount.controller.AddTemplateController;
 import tgpr.tricount.controller.ViewTemplatesController;
 import tgpr.tricount.model.Repartition;
 import tgpr.tricount.model.Template;
@@ -32,19 +33,22 @@ public class ViewTemplatesView extends DialogWindow {
         setHints(List.of(Hint.CENTERED));
         setCloseWindowWithEscape(true);
 
+        //créations panneaux root et grid
         Panel root = new Panel().setLayoutManager(new LinearLayout(Direction.VERTICAL));
         Panel panelGrid = new Panel().asGridPanel(1);
 
+        //création de l'objectTable templates
         tmpTable = new ObjectTable<>(
                 new ColumnSpec<>("Templates:", Template::getTitle)
         );
-
         tmpTable.addTo(root);
 
         new EmptySpace().addTo(root);
 
+        //création de la checkboxlist repartition
         Label labelRepartitions = new Label("Repartition:").addTo(root);
         labelRepartitions.addStyle(SGR.BOLD).addStyle(SGR.UNDERLINE);
+
         var templates = controller.getTemplates();
         for (var temp : getTemplatesItem()) {
             tmpItem.addItem(temp, temp.getWeight() > 0);
@@ -61,9 +65,9 @@ public class ViewTemplatesView extends DialogWindow {
                 this::handleWeightKeyStroke);
 
         new EmptySpace().addTo(root);
-
+        //création panel grid pour les boutons
         Panel panelButtons = new Panel().asGridPanel(5);
-        Button btnNew = new Button("New").addTo(panelButtons);
+        Button btnNew = new Button("New",this::addTemplate).addTo(panelButtons);
         Button btnEditTitle = new Button("Edit Title").addTo(panelButtons);
         Button btnDelete = new Button("Delete").addTo(panelButtons);
         Button btnSave = new Button("Save").addTo(panelButtons);
@@ -84,9 +88,7 @@ public class ViewTemplatesView extends DialogWindow {
     public List<TemplateItem> getTemplatesItem(){
         List<TemplateItem> tmpItem = new ArrayList<>();
         for (Template temp: controller.getTricount().getTemplates()){
-            for(var tmpItem2 : temp.getTemplateItems()){
-            tmpItem.add(tmpItem2);
-        }
+            tmpItem.addAll(temp.getTemplateItems());
       }
         return tmpItem;
     }
@@ -123,5 +125,12 @@ public class ViewTemplatesView extends DialogWindow {
         }
         return true;
     }
+    private void add() {
+    }
+    public void addTemplate(){
+        controller.addTemplate();
+        close();
+    }
+
 
 }

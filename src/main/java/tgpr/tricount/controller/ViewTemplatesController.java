@@ -12,14 +12,15 @@ public class ViewTemplatesController extends Controller {
 
     private final ViewTemplatesView view;
     private final Tricount tricount;
-
     public Tricount getTricount() {
         return tricount;
     }
-
     public ViewTemplatesController(Tricount tricount){
         this.tricount = tricount;
         view = new ViewTemplatesView(this);
+    }
+    public void addTemplate(){
+        navigateTo(new AddTemplateController(null, getTricount().getId(),null));
     }
     @Override
     public Window getView() {

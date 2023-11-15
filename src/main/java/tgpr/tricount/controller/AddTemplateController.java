@@ -14,10 +14,12 @@ import java.util.List;
 
 public class AddTemplateController extends Controller {
     private List<Repartition> repartitions;
+    private Template template;
     int tricountId;
-    public AddTemplateController(List<Repartition> repartitions, int tricountId) {
+    public AddTemplateController(List<Repartition> repartitions, int tricountId,Template template) {
         this.repartitions = repartitions;
         this.tricountId = tricountId;
+        this.template = template;
     }
     public static Error isValidTitle(String title) {
         if (title != null && !title.trim().isEmpty())
@@ -31,17 +33,21 @@ public class AddTemplateController extends Controller {
     }
     public void create(String title){
         var error = isValidTitle(title);
-        Template template = new Template(title, tricountId);
-        if(error == Error.NOERROR)
+        if(error == Error.NOERROR){
+            template = new Template(title,tricountId);
             template.save();
+        }
         else
             showError(error);
-        for (var rep: repartitions) {
-            TemplateItem templateItem = new TemplateItem();
-            templateItem.setUserId(rep.getUserId());
-            templateItem.setWeight(rep.getWeight());
-            templateItem.setTemplateId(template.getId());
-            templateItem.save();
+        if (repartitions != null) {
+
+            for (var rep : repartitions) {
+                TemplateItem templateItem = new TemplateItem();
+                templateItem.setUserId(rep.getUserId());
+                templateItem.setWeight(rep.getWeight());
+                templateItem.setTemplateId(template.getId());
+                templateItem.save();
+            }
         }
     }
     @Override
