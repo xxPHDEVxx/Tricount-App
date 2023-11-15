@@ -58,7 +58,7 @@ public class Tricount extends Model {
         return queryList(User.class, """
                         select u.* from subscriptions s
                         join users u on s.user=u.id
-                        where tricount=:id
+                        where tricount=:id order by u.full_name
                         """,
                 new Params("id", id));
     }
