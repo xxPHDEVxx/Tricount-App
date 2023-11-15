@@ -3,16 +3,13 @@ package tgpr.tricount;
 import tgpr.framework.Controller;
 import tgpr.framework.Model;
 
-import tgpr.tricount.controller.EditTricountController;
-import tgpr.tricount.controller.TestController;
-import tgpr.tricount.controller.ViewBalanceController;
-import tgpr.tricount.model.Security;
-import tgpr.tricount.model.Tricount;
-
-
-import tgpr.tricount.controller.DisplayOperationController;
+import tgpr.tricount.controller.*;
 import tgpr.tricount.model.Operation;
+import tgpr.tricount.model.Tricount;
+import tgpr.tricount.model.Security;
 import tgpr.tricount.model.User;
+
+
 
 
 public class TricountApp {
@@ -23,18 +20,24 @@ public class TricountApp {
             Controller.abort("Database is not available!");
 
         else {
-            Controller.navigateTo(new EditTricountController(Tricount.getByKey(1)));
 
-           /* Tricount tricount = Tricount.getByKey(4);
+
+
+
+            Tricount tricount = Tricount.getByKey(4);
             User Xavier =  User.getByFullName("Xavier");
             Security.login(Xavier);
-            Controller.navigateTo(new EditOperationController(tricount, null));*/
-
+            //Controller.navigateTo(new EditOperationController(tricount, null));
+            //Controller.navigateTo(new ChangePasswordController());
+            //Controller.navigateTo(new EditTricountController(Tricount.getByKey(1)));
             //Controller.navigateTo(new DisplayOperationController(Operation.getByKey(5)));
+            //Controller.navigateTo(new AddTricountController());
+            // Controller.navigateTo(new ViewTricountController(tricount));
+            //Controller.navigateTo(new ViewTricountController(tricount));
+            //Controller.navigateTo(new LoginController());
+
+            Controller.navigateTo(new EditTricountController(Tricount.getByKey(4)));
 
         }
     }
-
-
-
 }
