@@ -163,6 +163,7 @@ public class EditOperationView extends DialogWindow {
     public void decocheCase(ComboBox<Repartition> cboR, List<Repartition> lsR){
 
     // Met à jour les données de la vue
+
     }
     public void reloadData() {
         if (controller.getOperation() != null) {
