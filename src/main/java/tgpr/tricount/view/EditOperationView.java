@@ -4,7 +4,6 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
-import com.googlecode.lanterna.gui2.dialogs.MessageDialogButton;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import tgpr.framework.Margin;
@@ -100,7 +99,7 @@ public class EditOperationView extends DialogWindow {
         cboTemplates.setSelectedItem(Template.DUMMY);
         cboTemplates.addListener((selectedIndex, previousSelection, changedByUserInteraction) -> validate());
 
-        btnApplay = new Button("Apply", this::applayTemplate).addTo(templatePanel).setEnabled(false);
+        btnApplay = new Button("Apply", this::applyTemplate).addTo(templatePanel).setEnabled(false);
         panel.addEmpty();
         panel.addEmpty();
 
@@ -235,13 +234,13 @@ public class EditOperationView extends DialogWindow {
                 txtTitle.getText(),
                 txtAmount.getText(),
                 txtDate.getText(),
-                    cboUsers.getSelectedItem().getFullName(),
+                cboUsers.getSelectedItem().getFullName(),
                 cklRepartitions.getCheckedItems()
         );
 
     }
 
-    private void applayTemplate() {
+    private void applyTemplate() {
         Template template = cboTemplates.getSelectedItem();
         List<TemplateItem> templateItems = template.getTemplateItems();
         for (var rep : cklRepartitions.getItems()) {
