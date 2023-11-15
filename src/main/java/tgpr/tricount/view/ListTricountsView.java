@@ -22,6 +22,8 @@ public class ListTricountsView extends BasicWindow {
     private final ListTricountsController controller;
     private List<Tricount> listTricounts = new ArrayList<>();
     private final Menu menuFile = new Menu("File");
+    private Panel tricountContainer;
+    private Paginator paginator;
 
     public ListTricountsView (ListTricountsController controller, List<Tricount> listTricounts) {
         //super("Tricount");
@@ -42,22 +44,18 @@ public class ListTricountsView extends BasicWindow {
         filtre.addComponent(textBoxFiltre);
         mainPanel.addComponent(filtre);
         GridLayout gridTricount = new GridLayout(3);
-        Panel tricountContainer = new Panel(gridTricount);
-        //tricountContainer.withBorder(Borders.singleLine());
-        int i=0;
-        for (Tricount tricount : this.listTricounts) {
-            if (i < 12) {
-                tricountContainer.addComponent(cardTricount(tricount));
-                i++;
-            }
-        }
-        mainPanel.addComponent(tricountContainer);
+        this.tricountContainer = new Panel(gridTricount);
+        loadTricountContainer(0);
+        //this.tricountContainer.withBorder(Borders.singleLine());
+
+        mainPanel.addComponent(this.tricountContainer);
 
         Panel bottom = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL)).addTo(mainPanel);
         Button newButton = new Button("Create a new Tricount", () -> controller.addTricount()).addTo(bottom); //ajouter action sur le button
-        Paginator paginator = new Paginator(this, 12,this::pageChanged);
-        paginator.addTo(bottom).setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.End));
-        bottom.addComponent(paginator, BorderLayout.Location.RIGHT);
+        this.paginator = new Paginator(this, 12,this::pageChanged);
+        this.paginator.setCount(this.listTricounts.size());
+        this.paginator.addTo(bottom).setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.End));
+        bottom.addComponent(this.paginator, BorderLayout.Location.RIGHT);
 
 
     }
@@ -89,6 +87,12 @@ public class ListTricountsView extends BasicWindow {
         return menuBar;
     }
     private void pageChanged(int page){
-
+        loadTricountContainer(page*12);
+    }
+    private void loadTricountContainer(int startId){
+        this.tricountContainer.removeAllComponents();
+        for (int i = startId; i < Math.min(startId + 12, listTricounts.size()-1); i++) {
+            this.tricountContainer.addComponent(cardTricount(this.listTricounts[i]));
+        }
     }
 }
