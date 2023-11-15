@@ -48,42 +48,45 @@ public class ViewBalanceView extends DialogWindow {
         for (int i = 0; i < users.size(); ++i) {
             Double userBalance = controller.getBalance(tricount, users.get(i));
 
-            int numberOfSpacing = (int) Math.round((balanceMax/userBalance)*10);
+            int numberOfSpacing = (int) Math.round((userBalance/balanceMax)*10);
             if (numberOfSpacing < 0) numberOfSpacing *= -1;
             String spacing = " ".repeat(Math.max(0, numberOfSpacing));
+
 
             if (userBalance < 0) {
                 //Prix et barre de couleur pour les négatifs
                 if (i == indexMax)
                     createPanel("                    " + decimalFormat.format(userBalance) + " €",
-                            red, true).addTo(balance);
+                            red).addTo(balance);
                 else
                     createPanel(spacing + decimalFormat.format(userBalance) + " €",
-                            red, true).addTo(balance);
+                            red).addTo(balance);
 
                 new Label("|").addTo(balance);
 
                 //Pseudos pour négatifs
                 if (users.get(i).equals(Security.getLoggedUser()))
-                    createPanel(users.get(i).getFullName() + " (me)", blue, false).addTo(balance);
+                    createPanel(users.get(i).getFullName() + " (me)", blue)
+                            .addTo(balance);
                 else
-                    createPanel(users.get(i).getFullName(), null, false).addTo(balance);
+                    createPanel(users.get(i).getFullName(), null)
+                            .addTo(balance);
             } else {
                 //Pseudos pour positifs
                 if (users.get(i).equals(Security.getLoggedUser()))
-                    createPanel(users.get(i).getFullName() + " (me)", blue, true).addTo(balance);
+                    createPanel(users.get(i).getFullName() + " (me)", blue).addTo(balance);
                 else
-                    createPanel(users.get(i).getFullName(), null, true).addTo(balance);
+                    createPanel(users.get(i).getFullName(), null).addTo(balance);
 
                 new Label("|").addTo(balance);
 
                 //Prix et barre de couleur pour les positifs
                 if (i == indexMax)
                     createPanel(decimalFormat.format(userBalance) + " €                    ",
-                            green, false).addTo(balance);
+                            green).addTo(balance);
                 else
                     createPanel(decimalFormat.format(userBalance) + " €" + spacing,
-                            green, false).addTo(balance);
+                            green).addTo(balance);
             }
         }
 
@@ -96,9 +99,8 @@ public class ViewBalanceView extends DialogWindow {
         setComponent(root);
     }
 
-    public Panel createPanel(String text, TextColor backGroundColor, boolean alignRight) {
-        LinearLayout.Alignment align = alignRight ? LinearLayout.Alignment.End : LinearLayout.Alignment.Beginning;
-        Panel panel = new Panel().asHorizontalPanel().setLayoutData(LinearLayout.createLayoutData(align));
+    public Panel createPanel(String text, TextColor backGroundColor) {
+        Panel panel = new Panel();
 
         if (backGroundColor == null)
             new Label(text)
