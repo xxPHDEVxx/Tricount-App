@@ -6,6 +6,7 @@ import tgpr.framework.ErrorList;
 import tgpr.framework.Tools;
 import tgpr.tricount.model.*;
 import tgpr.tricount.view.EditTricountView;
+import tgpr.tricount.view.ViewTemplatesView;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -74,5 +75,8 @@ public class EditTricountController extends Controller {
                 view.close();
             }
         }
+    }
+    public void viewTemplates(){
+        navigateTo(new ViewTemplatesController(tricount));
     }
 }

@@ -4,10 +4,8 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import tgpr.framework.*;
 import tgpr.framework.Error;
-import tgpr.framework.ErrorList;
-import tgpr.framework.Margin;
-import tgpr.framework.Tools;
 import tgpr.tricount.controller.EditTricountController;
 import tgpr.tricount.model.*;
 
@@ -115,7 +113,7 @@ public class EditTricountView extends DialogWindow {
 
         btnSave = new Button("Save", this::save).addTo(panel);
 
-        new Button("Templates").addTo(panel);
+        new Button("Templates",this::viewTemplates).addTo(panel);
         new Button("Cancel", this::close).addTo(panel);
 
 
@@ -221,5 +219,8 @@ public class EditTricountView extends DialogWindow {
         errDescription.setText(errors.getFirstErrorMessage(Tricount.Fields.Description));
         btnSave.setEnabled(errors.isEmpty());
         btnDelete.setEnabled(Security.isAdmin() || Security.getLoggedUserId() == tricount.getCreatorId());
+    }
+    public void viewTemplates(){
+        controller.viewTemplates();
     }
 }
