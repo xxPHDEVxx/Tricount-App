@@ -4,23 +4,24 @@ import com.googlecode.lanterna.gui2.Window;
 import tgpr.framework.Controller;
 import tgpr.framework.ErrorList;
 import tgpr.framework.Tools;
-import tgpr.tricount.model.Subscription;
-import tgpr.tricount.model.Tricount;
-import tgpr.tricount.model.TricountValidator;
-import tgpr.tricount.model.User;
+import tgpr.tricount.model.*;
 import tgpr.tricount.view.EditTricountView;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public class EditTricountController extends Controller {
     private final EditTricountView view ;
     private Tricount tricount;
     private Integer idTricount;
+    private LocalDateTime createdAt;
     private final boolean isNew;
 
     public EditTricountController(Tricount tricount){
         this.tricount = tricount;
         this.idTricount = tricount.getId();
+        this.createdAt = tricount.getCreatedAt();
         isNew = tricount == null;
         view = new EditTricountView(this, tricount);
     }
@@ -31,6 +32,7 @@ public class EditTricountController extends Controller {
             // rajouter l'user id de l'utilisateur connecté
             tricount = new Tricount( title, description, 1);
             tricount.setId(idTricount);
+            tricount.setCreatedAt(createdAt);
             tricount.save();
             for (User partic :
                     nvParticipants) {
@@ -52,7 +54,7 @@ public class EditTricountController extends Controller {
         }
 
 
-        var tric = new Tricount(title, description, 1);
+        var tric = new Tricount(title, description, Security.getLoggedUserId());
         errors.addAll(TricountValidator.validate(tric));
 
         return errors;
