@@ -69,8 +69,10 @@ public class EditTricountController extends Controller {
     public void delete() {
         if (askConfirmation("You're about to delete this tricount.\n" +
                 "Do you confirm ! ", "Delete tricount")) {
-            tricount.delete();
-            view.close();
+            if (Security.isAdmin() || Security.getLoggedUserId() == tricount.getCreatorId()) {
+                tricount.delete();
+                view.close();
+            }
         }
     }
 }

@@ -9,10 +9,7 @@ import tgpr.framework.ErrorList;
 import tgpr.framework.Margin;
 import tgpr.framework.Tools;
 import tgpr.tricount.controller.EditTricountController;
-import tgpr.tricount.model.Operation;
-import tgpr.tricount.model.Subscription;
-import tgpr.tricount.model.Tricount;
-import tgpr.tricount.model.User;
+import tgpr.tricount.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +26,7 @@ public class EditTricountView extends DialogWindow {
     private final Label errDescription = new Label("");
 
     private Button btnSave;
+    private Button btnDelete;
 
     private List<User> grpSubscribers;
     private ActionListBox lstSubscriber = new ActionListBox();
@@ -113,7 +111,7 @@ public class EditTricountView extends DialogWindow {
         var panel = Panel.horizontalPanel().center();
 
 
-        new Button("Delete", this::delete).addTo(panel);
+        btnDelete = new Button("Delete", this::delete).addTo(panel);
 
         btnSave = new Button("Save", this::save).addTo(panel);
 
@@ -222,5 +220,6 @@ public class EditTricountView extends DialogWindow {
         errTitle.setText(errors.getFirstErrorMessage(Tricount.Fields.Title));
         errDescription.setText(errors.getFirstErrorMessage(Tricount.Fields.Description));
         btnSave.setEnabled(errors.isEmpty());
+        btnDelete.setEnabled(Security.isAdmin() || Security.getLoggedUserId() == tricount.getCreatorId());
     }
 }
