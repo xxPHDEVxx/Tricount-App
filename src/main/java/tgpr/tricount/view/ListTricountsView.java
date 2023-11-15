@@ -42,13 +42,16 @@ public class ListTricountsView extends BasicWindow {
         TextBox textBoxFiltre = new TextBox();
         filtre.addComponent(labelFiltre);
         filtre.addComponent(textBoxFiltre);
+        textBoxFiltre.takeFocus().setTextChangeListener((txt, byUser) -> reloadData());                       //ajout listener
         mainPanel.addComponent(filtre);
+
+
         GridLayout gridTricount = new GridLayout(3);
         this.tricountContainer = new Panel(gridTricount);
         loadTricountContainer(0);
         //this.tricountContainer.withBorder(Borders.singleLine());
-
         mainPanel.addComponent(this.tricountContainer);
+
 
         Panel bottom = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL)).addTo(mainPanel);
         Button newButton = new Button("Create a new Tricount", () -> controller.addTricount()).addTo(bottom); //ajouter action sur le button
@@ -59,6 +62,11 @@ public class ListTricountsView extends BasicWindow {
 
 
     }
+
+    private void reloadData() {
+
+    }
+
     private Border createCell (int i){
         return new Panel().addComponent(new Label(String.valueOf(i))).withBorder(Borders.singleLine());
     }
@@ -67,12 +75,12 @@ public class ListTricountsView extends BasicWindow {
     }
     private Border cardTricount(Tricount tricount) {
         Panel panel = new Panel();
-        panel.addComponent(new Label(tricount.getTitle()));
-        panel.addComponent(new Label((tricount.getDescription() != null) ? tricount.getDescription() : "pas de description"));
-        panel.addComponent(new Label(tricount.getCreator().getFullName()));
+        panel.addComponent(new Label(tricount.getTitle()).center());
+        panel.addComponent(new Label((tricount.getDescription() != null) ? tricount.getDescription() : "pas de description").center());
+        panel.addComponent(new Label(tricount.getCreator().getFullName()).center());
         String numberParticipants = String.valueOf(tricount.getParticipants().size()-1);
-        panel.addComponent(new Label("with " + ((!numberParticipants.equals("0")) ? numberParticipants : "no") + " friends"));
-        panel.addComponent(new Button("Open", () -> {controller.openTricount(tricount);}));
+        panel.addComponent(new Label("with " + ((!numberParticipants.equals("0")) ? numberParticipants : "no") + " friends").center());
+        panel.addComponent(new Button("Open", () -> {controller.openTricount(tricount);}).center());
 
         return panel.withBorder(Borders.singleLine());
     }
