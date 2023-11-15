@@ -31,12 +31,10 @@ public class AddTemplateView extends DialogWindow {
         new Label("Title: ").addTo(fields);
         txtTitle = new TextBox().sizeTo(25)
                 .addTo(fields).takeFocus();
-
-
-
         new EmptySpace().addTo(fields);
         errTitle.addTo(fields).setForegroundColor(TextColor.ANSI.RED).addTo(fields);
         txtTitle.setTextChangeListener((txt, byUser) -> validate());
+
         new EmptySpace().addTo(fields);
         Panel buttons = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
         btnCreate = new Button("Create", this::create).addTo(buttons).setEnabled(false);

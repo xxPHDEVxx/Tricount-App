@@ -21,7 +21,7 @@ public class AddTricountView extends DialogWindow {
     private final AddTricountController controller;
     private final TextBox txtTitle;
     private final TextBox txtDesc;
-    private final Label errTitle = new Label("");
+    private final Label errTitle = new Label("Test");
     private final Label errDesc = new Label("");
     private final Button btnCreate;
 
@@ -57,10 +57,11 @@ public class AddTricountView extends DialogWindow {
 
         var buttons = new Panel().addTo(vert).setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
         buttons.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.End));
-        btnCreate = new Button("Create", this::create).addTo(buttons);
+        btnCreate = new Button("Create", this::create).setEnabled(false).addTo(buttons);
         new Button("Cancel", this::close).addTo(buttons);
 
         setComponent(vert);
+        refresh();
     }
 
     private void create() {
@@ -69,11 +70,12 @@ public class AddTricountView extends DialogWindow {
     }
 
     private void validate() {
-        var errors = controller.validate(
-                txtTitle.getText(),
-                txtDesc.getText()
-        );
-        errTitle.setText(errors.getFirstErrorMessage(Operation.Fields.Title));
-        errDesc.setText(errors.getFirstErrorMessage(Operation.Fields.Amount));
+        var errors = controller.validate(txtTitle.getText(), txtDesc.getText());
+        errTitle.setText(errors.getFirstErrorMessage(Tricount.Fields.Title));
+        errDesc.setText(errors.getFirstErrorMessage(Tricount.Fields.Description));
+
+        btnCreate.setEnabled(errors.isEmpty());
     }
+
+    private void refresh() {}
 }
