@@ -12,12 +12,15 @@ import java.util.regex.Pattern;
 
 public class AddTemplateController extends Controller {
     private List<Repartition> repartitions;
-    int tricountId;
+    private Template template;
     private AddTemplateView view;
-    public AddTemplateController(List<Repartition> repartitions, int tricountId) {
+    int tricountId;
+
+    public AddTemplateController(List<Repartition> repartitions, int tricountId,Template template) {
         this.repartitions = repartitions;
         this.tricountId = tricountId;
-        view = new AddTemplateView(this);
+        this.template = template;
+
     }
     public  Error isValidTitle(String title) {
         if(title == null || title.isBlank())
@@ -34,21 +37,28 @@ public class AddTemplateController extends Controller {
     }
     public void create(String title){
         var error = isValidTitle(title);
-        Template template = new Template(title, tricountId);
-        if(error == Error.NOERROR)
+        if(error == Error.NOERROR){
+            if(template==null)
+                template = new Template(title,tricountId);
+            else
+                template.setTitle(title);
             template.save();
+        }
         else
             showError(error);
-        for (var rep: repartitions) {
-            TemplateItem templateItem = new TemplateItem();
-            templateItem.setUserId(rep.getUserId());
-            templateItem.setWeight(rep.getWeight());
-            templateItem.setTemplateId(template.getId());
-            templateItem.save();
+        if (repartitions != null) {
+
+            for (var rep : repartitions) {
+                TemplateItem templateItem = new TemplateItem();
+                templateItem.setUserId(rep.getUserId());
+                templateItem.setWeight(rep.getWeight());
+                templateItem.setTemplateId(template.getId());
+                templateItem.save();
+            }
         }
     }
     @Override
     public Window getView() {
-        return new AddTemplateView(this);
+        return new AddTemplateView(this,template);
     }
 }

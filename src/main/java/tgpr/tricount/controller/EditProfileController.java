@@ -20,6 +20,16 @@ public class EditProfileController extends Controller{
         return view;
     }
 
+    public String getFullName() {
+        return user.getFullName();
+    }
+
+    public String getMail() {
+        return user.getMail();
+    }
+
+    public String getIban(){ return user.getIban();}
+
     public void saveProfile(String mail, String fullname, String iban){
         var errors = validate(mail, fullname, iban);
         if (errors.isEmpty()) {
@@ -35,9 +45,13 @@ public class EditProfileController extends Controller{
     public ErrorList validate(String mail, String fullname, String iban) {
         var errors = new ErrorList();
 
-        // Ajouter fonctions de validation, exemple :
-        // -> errors.add(UserValidator.isValidMail(mail));
+        errors.add(ProfileValidator.isValidMail(mail));
+        errors.add(ProfileValidator.isValidFullname(fullname));
+        errors.add(ProfileValidator.isValidIban(iban));
 
         return errors;
+    }
+    public User getUser() {
+        return user;
     }
 }

@@ -103,7 +103,7 @@ public class DisplayOperationView extends DialogWindow {
     }
 
     private void edit() {
-        Controller.navigateTo(new EditOperationController(operation.getTricount(), operation));
+        controller.update();
     }
 
     private void down() {
@@ -132,7 +132,7 @@ public class DisplayOperationView extends DialogWindow {
     }
 
 
-    private void refresh() {
+    public void refresh() {
         if (operation != null) {
             lblTitle.setText(operation.getTitle());
             DecimalFormat decimalFormat = new DecimalFormat("#0.00");
