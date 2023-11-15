@@ -4,15 +4,14 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.input.KeyType;
 import tgpr.framework.Controller;
 import tgpr.framework.Margin;
 import tgpr.framework.Spacing;
 import tgpr.framework.Tools;
 import tgpr.tricount.controller.AddTricountController;
-import tgpr.tricount.model.Operation;
-import tgpr.tricount.model.Security;
-import tgpr.tricount.model.Tricount;
-import tgpr.tricount.model.User;
+import tgpr.tricount.model.*;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -21,7 +20,7 @@ public class AddTricountView extends DialogWindow {
     private final AddTricountController controller;
     private final TextBox txtTitle;
     private final TextBox txtDesc;
-    private final Label errTitle = new Label("Test");
+    private final Label errTitle = new Label("");
     private final Label errDesc = new Label("");
     private final Button btnCreate;
 
