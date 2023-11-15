@@ -115,7 +115,7 @@ public class EditTricountView extends DialogWindow {
 
         new Button("Delete", this::delete).addTo(panel);
 
-        btnSave = new Button("Save", this::add).addTo(panel);
+        btnSave = new Button("Save", this::save).addTo(panel);
 
         new Button("Templates").addTo(panel);
         new Button("Cancel", this::close).addTo(panel);
@@ -170,7 +170,7 @@ public class EditTricountView extends DialogWindow {
         controller.delete();
     }
 
-    private void add() {
+    private void save() {
         controller.save(
                 txtTitle.getText(),
                 txtDescription.getText(),
@@ -180,14 +180,23 @@ public class EditTricountView extends DialogWindow {
     }
 
     private void addParticipant() {
+        var errors = new ErrorList();
         User selected = user.getByFullName(cbAddParticipant.getSelectedItem());
-        lstNvParticipants.add(selected);
-        lstSubscriber.addItem(selected.getFullName()
+        if (selected == null) {
+            errors.add(new Error("Please select a subscriber"));
+        } else {
+            lstNvParticipants.add(selected);
+            lstSubscriber.addItem(selected.getFullName()
 
-                , () -> deleteLstParticipant(selected));
-        cbAddParticipant.removeItem(cbAddParticipant.getSelectedItem());
-        // remettre le premier item
-        cbAddParticipant.setSelectedIndex(0);
+                    , () -> deleteLstParticipant(selected));
+            cbAddParticipant.removeItem(cbAddParticipant.getSelectedItem());
+            // remettre le premier item
+            cbAddParticipant.setSelectedIndex(0);
+        }
+
+        if(!errors.isEmpty()) {
+            controller.showErrors(errors);
+        }
 
     }
 
