@@ -33,10 +33,10 @@ public class ListTricountsController extends Controller {
             listTricounts=Tricount.getAll();
     }
 
-    /*public void logout() {
+    public void logout() {
         Security.logout();
         navigateTo(new LoginController());
-    }*/
+    }
 
     public void exit() {
         System.exit(0);
