@@ -79,7 +79,7 @@ public class ListTricountsView extends BasicWindow {
     private MenuBar createMenu() {
         MenuBar menuBar = new MenuBar();
         menuBar.add(menuFile);
-        //addShortcut(menuFile, KeyStroke.fromString("<A-f>"));
+        addShortcut(menuFile, KeyStroke.fromString("<A-f>"));
         //MenuItem menuLogout = new MenuItem("Logout", controller::logout);
         //menuFile.add(menuLogout);
         MenuItem menuExit = new MenuItem("Exit", controller::exit);
