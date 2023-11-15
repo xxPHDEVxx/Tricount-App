@@ -165,14 +165,6 @@ public class EditOperationView extends DialogWindow {
     // Met à jour les données de la vue
 
     }
-    public void reloadData() {
-        if (controller.getOperation() != null) {
-            operation = controller.getOperation();
-            tricount = controller.getTricount();
-        }
-        populateFields();
-        updateRepartitionsView();
-    }
 
     private Panel createButtonsPanel() {
         var panel = Panel.horizontalPanel().center();
@@ -243,7 +235,7 @@ public class EditOperationView extends DialogWindow {
                 txtTitle.getText(),
                 txtAmount.getText(),
                 txtDate.getText(),
-                cboUsers.getSelectedItem().getFullName(),
+                    cboUsers.getSelectedItem().getFullName(),
                 cklRepartitions.getCheckedItems()
         );
 

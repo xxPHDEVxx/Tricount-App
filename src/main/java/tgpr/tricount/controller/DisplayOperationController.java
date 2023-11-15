@@ -30,10 +30,10 @@ public class DisplayOperationController extends Controller {
     }
 
     // affiche la fenêtre d'édition de l'opération.
-    public Operation update(){
+    public void update(){
         var controller = new EditOperationController(operation.getTricount(), operation);
         navigateTo(controller);
         view.refresh();
-        return controller.getOperation();
+        view.close();// permet de fermer fenetre après une supression ( solution à un bug temporaire).
     }
 }

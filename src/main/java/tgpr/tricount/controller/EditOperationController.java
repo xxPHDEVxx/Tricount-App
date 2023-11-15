@@ -52,7 +52,6 @@ public class EditOperationController extends Controller {
                 Repartition repartition = new Repartition(saved.getId(), rep.getUserId(), rep.getWeight());
                 repartition.save();
             }
-            reloadData();
             view.close();
         } else
             showErrors(errors);
@@ -94,10 +93,5 @@ public class EditOperationController extends Controller {
             showError(OperationValidator.isValideRepartitions(repartitions));
 
 
-    }
-
-    // Gère la mise à jour des données
-    public void reloadData(){
-        view.reloadData();
     }
 }
