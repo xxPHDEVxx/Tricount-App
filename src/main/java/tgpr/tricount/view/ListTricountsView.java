@@ -91,7 +91,7 @@ public class ListTricountsView extends BasicWindow {
     }
     private void loadTricountContainer(int startId){
         this.tricountContainer.removeAllComponents();
-        for (int i = startId; i < Math.min(startId + 12, listTricounts.size()-1); i++) {
+        for (int i = startId; i < Math.min(startId + 12, listTricounts.size()); i++) {
             this.tricountContainer.addComponent(cardTricount(this.listTricounts[i]));
         }
     }
