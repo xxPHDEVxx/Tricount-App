@@ -159,6 +159,7 @@ public class EditOperationView extends DialogWindow {
         return true;
     }
 
+    // Met à jour les données de la vue
     public void reloadData() {
         if (controller.getOperation() != null) {
             operation = controller.getOperation();
@@ -229,14 +230,7 @@ public class EditOperationView extends DialogWindow {
 
 
     private void delete() {
-        if (operation != null) {
-            MessageDialogButton result = EditOperationController.showMessage("Voulez-vous vraiment supprimer cette opération ?", "Confirmation", MessageDialogButton.OK, MessageDialogButton.Cancel);
-
-            if (result == MessageDialogButton.OK) {
-                controller.deleteOperation(operation);
-                this.close();
-            }
-        }
+        controller.delete();
     }
 
     private void add() {
@@ -246,7 +240,6 @@ public class EditOperationView extends DialogWindow {
                 txtDate.getText(),
                 cboUsers.getSelectedItem().getFullName(),
                 cklRepartitions.getCheckedItems()
-
         );
 
     }

@@ -28,4 +28,12 @@ public class DisplayOperationController extends Controller {
     public List<Repartition> getRepartitions(){
         return operation.getRepartitions();
     }
+
+    // affiche la fenêtre d'édition de l'opération.
+    public Operation update(){
+        var controller = new EditOperationController(operation.getTricount(), operation);
+        navigateTo(controller);
+        view.refresh();
+        return controller.getOperation();
+    }
 }

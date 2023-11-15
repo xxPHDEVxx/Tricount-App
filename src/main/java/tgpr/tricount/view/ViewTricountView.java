@@ -33,6 +33,7 @@ public class ViewTricountView extends DialogWindow {
     private final Button btnNewExpense;
     private final Button btnEditTricount;
     private final Tricount tricount;
+    private ObjectTable<Operation> tbl;
 
     public ViewTricountView(ViewTricountController controller, Tricount tricount) {
         super("View Tricount Detail");
@@ -71,7 +72,7 @@ public class ViewTricountView extends DialogWindow {
         Panel panelOperation = new Panel();
         panelOperation.addTo(root);
 
-        ObjectTable<Operation> tbl = new ObjectTable<>(
+        tbl = new ObjectTable<>(
                 new ColumnSpec<>("Operation", Operation::getTitle).setWidth(30),
                 new ColumnSpec<>("Amount", Operation::getAmount).setFormat("%.2f €").setWidth(10).alignRight(),
                 new ColumnSpec<>("Paid By", Operation::getInitiator).setWidth(10),
@@ -102,5 +103,15 @@ public class ViewTricountView extends DialogWindow {
         new Button("Close", this::close).addTo(buttons);
 
         setComponent(root);
+    }
+
+    // Met à jour les opérations après une modification
+    public void updateOperationsTable() {
+        List<Operation> operations = tricount.getOperations();
+        tbl.clear();
+        for (int i = operations.size(); i > 0; i--) {
+            tbl.add(operations.get(i - 1));
+        }
+        tbl.refresh();
     }
 }
