@@ -5,8 +5,7 @@ import tgpr.framework.Model;
 
 import tgpr.tricount.controller.*;
 import tgpr.tricount.model.Tricount;
-
-
+import tgpr.tricount.model.User;
 
 
 public class TricountApp {
@@ -17,16 +16,12 @@ public class TricountApp {
             Controller.abort("Database is not available!");
 
         else {
-<<<<<<< HEAD
+
 
             Tricount tricount = Tricount.getByKey(4);
             User Xavier =  User.getByFullName("Xavier");
             //Model.seedData(TricountApp.DATABASE_SCRIPT_FILE);// reset la database (pour les tests)
             Controller.navigateTo(new LoginController());
-
-=======
-            Controller.navigateTo(new LoginController());
->>>>>>> 1605e32f16d0723fa89bfdb13c1cb73dd60f902a
         }
     }
 }
