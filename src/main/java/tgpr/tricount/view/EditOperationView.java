@@ -4,6 +4,7 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import com.googlecode.lanterna.gui2.dialogs.MessageDialogButton;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import tgpr.framework.Margin;
@@ -14,11 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static tgpr.tricount.model.DateUtils.localDateToString;
 
 public class EditOperationView extends DialogWindow {
     private final EditOperationController controller;
-    private final Operation operation;
-    private final Tricount tricount;
+    private Operation operation;
+    private Tricount tricount;
     private TextBox txtTitle;
     private TextBox txtAmount;
     private TextBox txtDate;
@@ -33,9 +35,10 @@ public class EditOperationView extends DialogWindow {
     private Button btnAddUpdate;
     private Button btnApplay;
     private Button btnSaveRepAtTemplate;
+    private Button buttonDelete;
 
-    public EditOperationView(EditOperationController controller,Tricount tricount, Operation operation) {
-        super((operation == null ? "Add " : "Update ") + "Operation");
+    public EditOperationView(EditOperationController controller, Tricount tricount, Operation operation) {
+        super((operation == null ? "Add " : "Edit ") + "Operation");
         this.operation = operation;
         this.controller = controller;
         this.tricount = tricount;
@@ -50,6 +53,8 @@ public class EditOperationView extends DialogWindow {
         createFieldsGrid().addTo(root);
         createButtonsPanel().addTo(root);
 
+        populateFields();
+
         refresh();
 
         txtTitle.takeFocus();
@@ -61,9 +66,7 @@ public class EditOperationView extends DialogWindow {
 
         new Label("Title:").addTo(panel);
         txtTitle = new TextBox().sizeTo(33).addTo(panel)
-                .setValidationPattern(Pattern.compile("^[A-Za-z0-9\\s]+$"))
-                .setTextChangeListener((txt, byUser) -> validate())
-                .setReadOnly(operation != null);
+                .setTextChangeListener((txt, byUser) -> validate());
         panel.addEmpty();
         errTitle.addTo(panel)
                 .setForegroundColor(TextColor.ANSI.RED);
@@ -102,12 +105,19 @@ public class EditOperationView extends DialogWindow {
         panel.addEmpty();
 
         new Label("For whom: \n(weight: ←/→ or -/+)").addTo(panel);
-        for (var rep : lsRepartitions()){
+        for (var rep : lsRepartitions()) {
             cklRepartitions.addItem(rep, rep.getWeight() > 0);
             cklRepartitions.setChecked(rep, true);
-
         }
         cklRepartitions.addListener((idx, isChecked) -> {
+            Repartition rep = cklRepartitions.getItemAt(idx);
+            if(isChecked && rep.getWeight() == 0) {
+                cklRepartitions.setChecked(rep, false);
+
+
+            }
+
+            validate();
         }).addTo(panel);
         panel.addEmpty();
         errRepartitions.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
@@ -115,11 +125,9 @@ public class EditOperationView extends DialogWindow {
         addKeyboardListener(
                 cklRepartitions,
                 this::handleWeightKeyStroke);
-
-
         return panel;
-
     }
+
     private Boolean handleWeightKeyStroke(KeyStroke keyStroke) {
         Character character = keyStroke.getCharacter();
         KeyType type = keyStroke.getKeyType();
@@ -127,39 +135,50 @@ public class EditOperationView extends DialogWindow {
         Repartition rep = cklRepartitions.getItemAt(idx);
         int weight = rep.getWeight();
         boolean changement = false;
-            if (character != null) {
-                if (character == '+') {
-                    ++weight;
-                    changement = true;
-                }
-                if (character == '-')  {
-                    --weight;
-                    changement = true;
-                }
-            }else {
-                if (type == KeyType.ArrowRight) {
-                    ++weight;
-                    changement = true;
-                }
-                if (type == KeyType.ArrowLeft) {
-                    --weight;
-                    changement = true;
-                }
+        if (character != null) {
+            if (character == '+') {
+                ++weight;
+                changement = true;
             }
-            if (changement) {
-                rep.setWeight(weight);
-                cklRepartitions.invalidate();
+            if (character == '-') {
+                --weight;
+                changement = true;
             }
-            return true;
+        } else {
+            if (type == KeyType.ArrowRight) {
+                ++weight;
+                changement = true;
+            }
+            if (type == KeyType.ArrowLeft) {
+                --weight;
+                changement = true;
+            }
+        }
+        if (changement) {
+            rep.setWeight(weight);
+            cklRepartitions.invalidate();
+        }
+        return true;
     }
-    private void reloadData() {
+    public void decocheCase(ComboBox<Repartition> cboR, List<Repartition> lsR){
+
+    // Met à jour les données de la vue
+    }
+    public void reloadData() {
+        if (controller.getOperation() != null) {
+            operation = controller.getOperation();
+            tricount = controller.getTricount();
+        }
+        populateFields();
+        updateRepartitionsView();
     }
 
     private Panel createButtonsPanel() {
         var panel = Panel.horizontalPanel().center();
 
-        btnAddUpdate = new Button("save", this::add).addTo(panel).setEnabled(false);
-        btnSaveRepAtTemplate = new Button("save Repartition as Template", this::saveRepAsTemp).addTo(panel).setEnabled(false);
+        buttonDelete = new Button("Delete", this::delete).addTo(panel).setEnabled(operation != null);
+        btnAddUpdate = new Button("Save", this::add).addTo(panel).setEnabled(false);
+        btnSaveRepAtTemplate = new Button("Save Repartition as Template", this::saveRepAsTemp).addTo(panel).setEnabled(false);
         new Button("Cancel", this::close).addTo(panel);
         addShortcut(btnAddUpdate, KeyStroke.fromString(operation == null ? "<A-a>" : "<A-u>"));
 
@@ -178,6 +197,46 @@ public class EditOperationView extends DialogWindow {
 
     }
 
+    // Définis les champs de texte avec les données de l'opération concernée.
+    private void populateFields() {
+        if (operation != null) {
+            txtTitle.setText(operation.getTitle());
+            txtAmount.setText(String.valueOf((operation.getAmount())).replace('.', ','));
+            txtDate.setText(localDateToString(operation.getOperationDate()).replace('-', '/'));
+            cboUsers.setSelectedItem(Security.getLoggedUser()); // pas nécessaire en théorie, à tester
+            updateRepartitionsView();
+        }
+    }
+
+    // Récupère la répartition de poid de l'opération
+    private void updateRepartitionsView() {
+        if (operation != null) {
+            List<Repartition> operationRepartitions = operation.getRepartitions();
+
+            for (var rep : cklRepartitions.getItems()) {
+                boolean found = false;
+
+                for (var operationRep : operationRepartitions) {
+                    if (rep.getUser().getId() == operationRep.getUser().getId()) {
+                        rep.setWeight(operationRep.getWeight());
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    rep.setWeight(0);
+                }
+
+                cklRepartitions.invalidate();
+            }
+        }
+    }
+
+
+    private void delete() {
+        controller.delete();
+    }
+
     private void add() {
         controller.save(
                 txtTitle.getText(),
@@ -185,19 +244,19 @@ public class EditOperationView extends DialogWindow {
                 txtDate.getText(),
                 cboUsers.getSelectedItem().getFullName(),
                 cklRepartitions.getCheckedItems()
-
         );
 
     }
-    private void applayTemplate(){
+
+    private void applayTemplate() {
         Template template = cboTemplates.getSelectedItem();
         List<TemplateItem> templateItems = template.getTemplateItems();
         for (var rep : cklRepartitions.getItems()) {
             int i = 0;
-            while(i < templateItems.size() && !rep.getUser().equals(templateItems[i].getUser())) {
+            while (i < templateItems.size() && !rep.getUser().equals(templateItems[i].getUser())) {
                 ++i;
             }
-            if( i < templateItems.size())
+            if (i < templateItems.size())
                 rep.setWeight(templateItems[i].getWeight());
             else rep.setWeight(0);
         }
@@ -220,11 +279,11 @@ public class EditOperationView extends DialogWindow {
 
     }
 
-    public List<Repartition> lsRepartitions(){
+    public List<Repartition> lsRepartitions() {
         List<Repartition> lsRepartitions = new ArrayList<>();
         for (User participant : tricount.getParticipants()
-             ) {
-            Repartition repartition = new Repartition (0, participant.getId(), 1);
+        ) {
+            Repartition repartition = new Repartition(0, participant.getId(), 1);
             lsRepartitions.add(repartition);
 
         }

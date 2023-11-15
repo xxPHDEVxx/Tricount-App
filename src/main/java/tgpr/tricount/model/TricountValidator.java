@@ -8,7 +8,7 @@ import java.util.List;
 public abstract class TricountValidator {
     public static Error isValidTitle(String title) {
         if (title == null || title.length() <3)  {
-            return new Error("Title must be longer than 3");
+            return new Error("Title must be longer than 3", Tricount.Fields.Title);
         } else  {
             return Error.NOERROR;
         }
@@ -16,8 +16,9 @@ public abstract class TricountValidator {
 
     }
     public static Error isValidDescription(String description) {
-        if (description != null && description.length() < 3)  {
-            return new Error("Description must be longer than 3");
+        if (description != "" && description.length() < 3)  {
+            return new Error("Description must be longer than 3", Tricount.Fields.Description);
+
         } else  {
             return Error.NOERROR;
         }

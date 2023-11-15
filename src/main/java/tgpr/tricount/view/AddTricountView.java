@@ -4,15 +4,14 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.input.KeyType;
 import tgpr.framework.Controller;
 import tgpr.framework.Margin;
 import tgpr.framework.Spacing;
 import tgpr.framework.Tools;
 import tgpr.tricount.controller.AddTricountController;
-import tgpr.tricount.model.Operation;
-import tgpr.tricount.model.Security;
-import tgpr.tricount.model.Tricount;
-import tgpr.tricount.model.User;
+import tgpr.tricount.model.*;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -57,10 +56,11 @@ public class AddTricountView extends DialogWindow {
 
         var buttons = new Panel().addTo(vert).setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
         buttons.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.End));
-        btnCreate = new Button("Create", this::create).addTo(buttons);
+        btnCreate = new Button("Create", this::create).setEnabled(false).addTo(buttons);
         new Button("Cancel", this::close).addTo(buttons);
 
         setComponent(vert);
+        refresh();
     }
 
     private void create() {
@@ -69,11 +69,12 @@ public class AddTricountView extends DialogWindow {
     }
 
     private void validate() {
-        var errors = controller.validate(
-                txtTitle.getText(),
-                txtDesc.getText()
-        );
-        errTitle.setText(errors.getFirstErrorMessage(Operation.Fields.Title));
-        errDesc.setText(errors.getFirstErrorMessage(Operation.Fields.Amount));
+        var errors = controller.validate(txtTitle.getText(), txtDesc.getText());
+        errTitle.setText(errors.getFirstErrorMessage(Tricount.Fields.Title));
+        errDesc.setText(errors.getFirstErrorMessage(Tricount.Fields.Description));
+
+        btnCreate.setEnabled(errors.isEmpty());
     }
+
+    private void refresh() {}
 }

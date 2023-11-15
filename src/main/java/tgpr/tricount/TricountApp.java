@@ -3,13 +3,7 @@ package tgpr.tricount;
 import tgpr.framework.Controller;
 import tgpr.framework.Model;
 
-
 import tgpr.tricount.controller.*;
-
-import tgpr.tricount.model.Tricount;
-
-
-import tgpr.tricount.model.Operation;
 import tgpr.tricount.model.Security;
 import tgpr.tricount.model.Tricount;
 import tgpr.tricount.model.User;
@@ -31,6 +25,7 @@ public class TricountApp {
             //Controller.navigateTo(new EditTricountController(Tricount.getByKey(1)));*/
 
             Controller.navigateTo(new ViewTemplatesController(tricount));
+
         }
     }
 }
