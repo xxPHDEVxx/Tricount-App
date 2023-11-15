@@ -18,8 +18,6 @@ public class ViewTricountController extends Controller {
         view = new ViewTricountView(this, tricount);
     }
 
-
-
     @Override
     public Window getView() {
         return view;
@@ -68,6 +66,6 @@ public class ViewTricountController extends Controller {
     }
 
     public void balance() {
-        //Controller.navigateTo(new ViewBalanceView(ViewBalanceController, tricount));
+        Controller.navigateTo(new ViewBalanceController(tricount));
     }
 }

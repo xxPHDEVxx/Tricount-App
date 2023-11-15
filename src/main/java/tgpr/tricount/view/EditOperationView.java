@@ -66,9 +66,7 @@ public class EditOperationView extends DialogWindow {
 
         new Label("Title:").addTo(panel);
         txtTitle = new TextBox().sizeTo(33).addTo(panel)
-                .setValidationPattern(Pattern.compile("^[A-Za-z0-9\\s]+$"))
-                .setTextChangeListener((txt, byUser) -> validate())
-                .setReadOnly(operation != null);
+                .setTextChangeListener((txt, byUser) -> validate());
         panel.addEmpty();
         errTitle.addTo(panel)
                 .setForegroundColor(TextColor.ANSI.RED);
@@ -110,9 +108,16 @@ public class EditOperationView extends DialogWindow {
         for (var rep : lsRepartitions()) {
             cklRepartitions.addItem(rep, rep.getWeight() > 0);
             cklRepartitions.setChecked(rep, true);
-
         }
         cklRepartitions.addListener((idx, isChecked) -> {
+            Repartition rep = cklRepartitions.getItemAt(idx);
+            if(isChecked && rep.getWeight() == 0) {
+                cklRepartitions.setChecked(rep, false);
+
+
+            }
+
+            validate();
         }).addTo(panel);
         panel.addEmpty();
         errRepartitions.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
@@ -120,10 +125,7 @@ public class EditOperationView extends DialogWindow {
         addKeyboardListener(
                 cklRepartitions,
                 this::handleWeightKeyStroke);
-
-
         return panel;
-
     }
 
     private Boolean handleWeightKeyStroke(KeyStroke keyStroke) {
@@ -158,8 +160,13 @@ public class EditOperationView extends DialogWindow {
         }
         return true;
     }
+    public void decocheCase(ComboBox<Repartition> cboR, List<Repartition> lsR){
 
+<<<<<<< HEAD
     // Met à jour les données de la vue
+=======
+    }
+>>>>>>> 1605e32f16d0723fa89bfdb13c1cb73dd60f902a
     public void reloadData() {
         if (controller.getOperation() != null) {
             operation = controller.getOperation();

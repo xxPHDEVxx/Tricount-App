@@ -37,12 +37,11 @@ public class ViewTricountView extends DialogWindow {
 
     public ViewTricountView(ViewTricountController controller, Tricount tricount) {
         super("View Tricount Detail");
-        this.tricount = tricount;
         setHints(List.of(Hint.CENTERED));
 
+        this.tricount = tricount;
         this.controller = controller;
         DecimalFormat decimalFormat = new DecimalFormat("#0.00");
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
 
         Panel root = new Panel().setLayoutManager(new LinearLayout(Direction.VERTICAL));
         Panel description = new Panel();
