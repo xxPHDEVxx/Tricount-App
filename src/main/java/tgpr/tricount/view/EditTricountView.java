@@ -25,6 +25,8 @@ public class EditTricountView extends DialogWindow {
     private final Label errTitle = new Label("");
     private final Label errDescription = new Label("");
 
+    private Button btnSave;
+
     private List<User> grpSubscribers;
     private ActionListBox lstSubscriber = new ActionListBox();
     private ComboBox<String> cbAddParticipant = new ComboBox<>();
@@ -113,7 +115,7 @@ public class EditTricountView extends DialogWindow {
         var panel = Panel.horizontalPanel().center();
 
         new Button("Delete").addTo(panel);
-        new Button("Save", this::add).addTo(panel);
+        btnSave = new Button("Save", this::add).addTo(panel);
         new Button("Templates").addTo(panel);
         new Button("Cancel", this::close).addTo(panel);
 
@@ -162,6 +164,6 @@ public class EditTricountView extends DialogWindow {
 
         errTitle.setText(errors.getFirstErrorMessage(Tricount.Fields.Title));
         errDescription.setText(errors.getFirstErrorMessage(Tricount.Fields.Description));
-
+        btnSave.setEnabled(errors.isEmpty());
     }
 }
