@@ -38,7 +38,8 @@ public class EditTricountController extends Controller {
                 sub.save();
             }
 
-            //view.close();
+            view.close();
+
        } else
             showErrors(errors);
     }
@@ -49,6 +50,7 @@ public class EditTricountController extends Controller {
             errors.add(TricountValidator.isValidTitle(title));
             errors.add(TricountValidator.isValidDescription(description));
         }
+
 
         var tric = new Tricount(title, description, 1);
         errors.addAll(TricountValidator.validate(tric));

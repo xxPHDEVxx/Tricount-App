@@ -23,6 +23,7 @@ public class TricountApp {
 
 
 
+
             Tricount tricount = Tricount.getByKey(4);
             User Xavier =  User.getByFullName("Xavier");
             Security.login(Xavier);
@@ -34,6 +35,8 @@ public class TricountApp {
            // Controller.navigateTo(new ViewTricountController(tricount));
             //Controller.navigateTo(new ViewTricountController(tricount));
             //Controller.navigateTo(new LoginController());
+
+            Controller.navigateTo(new EditTricountController(Tricount.getByKey(4)));
 
         }
     }

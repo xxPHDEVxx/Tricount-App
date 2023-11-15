@@ -28,6 +28,8 @@ public class EditTricountView extends DialogWindow {
     private final Label errTitle = new Label("");
     private final Label errDescription = new Label("");
 
+    private Button btnSave;
+
     private List<User> grpSubscribers;
     private ActionListBox lstSubscriber = new ActionListBox();
     private ComboBox<String> cbAddParticipant = new ComboBox<>();
@@ -53,8 +55,7 @@ public class EditTricountView extends DialogWindow {
         }
 
         setHints(List.of(Hint.CENTERED, Hint.FIXED_SIZE));
-        setCloseWindowWithEscape(true);
-        setFixedSize(new TerminalSize(60, 20));
+        setFixedSize(new TerminalSize(60, 25));
 
 
 
@@ -74,17 +75,18 @@ public class EditTricountView extends DialogWindow {
 
         new Label("Title:").addTo(panel);
         txtTitle = new TextBox().sizeTo(19).addTo(panel)
-                .setTextChangeListener((txt, byUser) -> validate());
+                .setTextChangeListener((txt, byUser)->validate());
         ;
         panel.addEmpty();
         errTitle.addTo(panel)
                 .setForegroundColor(TextColor.ANSI.RED);
 
         new Label("Description:").addTo(panel);
-        txtDescription = new TextBox().sizeTo(25 ,9).addTo(panel)
+
+        txtDescription = new TextBox().sizeTo(30 ,10).addTo(panel)
                 .setTextChangeListener((txt, byUser) -> validate());
-        ;
         panel.addEmpty();
+
         errDescription.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
         new Label("Subscribers:").addTo(panel);
         comboBoxSub().addTo(panel);
@@ -110,8 +112,11 @@ public class EditTricountView extends DialogWindow {
     private Panel createButtonsPanel() {
         var panel = Panel.horizontalPanel().center();
 
+
         new Button("Delete", this::delete).addTo(panel);
-        new Button("Save", this::add).addTo(panel);
+
+        btnSave = new Button("Save", this::add).addTo(panel);
+
         new Button("Templates").addTo(panel);
         new Button("Cancel", this::close).addTo(panel);
 
@@ -203,6 +208,6 @@ public class EditTricountView extends DialogWindow {
 
         errTitle.setText(errors.getFirstErrorMessage(Tricount.Fields.Title));
         errDescription.setText(errors.getFirstErrorMessage(Tricount.Fields.Description));
-
+        btnSave.setEnabled(errors.isEmpty());
     }
 }
