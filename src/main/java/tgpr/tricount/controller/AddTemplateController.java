@@ -34,7 +34,10 @@ public class AddTemplateController extends Controller {
     public void create(String title){
         var error = isValidTitle(title);
         if(error == Error.NOERROR){
-            template = new Template(title,tricountId);
+            if(template==null)
+                template = new Template(title,tricountId);
+            else
+                template.setTitle(title);
             template.save();
         }
         else
@@ -52,6 +55,6 @@ public class AddTemplateController extends Controller {
     }
     @Override
     public Window getView() {
-        return new AddTemplateView(this);
+        return new AddTemplateView(this,template);
     }
 }

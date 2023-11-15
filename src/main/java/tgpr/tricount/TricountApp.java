@@ -21,9 +21,7 @@ public class TricountApp {
     public static void main(String[] args) {
         if (!Model.checkDb(DATABASE_SCRIPT_FILE))
             Controller.abort("Database is not available!");
-
         else {
-
 
             Tricount tricount = Tricount.getByKey(4);
             User Boris =  User.getByFullName("Boris");
@@ -32,9 +30,7 @@ public class TricountApp {
 
             //Controller.navigateTo(new EditTricountController(Tricount.getByKey(1)));*/
 
-
             Controller.navigateTo(new ViewTemplatesController(tricount));
-
         }
     }
 }

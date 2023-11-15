@@ -16,8 +16,10 @@ public class AddTemplateView extends DialogWindow {
     private final TextBox txtTitle;
     private final Button btnCreate;
     private final Label errTitle;
-    public AddTemplateView(AddTemplateController controller) {
-        super("create a new template");
+    private final Template template;
+    public AddTemplateView(AddTemplateController controller,Template template) {
+        super(template == null? "Create a new Template":"Change template title" );
+        this.template = template;
         this.controller = controller;
 
         setHints(List.of(Hint.CENTERED, Hint.MODAL));
@@ -36,11 +38,12 @@ public class AddTemplateView extends DialogWindow {
         txtTitle.setTextChangeListener((txt, byUser) -> validate());
         new EmptySpace().addTo(fields);
         Panel buttons = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
-        btnCreate = new Button("Create", this::create).addTo(buttons);
+        btnCreate = new Button(template==null?"Create":"Save", this::create).addTo(buttons).setEnabled(false);
         new Button("Cancel", this::close).addTo(buttons);
         root.addComponent(buttons, LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
 
         validate();
+        refresh();
     }
 
     private void validate() {
@@ -51,6 +54,11 @@ public class AddTemplateView extends DialogWindow {
     private void create() {
         controller.create(txtTitle.getText());
         close();
+    }
+    private void refresh(){
+        if(template!=null){
+            txtTitle.setText(template.getTitle());
+        }
     }
 
 

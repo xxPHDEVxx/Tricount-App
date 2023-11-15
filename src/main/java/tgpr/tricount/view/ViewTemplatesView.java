@@ -68,7 +68,7 @@ public class ViewTemplatesView extends DialogWindow {
         //création panel grid pour les boutons
         Panel panelButtons = new Panel().asGridPanel(5);
         Button btnNew = new Button("New",this::addTemplate).addTo(panelButtons);
-        Button btnEditTitle = new Button("Edit Title").addTo(panelButtons);
+        Button btnEditTitle = new Button("Edit Title",this::editTemplate).addTo(panelButtons);
         Button btnDelete = new Button("Delete").addTo(panelButtons);
         Button btnSave = new Button("Save").addTo(panelButtons);
         new Button("Close", this::close).addTo(panelButtons);
@@ -125,12 +125,16 @@ public class ViewTemplatesView extends DialogWindow {
         }
         return true;
     }
-    private void add() {
+    private void add(){
+
     }
     public void addTemplate(){
         controller.addTemplate();
-        close();
-    }
 
+    }
+    public void editTemplate(){
+       controller.editTemplate(tmpTable.getSelected());
+
+    }
 
 }

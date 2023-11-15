@@ -12,9 +12,11 @@ public class ViewTemplatesController extends Controller {
 
     private final ViewTemplatesView view;
     private final Tricount tricount;
+
     public Tricount getTricount() {
         return tricount;
     }
+
     public ViewTemplatesController(Tricount tricount){
         this.tricount = tricount;
         view = new ViewTemplatesView(this);
@@ -28,6 +30,10 @@ public class ViewTemplatesController extends Controller {
     }
     public List<Template> getTemplates(){
         return Template.getAll();
+    }
+
+    public void editTemplate(Template template){
+        navigateTo(new AddTemplateController(null, getTricount().getId(),template));
     }
 
 }
