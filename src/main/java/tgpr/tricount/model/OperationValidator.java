@@ -27,7 +27,9 @@ public abstract class OperationValidator {
     public static Error isValidAmount(String amount) {
         if(amount == null || amount.isBlank())
             return new Error("amount is required", Operation.Fields.Amount);
-        if(!Pattern.matches("-?\\d*(.\\d*)?", amount))
+        if(!Pattern.matches("-?\\d*(,\\d*)?", amount))
+            return new Error("invalid amount", Operation.Fields.Amount);
+        if(!Pattern.matches("^[0-9]\\d*(,\\d*)?$", amount))
             return new Error("amount must be positive", Operation.Fields.Amount);
         return Error.NOERROR;
     }

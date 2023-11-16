@@ -71,7 +71,6 @@ public class EditOperationView extends DialogWindow {
                 .setForegroundColor(TextColor.ANSI.RED);
         new Label(("Amount:")).addTo(panel);
         txtAmount = new TextBox().sizeTo(10).addTo(panel)
-                .setValidationPattern(Pattern.compile("-?\\d*(,\\d*)?"))
                 .setTextChangeListener((txt, byUser) -> validate());
         panel.addEmpty();
         errAmount.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
@@ -104,20 +103,17 @@ public class EditOperationView extends DialogWindow {
         panel.addEmpty();
 
         new Label("For whom: \n(weight: ←/→ or -/+)").addTo(panel);
-        List<Repartition> lstRepartitions = operation == null ? lsRepartitions() : operation.getRepartitions();
+        List<Repartition> lstRepartitions = getRepartitions();
         for (var rep : lstRepartitions) {
             cklRepartitions.addItem(rep, rep.getWeight() > 0);
 
         }
-        
         cklRepartitions.addListener((idx, isChecked) -> {
-
             validate();
-
         }).addTo(panel);
         panel.addEmpty();
         errRepartitions.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
-
+        
         addKeyboardListener(
                 cklRepartitions,
                 this::handleWeightKeyStroke);
@@ -137,8 +133,10 @@ public class EditOperationView extends DialogWindow {
                 changement = true;
             }
             if (character == '-') {
-                --weight;
-                changement = true;
+                if(weight > 0) {
+                    --weight;
+                    changement = true;
+                }
             }
         } else {
             if (type == KeyType.ArrowRight) {
@@ -146,8 +144,10 @@ public class EditOperationView extends DialogWindow {
                 changement = true;
             }
             if (type == KeyType.ArrowLeft) {
-                --weight;
-                changement = true;
+                if(weight > 0) {
+                    --weight;
+                    changement = true;
+                }
             }
         }
         if (changement) {
@@ -156,10 +156,28 @@ public class EditOperationView extends DialogWindow {
         }
         return true;
     }
-    public void decocheCase(ComboBox<Repartition> cboR, List<Repartition> lsR){
+            //récupérer la liste de répartions que ce soit pour une nouvelle opération ou bien pour une opération existante
+    public List<Repartition> getRepartitions() {
+        List<Repartition> getParticipantRep = new ArrayList<>();
+        for (User participant : tricount.getParticipants()) {
+            if (operation != null) {
+                int i = 0;
+                while (i < operation.getRepartitions().size() && !participant.equals(operation.getRepartitions()[i].getUser()))
+                    ++i;
+                if (i < operation.getRepartitions().size()) {
+                    Repartition rep = new Repartition(operation.getId(), participant.getId(), operation.getRepartitions()[i].getWeight());
+                    getParticipantRep.add(rep);
+                } else {
+                    Repartition rep = new Repartition(operation.getId(), participant.getId(), 0);
+                    getParticipantRep.add(rep);
+                }
+            } else {
+                Repartition repartition = new Repartition(0, participant.getId(), 1);
+                getParticipantRep.add(repartition);
 
-    // Met à jour les données de la vue
-
+            }
+        }
+        return getParticipantRep;
     }
 
     private Panel createButtonsPanel() {
@@ -183,12 +201,9 @@ public class EditOperationView extends DialogWindow {
     }
 
     private void refresh() {
-
-
-
     }
 
-    // Définis les champs de texte avec les données de l'opération concernée.
+        // Définis les champs de texte avec les données de l'opération concernée.
     private void populateFields() {
         if (operation != null) {
             txtTitle.setText(operation.getTitle());
@@ -238,8 +253,6 @@ public class EditOperationView extends DialogWindow {
                 cboUsers.getSelectedItem().getFullName(),
                 cklRepartitions.getCheckedItems(),
                 operationId);
-
-
     }
 
     private void applyTemplate() {
@@ -272,19 +285,6 @@ public class EditOperationView extends DialogWindow {
         btnAddUpdate.setEnabled(errors.isEmpty());
 
     }
-
-    public List<Repartition> lsRepartitions() {
-        List<Repartition> lsRepartitions = new ArrayList<>();
-        for (User participant : tricount.getParticipants()
-        ) {
-            Repartition repartition = new Repartition(0, participant.getId(), 1);
-            lsRepartitions.add(repartition);
-
-        }
-        return lsRepartitions;
-
-    }
-
     public List<Template> templates() {
         List<Template> ls = new ArrayList<>();
         ls.add(Template.DUMMY);
