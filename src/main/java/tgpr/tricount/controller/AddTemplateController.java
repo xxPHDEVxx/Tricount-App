@@ -25,6 +25,8 @@ public class AddTemplateController extends Controller {
     public  Error isValidTitle(String title) {
         if(title == null || title.isBlank())
             return new Error("Title required", Template.Fields.Title);
+        if(Template.getByTitle(tricountId, title) != null)
+            return new Error("not available", Template.Fields.Title);
         if(!Pattern.matches("^[A-Za-z0-9\\s]{3,256}", title))
             return new Error("minimum 3 chars", Template.Fields.Title);
 

@@ -87,8 +87,6 @@ public class DisplayOperationView extends DialogWindow {
 
         refresh();
     }
-
-
     private Panel createButtonPanel() {
         var panel = new Panel()
                 .setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
@@ -106,7 +104,7 @@ public class DisplayOperationView extends DialogWindow {
         controller.update();
     }
 
-    private void down() {
+    private void up() {
         List<Operation> operations = operation.getTricount().getOperations();
         int i = 0;
         while (i < operations.size() && !operations[i].equals(operation))
@@ -115,10 +113,10 @@ public class DisplayOperationView extends DialogWindow {
             this.operation = operations[i + 1];
             refresh();
         }if(i == operations.size() - 1)
-            btnUp.takeFocus();
+            btnDown.takeFocus();
     }
 
-    private void up() {
+    private void down() {
         List<Operation> operations = operation.getTricount().getOperations();
         int i = 0;
         while (i < operations.size() && !operations[i].equals(operation))
@@ -127,11 +125,9 @@ public class DisplayOperationView extends DialogWindow {
             this.operation = operations[i - 1];
             refresh();
         }if(i == 0)
-            btnDown.takeFocus();
+            btnUp.takeFocus();
 
     }
-
-
     public void refresh() {
         if (operation != null) {
             lblTitle.setText(operation.getTitle());
