@@ -8,6 +8,7 @@ import tgpr.tricount.model.*;
 import tgpr.tricount.view.EditTricountView;
 import tgpr.tricount.view.ViewTemplatesView;
 import tgpr.tricount.controller.ListTricountsController;
+import tgpr.tricount.view.ViewTricountView;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -32,7 +33,7 @@ public class EditTricountController extends Controller {
     }
 
     public void save(String title, String description, List<User> nvParticipants) {
-        var errors = validate(title, description);
+        var errors = validate(title, description, idTricount);
         if (errors.isEmpty()) {
             // rajouter l'user id de l'utilisateur connecté
             tricount = new Tricount( title, description, Security.getLoggedUserId());
@@ -52,7 +53,7 @@ public class EditTricountController extends Controller {
        } else
             showErrors(errors);
     }
-    public ErrorList validate(String title, String description) {
+    public ErrorList validate(String title, String description, int idTricount) {
         var errors = new ErrorList();
 
         if (isNew) {
@@ -62,7 +63,7 @@ public class EditTricountController extends Controller {
 
 
         var tric = new Tricount(title, description, Security.getLoggedUserId());
-        errors.addAll(TricountValidator.validate(tric));
+        errors.addAll(TricountValidator.validate(tric, idTricount));
 
         return errors;
     }
