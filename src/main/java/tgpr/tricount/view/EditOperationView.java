@@ -105,19 +105,16 @@ public class EditOperationView extends DialogWindow {
         panel.addEmpty();
 
         new Label("For whom: \n(weight: ←/→ or -/+)").addTo(panel);
-        for (var rep : lsRepartitions()) {
+        List<Repartition> lstRepartitions = operation == null ? lsRepartitions() : operation.getRepartitions();
+        for (var rep : lstRepartitions) {
             cklRepartitions.addItem(rep, rep.getWeight() > 0);
-            cklRepartitions.setChecked(rep, true);
+
         }
+        
         cklRepartitions.addListener((idx, isChecked) -> {
-            Repartition rep = cklRepartitions.getItemAt(idx);
-            if(isChecked && rep.getWeight() == 0) {
-                cklRepartitions.setChecked(rep, false);
-
-
-            }
 
             validate();
+
         }).addTo(panel);
         panel.addEmpty();
         errRepartitions.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
@@ -195,6 +192,8 @@ public class EditOperationView extends DialogWindow {
     }
 
     private void refresh() {
+
+
 
     }
 
