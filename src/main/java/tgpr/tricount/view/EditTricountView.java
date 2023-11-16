@@ -62,7 +62,6 @@ public class EditTricountView extends DialogWindow {
         root.addEmpty();
         createButtonsPanel().addTo(root);
 
-
         refresh();
     }
 
@@ -168,6 +167,7 @@ public class EditTricountView extends DialogWindow {
 
     private void delete() {
         controller.delete();
+
     }
 
     private void save() {
@@ -211,7 +211,8 @@ public class EditTricountView extends DialogWindow {
     private void validate() {
         var errors = controller.validate(
                 txtTitle.getText(),
-                txtDescription.getText()
+                txtDescription.getText(),
+                tricount.getId()
 
         );
 

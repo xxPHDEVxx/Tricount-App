@@ -25,12 +25,16 @@ public abstract class TricountValidator {
     }
 
 
-    public static List<Error> validate(Tricount tricount) {
+    public static List<Error> validate(Tricount tricount, int idTricount) {
         var errors = new ErrorList();
-
         // field validations
         errors.add(isValidTitle(tricount.getTitle()));
         errors.add(isValidDescription(tricount.getDescription()));
+
+        Tricount existed  =Tricount.getByTitleAndUser(tricount.getTitle(), User.getByKey(tricount.getCreatorId()));
+       if ( existed != null && existed.getId() != idTricount) {
+           errors.add(new Error("already exists", Tricount.Fields.Title));
+       }
 
 
         return errors;
