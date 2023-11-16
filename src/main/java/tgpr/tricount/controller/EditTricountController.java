@@ -77,6 +77,6 @@ public class EditTricountController extends Controller {
         }
     }
     public void viewTemplates(){
-        navigateTo(new ViewTemplatesController(tricount));
+        //navigateTo(new ViewTemplatesController(tricount,));
     }
 }

@@ -61,4 +61,5 @@ public class AddTemplateController extends Controller {
     public Window getView() {
         return new AddTemplateView(this,template);
     }
+
 }
