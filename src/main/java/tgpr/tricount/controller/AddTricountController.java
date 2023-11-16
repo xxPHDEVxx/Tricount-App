@@ -20,7 +20,9 @@ public class AddTricountController extends Controller {
     }
 
     public void createTricount(Tricount tricount) {
-        tricount.save();
+        int id = tricount.save().getId();
+        Subscription sub = new Subscription(id, tricount.getCreatorId());
+        sub.save();
         view.close();
         Controller.navigateTo(new EditTricountController(tricount, listTricountController));
     }
