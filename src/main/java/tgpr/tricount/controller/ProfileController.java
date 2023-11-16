@@ -26,6 +26,6 @@ public class ProfileController extends Controller {
         navigateTo(new EditProfileController(user));
     }
     public void changePasswrd() {
-        //ChangePasswordController(user);
+        navigateTo(new ChangePasswordController());
     }
 }
