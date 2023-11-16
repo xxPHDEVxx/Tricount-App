@@ -7,6 +7,7 @@ import tgpr.framework.Tools;
 import tgpr.tricount.model.*;
 import tgpr.tricount.view.EditTricountView;
 import tgpr.tricount.view.ViewTemplatesView;
+import tgpr.tricount.controller.ListTricountsController;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -18,11 +19,14 @@ public class EditTricountController extends Controller {
     private Integer idTricount;
     private LocalDateTime createdAt;
     private final boolean isNew;
+    public ListTricountsController listTricountController;
 
-    public EditTricountController(Tricount tricount){
+    public EditTricountController(Tricount tricount, ListTricountsController listTricountController){
         this.tricount = tricount;
         this.idTricount = tricount.getId();
         this.createdAt = tricount.getCreatedAt();
+        this.listTricountController=listTricountController;
+
         isNew = tricount == null;
         view = new EditTricountView(this, tricount);
     }
@@ -41,6 +45,8 @@ public class EditTricountController extends Controller {
                 sub.save();
             }
 
+            this.listTricountController.fetchTricounts();
+            this.listTricountController.reloadData("");
             view.close();
 
        } else
@@ -72,6 +78,8 @@ public class EditTricountController extends Controller {
                 "Do you confirm ! ", "Delete tricount")) {
             if (Security.isAdmin() || Security.getLoggedUserId() == tricount.getCreatorId()) {
                 tricount.delete();
+                this.listTricountController.fetchTricounts();
+                this.listTricountController.reloadData("");
                 view.close();
             }
         }

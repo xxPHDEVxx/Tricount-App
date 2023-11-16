@@ -23,7 +23,7 @@ public class TricountApp {
             Tricount tricount = Tricount.getByKey(4);
             User Xavier = User.getByFullName("Xavier");
 
-            Model.seedData(TricountApp.DATABASE_SCRIPT_FILE);// reset la database (pour les tests)
+            //Model.seedData(TricountApp.DATABASE_SCRIPT_FILE);// reset la database (pour les tests)
             Controller.navigateTo(new LoginController());
         }
     }

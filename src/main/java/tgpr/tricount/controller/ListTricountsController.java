@@ -45,10 +45,10 @@ public class ListTricountsController extends Controller {
         System.exit(0);
     }
     public void openTricount(Tricount tricount) {
-        navigateTo(new ViewTricountController(tricount));
+        navigateTo(new ViewTricountController(tricount, this));
     }
     public void addTricount() {
-        navigateTo(new AddTricountController());
+        navigateTo(new AddTricountController(this));
     }
     @Override
     public Window getView() {

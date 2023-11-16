@@ -9,15 +9,20 @@ import tgpr.tricount.view.AddTricountView;
 public class AddTricountController extends Controller {
 
     private final AddTricountView view = new AddTricountView(this);
+    public ListTricountsController listTricountController ;
     @Override
     public Window getView() {
         return view;
     }
 
+    public AddTricountController(ListTricountsController listTricountController){
+        this.listTricountController=listTricountController;
+    }
+
     public void createTricount(Tricount tricount) {
         tricount.save();
         view.close();
-        Controller.navigateTo(new EditTricountController(tricount));
+        Controller.navigateTo(new EditTricountController(tricount, listTricountController));
     }
 
     public ErrorList validate(String title, String description) {

@@ -48,6 +48,7 @@ public class ListTricountsView extends BasicWindow {
 
         GridLayout gridTricount = new GridLayout(3);
         this.tricountContainer = new Panel(gridTricount).setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
+        this.paginator = new Paginator(this, 12,this::pageChanged);
         loadTricountContainer(0, listTricounts);
         //this.tricountContainer.withBorder(Borders.singleLine());
         mainPanel.addComponent(this.tricountContainer);
@@ -56,8 +57,8 @@ public class ListTricountsView extends BasicWindow {
         Panel bottom = new Panel().setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
         bottom.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
         Button newButton = new Button("Create a new Tricount", () -> controller.addTricount()).addTo(bottom); //ajouter action sur le button
-        this.paginator = new Paginator(this, 12,this::pageChanged);
-        this.paginator.setCount(this.listTricounts.size());
+
+        //this.paginator.setCount(this.listTricounts.size());
         //this.paginator.addTo(bottom).setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.End));
         bottom.addComponent(this.paginator.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.End)));
         mainPanel.addComponent(bottom);
@@ -110,6 +111,8 @@ public class ListTricountsView extends BasicWindow {
     }
     public void loadTricountContainer(int startId, List<Tricount> listTricountsDisp){
         this.listTricounts = listTricountsDisp;
+        this.paginator.setCount(this.listTricounts.size());
+        menuFile.takeFocus();
         this.tricountContainer.removeAllComponents();
         for (int i = startId; i < Math.min(startId + 12, listTricountsDisp.size()); i++) {
             this.tricountContainer.addComponent(cardTricount(listTricountsDisp[i]));
