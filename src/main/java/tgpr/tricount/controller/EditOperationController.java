@@ -42,27 +42,40 @@ public class EditOperationController extends Controller {
     }
 
 
-    public void save(String title, String amount, String date, String user, List<Repartition> repartitions) {
+    public void save(String title, String amount, String date, String user, List<Repartition> repartitions, int id) {
         var errors = validate(title, amount, date, repartitions);
         if (errors.isEmpty()) {
             LocalDateTime createdAt = LocalDateTime.now();
-            operation = new Operation(title, tricount.getId(), Double.parseDouble(amount), date.toDate(), User.getByFullName(user).getId(), createdAt);
+            if (isNew) {
+                operation = new Operation(title, tricount.getId(), Double.parseDouble(amount),
+                        date.toDate(), User.getByFullName(user).getId(), createdAt);
+            } else {
+                operation.setTitle(title);
+                operation.setAmount(Double.parseDouble(amount));
+                operation.setOperationDate(date.toDate());
+                operation.setInitiatorId(User.getByFullName(user).getId());
+                operation.setCreatedAt(createdAt);
+            }
+
+            // Enregistrez l'opération
             Operation saved = operation.save();
+
+            // Enregistrez les répartitions associées
             for (var rep : repartitions) {
                 Repartition repartition = new Repartition(saved.getId(), rep.getUserId(), rep.getWeight());
                 repartition.save();
             }
-            reloadData();
+
             view.close();
-        } else
+        } else {
             showErrors(errors);
+        }
     }
 
     // Affiche un message de confirmation à l'utilisateur avant de supprimer  l'operation.
     public void delete(){
         if (askConfirmation("Voulez-vous vraiment supprimer cette opération ? ","Confirmation")){
             operation.delete();
-            operation = null;
             view.close();
         }
     }
@@ -94,10 +107,5 @@ public class EditOperationController extends Controller {
             showError(OperationValidator.isValideRepartitions(repartitions));
 
 
-    }
-
-    // Gère la mise à jour des données
-    public void reloadData(){
-        view.reloadData();
     }
 }

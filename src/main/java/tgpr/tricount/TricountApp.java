@@ -3,14 +3,12 @@ package tgpr.tricount;
 import tgpr.framework.Controller;
 import tgpr.framework.Model;
 
-import tgpr.tricount.controller.DisplayOperationController;
-import tgpr.tricount.controller.EditOperationController;
-import tgpr.tricount.controller.LoginController;
-import tgpr.tricount.controller.ViewTricountController;
+import tgpr.tricount.controller.*;
 import tgpr.tricount.model.Operation;
 import tgpr.tricount.model.Tricount;
 import tgpr.tricount.model.Security;
 import tgpr.tricount.model.User;
+import tgpr.tricount.view.ViewTemplatesView;
 
 
 public class TricountApp {
@@ -25,7 +23,7 @@ public class TricountApp {
             Tricount tricount = Tricount.getByKey(4);
             User Xavier = User.getByFullName("Xavier");
 
-            Model.seedData(TricountApp.DATABASE_SCRIPT_FILE);// reset la database (pour les tests)
+            //Model.seedData(TricountApp.DATABASE_SCRIPT_FILE);// reset la database (pour les tests)
             Controller.navigateTo(new LoginController());
         }
     }

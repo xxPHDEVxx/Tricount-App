@@ -22,8 +22,8 @@ public class ViewTemplatesView extends DialogWindow {
     private final ViewTemplatesController controller;
     private final ObjectTable<Template> tmpTable;
     private final Label errRepartitions = new Label("");
-
     private final CheckBoxList<TemplateItem> tmpItem = new CheckBoxList<>();
+
 
     public ViewTemplatesView(ViewTemplatesController controller) {
         super("Tricount Repartition Templates");
@@ -69,7 +69,7 @@ public class ViewTemplatesView extends DialogWindow {
         Panel panelButtons = new Panel().asGridPanel(5);
         Button btnNew = new Button("New",this::addTemplate).addTo(panelButtons);
         Button btnEditTitle = new Button("Edit Title",this::editTemplate).addTo(panelButtons);
-        Button btnDelete = new Button("Delete").addTo(panelButtons);
+        Button btnDelete = new Button("Delete",this::delete).addTo(panelButtons);
         Button btnSave = new Button("Save").addTo(panelButtons);
         new Button("Close", this::close).addTo(panelButtons);
 
@@ -135,6 +135,9 @@ public class ViewTemplatesView extends DialogWindow {
     public void editTemplate(){
        controller.editTemplate(tmpTable.getSelected());
 
+    }
+    public void delete(){
+        controller.delete();
     }
 
 }

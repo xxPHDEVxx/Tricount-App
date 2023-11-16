@@ -22,15 +22,18 @@ import static tgpr.framework.Model.queryList;
 
 public class ListTricountsController extends Controller {
     private final ListTricountsView view;
-    private List<Tricount> listTricounts = new ArrayList<>();;
+    private List<Tricount> listTricounts = new ArrayList<>();
+    private List<Tricount> listTricountsDisplayed = new ArrayList<>();
+
+
 
     public ListTricountsController() {
-        fetchTricounts("");
-        view = new ListTricountsView(this, listTricounts);
+        this.listTricountsDisplayed = fetchTricounts();
+        view = new ListTricountsView(this, listTricountsDisplayed);
     }
-    public void fetchTricounts(String filtre){
-        if (filtre.isEmpty())
-            listTricounts=Tricount.getAll();
+    public List<Tricount> fetchTricounts(){
+        listTricounts=Tricount.getAll();
+        return listTricounts;
     }
 
     public void logout() {
@@ -42,10 +45,10 @@ public class ListTricountsController extends Controller {
         System.exit(0);
     }
     public void openTricount(Tricount tricount) {
-        navigateTo(new ViewTricountController(tricount));
+        navigateTo(new ViewTricountController(tricount, this));
     }
     public void addTricount() {
-        navigateTo(new AddTricountController());
+        navigateTo(new AddTricountController(this));
     }
     @Override
     public Window getView() {
@@ -64,6 +67,13 @@ public class ListTricountsController extends Controller {
                         || tricount.getCreator().getFullName().contains(txt)
                         ).collect(Collectors.toList());
         return triedLst;
+    }
+    public void reloadData(String txt) {
+        this.listTricountsDisplayed=new ArrayList<>();
+        for (Tricount tricount : getSearch(txt)){
+            listTricountsDisplayed.add(tricount);
+        }
+        view.loadTricountContainer(0, listTricountsDisplayed);
     }
 
 }

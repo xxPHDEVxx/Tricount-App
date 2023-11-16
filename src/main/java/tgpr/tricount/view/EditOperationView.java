@@ -4,7 +4,6 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
-import com.googlecode.lanterna.gui2.dialogs.MessageDialogButton;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import tgpr.framework.Margin;
@@ -100,7 +99,7 @@ public class EditOperationView extends DialogWindow {
         cboTemplates.setSelectedItem(Template.DUMMY);
         cboTemplates.addListener((selectedIndex, previousSelection, changedByUserInteraction) -> validate());
 
-        btnApplay = new Button("Apply", this::applayTemplate).addTo(templatePanel).setEnabled(false);
+        btnApplay = new Button("Apply", this::applyTemplate).addTo(templatePanel).setEnabled(false);
         panel.addEmpty();
         panel.addEmpty();
 
@@ -161,14 +160,6 @@ public class EditOperationView extends DialogWindow {
 
     // Met à jour les données de la vue
 
-    }
-    public void reloadData() {
-        if (controller.getOperation() != null) {
-            operation = controller.getOperation();
-            tricount = controller.getTricount();
-        }
-        populateFields();
-        updateRepartitionsView();
     }
 
     private Panel createButtonsPanel() {
@@ -238,17 +229,20 @@ public class EditOperationView extends DialogWindow {
     }
 
     private void add() {
+        int operationId = (operation != null) ? operation.getId() : 0;
+        String amountText = txtAmount.getText().replace(',', '.');
         controller.save(
                 txtTitle.getText(),
-                txtAmount.getText(),
+                amountText,
                 txtDate.getText(),
                 cboUsers.getSelectedItem().getFullName(),
-                cklRepartitions.getCheckedItems()
-        );
+                cklRepartitions.getCheckedItems(),
+                operationId);
+
 
     }
 
-    private void applayTemplate() {
+    private void applyTemplate() {
         Template template = cboTemplates.getSelectedItem();
         List<TemplateItem> templateItems = template.getTemplateItems();
         for (var rep : cklRepartitions.getItems()) {
