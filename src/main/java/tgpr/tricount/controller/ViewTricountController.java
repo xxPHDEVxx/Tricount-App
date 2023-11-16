@@ -62,7 +62,7 @@ public class ViewTricountController extends Controller {
     }
 
     public void newExpense() {
-        //Controller.navigateTo(new AddOpperationView(AddOpperationController, tricount));
+        Controller.navigateTo(new EditOperationController(tricount));
     }
 
     public void balance() {
