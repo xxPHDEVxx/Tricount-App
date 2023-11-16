@@ -156,6 +156,7 @@ public class EditTricountView extends DialogWindow {
 
     }
     private void refresh() {
+        tricount.reload();
         if (tricount != null) {
             txtTitle.setText(tricount.getTitle());
             txtDescription.setText(Tools.ifNull(tricount.getDescription(), ""));
@@ -175,7 +176,7 @@ public class EditTricountView extends DialogWindow {
                 txtTitle.getText(),
                 txtDescription.getText(),
                 lstNvParticipants);
-
+        refresh();
 
     }
 
