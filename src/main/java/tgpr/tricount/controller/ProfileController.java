@@ -2,14 +2,14 @@ package tgpr.tricount.controller;
 
 import com.googlecode.lanterna.gui2.Window;
 import tgpr.framework.Controller;
+import tgpr.tricount.model.Security;
 import tgpr.tricount.model.User;
 import tgpr.tricount.view.ProfileView;
 
 public class ProfileController extends Controller {
     private final ProfileView view;
-    private final User user;
-    public ProfileController(User user) {
-        this.user = user;
+    private final User user = Security.getLoggedUser();
+    public ProfileController() {
         view = new ProfileView(this);
     }
     @Override

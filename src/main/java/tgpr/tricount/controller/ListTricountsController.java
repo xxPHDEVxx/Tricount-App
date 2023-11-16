@@ -41,6 +41,10 @@ public class ListTricountsController extends Controller {
         navigateTo(new LoginController());
     }
 
+    public void profile() {
+        navigateTo(new ProfileController());
+    }
+
     public void exit() {
         System.exit(0);
     }
@@ -54,7 +58,7 @@ public class ListTricountsController extends Controller {
     public Window getView() {
         return view;
     }
-    /*public List<Tricount> getSearch(String txt) {
+    /*public List<Tricout> getSearch(String txt) {
         Tricount.getByTitleAndUser("Van", User.getByFullName("Xavier"));
         return queryList(Tricount.class, "select * from users join tricounts on users.id=tricounts.id where title like ':%txt%' ",
                 new Params("txt", txt));

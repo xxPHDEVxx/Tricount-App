@@ -43,7 +43,7 @@ public class ProfileView extends DialogWindow {
 
         var buttons = new Panel().addTo(root).setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
         buttons.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
-        btnEditProfile = new Button("Edite Profile", controller::editProfile).addTo(buttons);
+        btnEditProfile = new Button("Edit Profile", controller::editProfile).addTo(buttons);
         btnChangePsswrd = new Button("Change Password", controller::changePasswrd).addTo(buttons);
         new Button("Close", this::close).addTo(buttons);
 
