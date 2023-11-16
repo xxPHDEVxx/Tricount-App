@@ -42,13 +42,13 @@ public class ListTricountsView extends BasicWindow {
         TextBox textBoxFiltre = new TextBox();
         filtre.addComponent(labelFiltre);
         filtre.addComponent(textBoxFiltre);
-        textBoxFiltre.takeFocus().setTextChangeListener((txt, byUser) -> reloadData(txt));                       //ajout listener
+        textBoxFiltre.takeFocus().setTextChangeListener((txt, byUser) -> this.controller.reloadData(txt));                       //ajout listener
         mainPanel.addComponent(filtre);
 
 
         GridLayout gridTricount = new GridLayout(3);
         this.tricountContainer = new Panel(gridTricount).setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
-        loadTricountContainer(0);
+        loadTricountContainer(0, listTricounts);
         //this.tricountContainer.withBorder(Borders.singleLine());
         mainPanel.addComponent(this.tricountContainer);
 
@@ -74,13 +74,7 @@ public class ListTricountsView extends BasicWindow {
         }
         loadTricountContainer(0);
     }*/
-    private void reloadData(String txt) {
-        this.listTricounts=new ArrayList<>();
-        for (Tricount tricount : this.controller.getSearch(txt)){
-            listTricounts.add(tricount);
-        }
-        loadTricountContainer(0);
-    }
+
 
     private Border createCell (int i){
         return new Panel().addComponent(new Label(String.valueOf(i))).withBorder(Borders.singleLine());
@@ -112,12 +106,13 @@ public class ListTricountsView extends BasicWindow {
         return menuBar;
     }
     private void pageChanged(int page){
-        loadTricountContainer(page*12);
+        loadTricountContainer(page*12, this.listTricounts);
     }
-    private void loadTricountContainer(int startId){
+    public void loadTricountContainer(int startId, List<Tricount> listTricountsDisp){
+        this.listTricounts = listTricountsDisp;
         this.tricountContainer.removeAllComponents();
-        for (int i = startId; i < Math.min(startId + 12, listTricounts.size()); i++) {
-            this.tricountContainer.addComponent(cardTricount(this.listTricounts[i]));
+        for (int i = startId; i < Math.min(startId + 12, listTricountsDisp.size()); i++) {
+            this.tricountContainer.addComponent(cardTricount(listTricountsDisp[i]));
         }
     }
 }
