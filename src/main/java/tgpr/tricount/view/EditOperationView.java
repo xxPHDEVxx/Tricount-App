@@ -230,13 +230,16 @@ public class EditOperationView extends DialogWindow {
     }
 
     private void add() {
+        int operationId = (operation != null) ? operation.getId() : 0;
+        String amountText = txtAmount.getText().replace(',', '.');
         controller.save(
                 txtTitle.getText(),
-                txtAmount.getText(),
+                amountText,
                 txtDate.getText(),
                 cboUsers.getSelectedItem().getFullName(),
-                cklRepartitions.getCheckedItems()
-        );
+                cklRepartitions.getCheckedItems(),
+                operationId);
+
 
     }
 
