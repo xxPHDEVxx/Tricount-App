@@ -7,6 +7,7 @@ import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import tgpr.framework.ColumnSpec;
+import tgpr.framework.Controller;
 import tgpr.framework.ObjectTable;
 import tgpr.tricount.controller.AddTemplateController;
 import tgpr.tricount.controller.ViewTemplatesController;
@@ -46,6 +47,7 @@ public class ViewTemplatesView extends DialogWindow {
         panelGrid.addTo(root);
         createButtonsPanel().addTo(root);
         setComponent(root);
+        isEmpty();
         refresh();
     }
 
@@ -55,11 +57,10 @@ public class ViewTemplatesView extends DialogWindow {
                 new ColumnSpec<>("Templates:", Template::getTitle)
         ).addTo(panel);
 
+
         Label labelRepartitions = new Label("Repartition:").addTo(panel);
         labelRepartitions.addStyle(SGR.BOLD).addStyle(SGR.UNDERLINE);
-        tmpTable.addSelectionChangeListener(listener).addTo(panel);
 
-        tmpTable.getPosition();
 
         for (var temp : TemplateItem.getAll()) {
             tmpItem.addItem(temp, temp.getWeight() > 0);
@@ -68,6 +69,7 @@ public class ViewTemplatesView extends DialogWindow {
         tmpItem.addListener((idx, isChecked) -> {
 
         }).addTo(panel);
+
 
         errRepartitions.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
 
@@ -144,5 +146,10 @@ public class ViewTemplatesView extends DialogWindow {
     }
     public void delete(){
         controller.delete(tmpTable.getSelected());
+    }
+    public void isEmpty(){
+        if (template==null){
+            Controller.showError("Pas encore de templates!");
+        }
     }
 }
