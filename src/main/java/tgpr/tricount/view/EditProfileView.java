@@ -6,6 +6,7 @@ import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import tgpr.tricount.controller.EditProfileController;
 import tgpr.tricount.model.Operation;
+import tgpr.tricount.model.Security;
 import tgpr.tricount.model.User;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public class EditProfileView extends DialogWindow {
 
         new Label("Full Name:").addTo(root);
         txtFullname = new TextBox(new TerminalSize(25, 1)).addTo(root)
-                .setValidationPattern(Pattern.compile("^[A-Za-zÀ-ÖØ-öø-ÿ\\s]+$"))
+                //.setValidationPattern(Pattern.compile("^[A-Za-zÀ-ÖØ-öø-ÿ\\s]+$"))
                 .setTextChangeListener((txt, byUser) -> validate());
         new EmptySpace().addTo(root);
         errFullname.addTo(root)
@@ -50,7 +51,7 @@ public class EditProfileView extends DialogWindow {
 
         new Label("IBAN:").addTo(root);
         txtIBAN = new TextBox(new TerminalSize(20, 1)).addTo(root)
-                .setValidationPattern(Pattern.compile("^[A-Z0-9\\s]+$"))
+                //.setValidationPattern(Pattern.compile("^[A-Z0-9\\s]+$"))
                 .setTextChangeListener((txt, byUser) -> validate());
         new EmptySpace().addTo(root);
         errIBAN.addTo(root)
@@ -62,10 +63,11 @@ public class EditProfileView extends DialogWindow {
 
         var buttons = new Panel().addTo(vert).setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
         buttons.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Center));
-        btnSave = new Button("Save", this::save).addTo(buttons);
+        btnSave = new Button("Save", this::save).addTo(buttons).setEnabled(false);
         new Button("Cancel", this::close).addTo(buttons);
 
         setComponent(vert);
+        populateFields();
     }
 
     private void save(){
@@ -81,5 +83,13 @@ public class EditProfileView extends DialogWindow {
         errMail.setText(errors.getFirstErrorMessage(User.Fields.Mail));
         errFullname.setText(errors.getFirstErrorMessage(User.Fields.FullName));
         errIBAN.setText(errors.getFirstErrorMessage(User.Fields.Iban));
+        btnSave.setEnabled(errors.isEmpty());
+    }
+
+    private void populateFields(){
+        txtMail.setText(controller.getMail());
+        txtFullname.setText(controller.getFullName());
+        if (controller.getIban() != null)
+            txtIBAN.setText(controller.getIban());
     }
 }

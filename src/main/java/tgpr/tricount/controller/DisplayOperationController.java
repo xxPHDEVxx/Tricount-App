@@ -28,4 +28,11 @@ public class DisplayOperationController extends Controller {
     public List<Repartition> getRepartitions(){
         return operation.getRepartitions();
     }
+
+    // affiche la fenêtre d'édition de l'opération.
+    public void update(){
+        navigateTo(new EditOperationController(operation.getTricount(), operation));
+        view.refresh();
+        view.close();// permet de fermer fenetre après une supression ( solution à un bug temporaire).
+    }
 }

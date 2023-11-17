@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class DisplayOperationView extends DialogWindow {
-    private final DisplayOperationController controller;
-    private final Operation operation;
+    private  DisplayOperationController controller;
+    private Operation operation;
     private final Label lblTitle;
     private final Label lblAmount;
     private final Label lblDate;
@@ -64,58 +64,44 @@ public class DisplayOperationView extends DialogWindow {
         fields.addEmpty();
 
         fields.addComponent(new Label("For whom:"));
-
         repartitionTable = new ObjectTable<>(
-                new ColumnSpec<>("Participant  ", r -> r.getUser().getFullName()),
-                new ColumnSpec<>("Weight   ", Repartition::getWeight).alignRight(),
-                new ColumnSpec<>("Amount", repartition -> {
-                    int weight = repartition.getWeight();
-                    double operationAmount = operation.getAmount();
-                    int sommeWeight = 0;
-                    for (var rep : operation.getRepartitions()) {
-                        sommeWeight += rep.getWeight();
-                    }
-                    double calculedAmount = (weight * operationAmount) / sommeWeight;
-                    DecimalFormat decimalFormat = new DecimalFormat("#0.00");
-                    return decimalFormat.format(calculedAmount) + " €";
-                })
+                 new ColumnSpec<>("Participant  ", r -> r.getUser().getFullName()),
+                 new ColumnSpec<Repartition>("Weight", Repartition::getWeight).setWidth(9).alignRight(),
+                 new ColumnSpec<>("Amount", repartition -> {
+                     int weight = repartition.getWeight();
+                     double operationAmount = this.operation.getAmount();
+                     int sommeWeight = 0;
+                     for (var rep :  this.operation.getRepartitions()) {
+                         sommeWeight += rep.getWeight();
+                     }
+                     double calculedAmount =  (weight * operationAmount) / sommeWeight;
+                     DecimalFormat decimalFormat = new DecimalFormat("#0.00");
+                     return decimalFormat.format(calculedAmount) + " €";
+                 })
 
         ).addTo(fields);
+
 
         root.addEmpty();
         createButtonPanel().addTo(root);
 
         refresh();
     }
-
     private Panel createButtonPanel() {
         var panel = new Panel()
                 .setLayoutManager(new LinearLayout(Direction.HORIZONTAL))
                 .setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.End));
 
 
-        btnUp = new Button("Up", this::up).addTo(panel).setEnabled(false);
-        btnDown = new Button("Down", this::down).addTo(panel).setEnabled(false);
-        btnEdit = new Button("Edit", this::edit).addTo(panel).setEnabled(false);
+        btnUp = new Button("Up", this::up).addTo(panel);
+        btnDown = new Button("Down", this::down).addTo(panel);
+        btnEdit = new Button("Edit", this::edit).addTo(panel);
         new Button("Close", this::close).addTo(panel);
         return panel;
     }
 
     private void edit() {
-        Controller.navigateTo(new EditOperationController(operation.getTricount(), operation));
-    }
-
-    private void down() {
-        List<Operation> operations = operation.getTricount().getOperations();
-        int i = 0;
-        while (i < operations.size() && !operations[i].equals(operation))
-            ++i;
-        if (i < operations.size() - 1 && operations[i + 1] != null) {
-            close();
-            Controller.navigateTo(new DisplayOperationController(operations[i + 1]));
-
-        }
-
+        controller.update();
     }
 
     private void up() {
@@ -123,15 +109,26 @@ public class DisplayOperationView extends DialogWindow {
         int i = 0;
         while (i < operations.size() && !operations[i].equals(operation))
             ++i;
-
-        if (i > 0 && operations[i - 1] != null) {
-            close();
-            Controller.navigateTo(new DisplayOperationController(operations[i - 1]));
-        }
+        if (i < operations.size() - 1 && operations[i + 1] != null) {
+            this.operation = operations[i + 1];
+            refresh();
+        }if(i == operations.size() - 1)
+            btnDown.takeFocus();
     }
 
+    private void down() {
+        List<Operation> operations = operation.getTricount().getOperations();
+        int i = 0;
+        while (i < operations.size() && !operations[i].equals(operation))
+            ++i;
+        if (i > 0 && operations[i - 1] != null) {
+            this.operation = operations[i - 1];
+            refresh();
+        }if(i == 0)
+            btnUp.takeFocus();
 
-    private void refresh() {
+    }
+    public void refresh() {
         if (operation != null) {
             lblTitle.setText(operation.getTitle());
             DecimalFormat decimalFormat = new DecimalFormat("#0.00");
@@ -139,10 +136,8 @@ public class DisplayOperationView extends DialogWindow {
             lblDate.setText(operation.getOperationDate().asString());
             lblPaidBy.setText(operation.getInitiator().getFullName());
             repartitionTable.clear();
-            var repartitions = controller.getRepartitions();
+            var repartitions = operation.getRepartitions();
             repartitionTable.add(repartitions);
-            btnUp.setEnabled(true);
-            btnDown.setEnabled(true);
             btnEdit.setEnabled(true);
         }
     }

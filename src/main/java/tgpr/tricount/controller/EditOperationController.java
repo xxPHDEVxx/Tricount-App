@@ -42,25 +42,42 @@ public class EditOperationController extends Controller {
     }
 
 
-    public void save(String title, String amount, String date, String user, List<Repartition> repartitions) {
+    public void save(String title, String amount, String date, String user, List<Repartition> repartitions, int id) {
         var errors = validate(title, amount, date, repartitions);
         if (errors.isEmpty()) {
             LocalDateTime createdAt = LocalDateTime.now();
-            operation = new Operation(title, tricount.getId(), Double.parseDouble(amount), date.toDate(), User.getByFullName(user).getId(), createdAt);
+            if (isNew) {
+                operation = new Operation(title, tricount.getId(), Double.parseDouble(amount),
+                        date.toDate(), User.getByFullName(user).getId(), createdAt);
+            } else {
+                operation.setTitle(title);
+                operation.setAmount(Double.parseDouble(amount));
+                operation.setOperationDate(date.toDate());
+                operation.setInitiatorId(User.getByFullName(user).getId());
+                operation.setCreatedAt(createdAt);
+            }
+
+            // Enregistrez l'opération
             Operation saved = operation.save();
+
+            // Enregistrez les répartitions associées
             for (var rep : repartitions) {
                 Repartition repartition = new Repartition(saved.getId(), rep.getUserId(), rep.getWeight());
                 repartition.save();
             }
+
             view.close();
-        } else
+        } else {
             showErrors(errors);
+        }
     }
 
-    // Gère la supression d'une opération.
-    public void deleteOperation(Operation operation) {
-        if (operation != null)
+    // Affiche un message de confirmation à l'utilisateur avant de supprimer  l'operation.
+    public void delete(){
+        if (askConfirmation("Voulez-vous vraiment supprimer cette opération ? ","Confirmation")){
             operation.delete();
+            view.close();
+        }
     }
 
     public ErrorList validate(String title, String amount, String date, List<Repartition> repartitions) {
@@ -82,8 +99,10 @@ public class EditOperationController extends Controller {
     }
 
     public void saveRepAsTemp(List<Repartition> repartitions) {
-        if (OperationValidator.isValideRepartitions(repartitions) == Error.NOERROR)
-            navigateTo(new AddTemplateController(repartitions, tricount.getId()));
+
+        if(OperationValidator.isValideRepartitions(repartitions) == Error.NOERROR)
+            navigateTo(new AddTemplateController(repartitions, tricount.getId(),null));
+
         else
             showError(OperationValidator.isValideRepartitions(repartitions));
 

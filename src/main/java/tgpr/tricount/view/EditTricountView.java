@@ -4,15 +4,10 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import tgpr.framework.*;
 import tgpr.framework.Error;
-import tgpr.framework.ErrorList;
-import tgpr.framework.Margin;
-import tgpr.framework.Tools;
 import tgpr.tricount.controller.EditTricountController;
-import tgpr.tricount.model.Operation;
-import tgpr.tricount.model.Subscription;
-import tgpr.tricount.model.Tricount;
-import tgpr.tricount.model.User;
+import tgpr.tricount.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +22,9 @@ public class EditTricountView extends DialogWindow {
     private TextBox txtDescription;
     private final Label errTitle = new Label("");
     private final Label errDescription = new Label("");
-    private final Label errDelParticipant = new Label("");
+
+    private Button btnSave;
+    private Button btnDelete;
 
     private List<User> grpSubscribers;
     private ActionListBox lstSubscriber = new ActionListBox();
@@ -54,8 +51,7 @@ public class EditTricountView extends DialogWindow {
         }
 
         setHints(List.of(Hint.CENTERED, Hint.FIXED_SIZE));
-        setCloseWindowWithEscape(true);
-        setFixedSize(new TerminalSize(60, 20));
+        setFixedSize(new TerminalSize(60, 25));
 
 
 
@@ -66,7 +62,6 @@ public class EditTricountView extends DialogWindow {
         root.addEmpty();
         createButtonsPanel().addTo(root);
 
-
         refresh();
     }
 
@@ -75,17 +70,18 @@ public class EditTricountView extends DialogWindow {
 
         new Label("Title:").addTo(panel);
         txtTitle = new TextBox().sizeTo(19).addTo(panel)
-                .setTextChangeListener((txt, byUser) -> validate());
+                .setTextChangeListener((txt, byUser)->validate());
         ;
         panel.addEmpty();
         errTitle.addTo(panel)
                 .setForegroundColor(TextColor.ANSI.RED);
 
         new Label("Description:").addTo(panel);
-        txtDescription = new TextBox().sizeTo(25 ,9).addTo(panel)
+
+        txtDescription = new TextBox().sizeTo(30 ,10).addTo(panel)
                 .setTextChangeListener((txt, byUser) -> validate());
-        ;
         panel.addEmpty();
+
         errDescription.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
         new Label("Subscribers:").addTo(panel);
         comboBoxSub().addTo(panel);
@@ -111,9 +107,12 @@ public class EditTricountView extends DialogWindow {
     private Panel createButtonsPanel() {
         var panel = Panel.horizontalPanel().center();
 
-        new Button("Delete").addTo(panel);
-        new Button("Save", this::add).addTo(panel);
-        new Button("Templates").addTo(panel);
+
+        btnDelete = new Button("Delete", this::delete).addTo(panel);
+
+        btnSave = new Button("Save", this::save).addTo(panel);
+
+        new Button("Templates",this::viewTemplates).addTo(panel);
         new Button("Cancel", this::close).addTo(panel);
 
 
@@ -136,14 +135,17 @@ public class EditTricountView extends DialogWindow {
     private void deleteLstParticipant(User parti) {
         var errors = new ErrorList();
         if (lstDepense.contains(parti) || parti.getId() == tricount.getCreatorId()) {
-            errors.add(new Error("You may not remove this participant " +
-                    "because he is the creator or he is implied in one more expenses"));
+            errors.add(new Error("You may not remove this participant because \nhe is the creator or he is implied in one or\nmore expenses"));
         } else {
             Subscription delSub = Subscription.getByKey(tricount.getId(), parti.getId());
-            delSub.delete();
+            if (delSub != null) {
+                delSub.delete();
+            }
+
             //supprime de l'actionList
             lstSubscriber.removeItem(lstSubscriber.getSelectedIndex());
-
+            // remettre le nom dans la comboBox
+            cbAddParticipant.addItem(parti.getFullName());
         }
 
         if (!errors.isEmpty()) {
@@ -154,6 +156,7 @@ public class EditTricountView extends DialogWindow {
 
     }
     private void refresh() {
+        tricount.reload();
         if (tricount != null) {
             txtTitle.setText(tricount.getTitle());
             txtDescription.setText(Tools.ifNull(tricount.getDescription(), ""));
@@ -162,28 +165,39 @@ public class EditTricountView extends DialogWindow {
 
     }
 
-    private void refreshSub() {
-        grpSubscribers = tricount.getParticipants();
+
+    private void delete() {
+        controller.delete();
+
     }
 
-    private void add() {
+    private void save() {
         controller.save(
                 txtTitle.getText(),
                 txtDescription.getText(),
                 lstNvParticipants);
-
+        refresh();
 
     }
 
     private void addParticipant() {
+        var errors = new ErrorList();
         User selected = user.getByFullName(cbAddParticipant.getSelectedItem());
-        lstNvParticipants.add(selected);
-        lstSubscriber.addItem(selected.getFullName()
+        if (selected == null) {
+            errors.add(new Error("Please select a subscriber"));
+        } else {
+            lstNvParticipants.add(selected);
+            lstSubscriber.addItem(selected.getFullName()
 
-                , () -> deleteLstParticipant(selected));
-        cbAddParticipant.removeItem(cbAddParticipant.getSelectedItem());
-        // remettre le premier item
-        cbAddParticipant.setSelectedIndex(0);
+                    , () -> deleteLstParticipant(selected));
+            cbAddParticipant.removeItem(cbAddParticipant.getSelectedItem());
+            // remettre le premier item
+            cbAddParticipant.setSelectedIndex(0);
+        }
+
+        if(!errors.isEmpty()) {
+            controller.showErrors(errors);
+        }
 
     }
 
@@ -198,12 +212,17 @@ public class EditTricountView extends DialogWindow {
     private void validate() {
         var errors = controller.validate(
                 txtTitle.getText(),
-                txtDescription.getText()
+                txtDescription.getText(),
+                tricount.getId()
 
         );
 
         errTitle.setText(errors.getFirstErrorMessage(Tricount.Fields.Title));
         errDescription.setText(errors.getFirstErrorMessage(Tricount.Fields.Description));
-
+        btnSave.setEnabled(errors.isEmpty());
+        btnDelete.setEnabled(Security.isAdmin() || Security.getLoggedUserId() == tricount.getCreatorId());
+    }
+    public void viewTemplates(){
+        controller.viewTemplates();
     }
 }

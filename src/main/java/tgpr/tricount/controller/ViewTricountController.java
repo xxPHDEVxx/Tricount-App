@@ -12,13 +12,14 @@ import java.util.List;
 public class ViewTricountController extends Controller {
     private final ViewTricountView view;
     private Tricount tricount;
+    public ListTricountsController listTricountController ;
 
-    public ViewTricountController(Tricount tricount) {
+
+    public ViewTricountController(Tricount tricount, ListTricountsController listTricountController) {
         this.tricount = tricount;
+        this.listTricountController = listTricountController;
         view = new ViewTricountView(this, tricount);
     }
-
-
 
     @Override
     public Window getView() {
@@ -60,14 +61,14 @@ public class ViewTricountController extends Controller {
     }
 
     public void editTricount() {
-        Controller.navigateTo(new EditTricountController(tricount));
+        Controller.navigateTo(new EditTricountController(tricount, this.listTricountController));
     }
 
     public void newExpense() {
-        //Controller.navigateTo(new AddOpperationView(AddOpperationController, tricount));
+        Controller.navigateTo(new EditOperationController(tricount));
     }
 
     public void balance() {
-        //Controller.navigateTo(new ViewBalanceView(ViewBalanceController, tricount));
+        Controller.navigateTo(new ViewBalanceController(tricount));
     }
 }
