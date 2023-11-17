@@ -2,6 +2,7 @@ package tgpr.tricount.controller;
 
 import com.googlecode.lanterna.gui2.Window;
 import tgpr.framework.Controller;
+import tgpr.framework.Model;
 import tgpr.tricount.model.*;
 import tgpr.tricount.view.TestView;
 import tgpr.tricount.view.ViewTricountView;
@@ -58,17 +59,27 @@ public class ViewTricountController extends Controller {
 
     public void openOperation(Operation operation) {
         Controller.navigateTo(new DisplayOperationController(operation));
+        refresh(operation);
     }
 
     public void editTricount() {
-        Controller.navigateTo(new EditTricountController(tricount, this.listTricountController));
+        Controller.navigateTo(new EditTricountController(tricount, listTricountController));
+        refresh(tricount);
     }
 
     public void newExpense() {
         Controller.navigateTo(new EditOperationController(tricount));
+        refresh(tricount);
     }
 
     public void balance() {
         Controller.navigateTo(new ViewBalanceController(tricount));
+    }
+
+    // refresh la vue
+    public void refresh(Model model){
+        model.reload();
+        view.close();
+        navigateTo(new ViewTricountController(tricount, listTricountController));
     }
 }

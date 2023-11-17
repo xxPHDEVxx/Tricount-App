@@ -2,6 +2,7 @@ package tgpr.tricount.controller;
 
 import com.googlecode.lanterna.gui2.Window;
 import tgpr.framework.Controller;
+import tgpr.framework.Model;
 import tgpr.tricount.model.Operation;
 import tgpr.tricount.model.Repartition;
 import tgpr.tricount.view.DisplayOperationView;
@@ -29,10 +30,21 @@ public class DisplayOperationController extends Controller {
         return operation.getRepartitions();
     }
 
-    // affiche la fenêtre d'édition de l'opération.
+    // Affiche la fenêtre d'édition de l'opération et check si une supression a été faite.
     public void update(){
-        navigateTo(new EditOperationController(operation.getTricount(), operation));
-        view.refresh();
-        view.close();// permet de fermer fenetre après une supression ( solution à un bug temporaire).
+        Controller edit = new EditOperationController(operation.getTricount(), operation);
+        navigateTo(edit);
+        if (((EditOperationController) edit).isDelete()) {
+            view.close();
+            return;
+        }
+        refresh(operation);
+    }
+
+    // Raffraichis la vue
+    public void refresh(Model model){
+        model.reload();
+        view.close();
+        navigateTo(new DisplayOperationController(operation));
     }
 }

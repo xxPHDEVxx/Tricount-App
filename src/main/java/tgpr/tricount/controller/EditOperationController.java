@@ -15,6 +15,7 @@ public class EditOperationController extends Controller {
     private Operation operation;
     private Tricount tricount;
     private final boolean isNew;
+    private boolean delete;
 
     public EditOperationController(Tricount tricount) {
         this(tricount, null);
@@ -24,6 +25,7 @@ public class EditOperationController extends Controller {
         this.tricount = tricount;
         this.operation = operation;
         isNew = operation == null;
+        delete = false;
         view = new EditOperationView(this, tricount, operation);
     }
 
@@ -41,6 +43,9 @@ public class EditOperationController extends Controller {
         return tricount;
     }
 
+    public boolean isDelete() {
+        return delete;
+    }
 
     public void save(String title, String amount, String date, String user, List<Repartition> repartitions, int id) {
         var errors = validate(title, amount, date, repartitions);
@@ -76,6 +81,7 @@ public class EditOperationController extends Controller {
     public void delete(){
         if (askConfirmation("Voulez-vous vraiment supprimer cette opération ? ","Confirmation")){
             operation.delete();
+            delete = true;
             view.close();
         }
     }

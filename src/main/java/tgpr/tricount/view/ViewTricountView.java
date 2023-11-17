@@ -103,14 +103,4 @@ public class ViewTricountView extends DialogWindow {
 
         setComponent(root);
     }
-
-    // Met à jour les opérations après une modification
-    public void updateOperationsTable() {
-        List<Operation> operations = tricount.getOperations();
-        tbl.clear();
-        for (int i = operations.size(); i > 0; i--) {
-            tbl.add(operations.get(i - 1));
-        }
-        tbl.refresh();
-    }
 }

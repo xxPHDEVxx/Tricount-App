@@ -45,7 +45,7 @@ public class EditProfileController extends Controller{
     public ErrorList validate(String mail, String fullname, String iban) {
         var errors = new ErrorList();
 
-        errors.add(ProfileValidator.isValidMail(mail));
+        errors.add(ProfileValidator.isValidMail(mail, user.getId()));
         errors.add(ProfileValidator.isValidFullname(fullname));
         errors.add(ProfileValidator.isValidIban(iban));
 
