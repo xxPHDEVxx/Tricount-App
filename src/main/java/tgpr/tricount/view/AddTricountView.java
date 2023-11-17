@@ -60,7 +60,6 @@ public class AddTricountView extends DialogWindow {
         new Button("Cancel", this::close).addTo(buttons);
 
         setComponent(vert);
-        refresh();
     }
 
     private void create() {
@@ -76,5 +75,4 @@ public class AddTricountView extends DialogWindow {
         btnCreate.setEnabled(errors.isEmpty());
     }
 
-    private void refresh() {}
 }
