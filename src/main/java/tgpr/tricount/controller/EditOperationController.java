@@ -52,11 +52,11 @@ public class EditOperationController extends Controller {
         if (errors.isEmpty()) {
             LocalDateTime createdAt = LocalDateTime.now();
             if (isNew) {
-                operation = new Operation(title, tricount.getId(), Double.parseDouble(amount),
+                operation = new Operation(title, tricount.getId(), Double.parseDouble(amount.replace(',', '.')),
                         date.toDate(), User.getByFullName(user).getId(), createdAt);
             } else {
                 operation.setTitle(title);
-                operation.setAmount(Double.parseDouble(amount));
+                operation.setAmount(Double.parseDouble(amount.replace(',', '.')));
                 operation.setOperationDate(date.toDate());
                 operation.setInitiatorId(User.getByFullName(user).getId());
                 operation.setCreatedAt(createdAt);

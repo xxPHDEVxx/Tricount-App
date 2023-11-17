@@ -7,6 +7,7 @@ import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import tgpr.framework.Margin;
+import tgpr.framework.Model;
 import tgpr.tricount.controller.EditOperationController;
 import tgpr.tricount.model.*;
 
@@ -53,11 +54,7 @@ public class EditOperationView extends DialogWindow {
         createButtonsPanel().addTo(root);
 
         populateFields();
-
-        refresh();
-
         txtTitle.takeFocus();
-
     }
 
     private Panel createFieldsGrid() {
@@ -84,7 +81,7 @@ public class EditOperationView extends DialogWindow {
 
         new Label("Paid by:").addTo(panel);
         cboUsers = new ComboBox<>(tricount.getParticipants()).addTo(panel).sizeTo(11);
-        cboUsers.setSelectedItem(Security.getLoggedUser());
+        cboUsers.setSelectedItem(operation == null ? Security.getLoggedUser() : operation.getInitiator());
         cboUsers.addListener((selectedIndex, previousSelection, changedByUserInteraction) -> validate());
         panel.addEmpty();
 
@@ -98,7 +95,7 @@ public class EditOperationView extends DialogWindow {
         cboTemplates.setSelectedItem(Template.DUMMY);
         cboTemplates.addListener((selectedIndex, previousSelection, changedByUserInteraction) -> validate());
 
-        btnApplay = new Button("Apply", this::applyTemplate).addTo(templatePanel).setEnabled(false);
+        btnApplay = new Button("Apply", this::applyTemplate).addTo(templatePanel);
         panel.addEmpty();
         panel.addEmpty();
 
@@ -127,31 +124,19 @@ public class EditOperationView extends DialogWindow {
         Repartition rep = cklRepartitions.getItemAt(idx);
         int weight = rep.getWeight();
         boolean changement = false;
-        if (character != null) {
-            if (character == '+') {
+            if ((character == null && type == KeyType.ArrowRight) || (character != null && character == '+')) {
                 ++weight;
                 changement = true;
             }
-            if (character == '-') {
-                if(weight > 0) {
+            if (character == null &&  type == KeyType.ArrowLeft || character != null && character == '-') {
+                if (weight > 0) {
                     --weight;
                     changement = true;
                 }
             }
-        } else {
-            if (type == KeyType.ArrowRight) {
-                ++weight;
-                changement = true;
-            }
-            if (type == KeyType.ArrowLeft) {
-                if(weight > 0) {
-                    --weight;
-                    changement = true;
-                }
-            }
-        }
-        if (changement) {
+            if (changement) {
             rep.setWeight(weight);
+            cklRepartitions.setChecked(rep, weight != 0);
             cklRepartitions.invalidate();
         }
         return true;
@@ -192,24 +177,20 @@ public class EditOperationView extends DialogWindow {
 
         return panel;
     }
-
     private void saveRepAsTemp() {
         List<Repartition> repartitions = cklRepartitions.getCheckedItems();
         controller.saveRepAsTemp(repartitions);
 
 
-    }
 
-    private void refresh() {
     }
-
-        // Définis les champs de texte avec les données de l'opération concernée.
+    // Définis les champs de texte avec les données de l'opération concernée.
     private void populateFields() {
         if (operation != null) {
             txtTitle.setText(operation.getTitle());
             txtAmount.setText(String.valueOf((operation.getAmount())).replace('.', ','));
             txtDate.setText(localDateToString(operation.getOperationDate()).replace('-', '/'));
-            cboUsers.setSelectedItem(Security.getLoggedUser()); // pas nécessaire en théorie, à tester
+            cboUsers.setSelectedItem(operation.getInitiator()); // pas nécessaire en théorie, à tester
             updateRepartitionsView();
         }
     }
@@ -232,20 +213,17 @@ public class EditOperationView extends DialogWindow {
                 if (!found) {
                     rep.setWeight(0);
                 }
-
                 cklRepartitions.invalidate();
             }
         }
     }
-
-
     private void delete() {
         controller.delete();
     }
 
     private void add() {
         int operationId = (operation != null) ? operation.getId() : 0;
-        String amountText = txtAmount.getText().replace(',', '.');
+        String amountText = txtAmount.getText();
         controller.save(
                 txtTitle.getText(),
                 amountText,
@@ -266,6 +244,8 @@ public class EditOperationView extends DialogWindow {
             if (i < templateItems.size())
                 rep.setWeight(templateItems[i].getWeight());
             else rep.setWeight(0);
+            cklRepartitions.setChecked(rep, rep.getWeight() > 0);
+            cboTemplates.setSelectedItem(Template.DUMMY);
         }
     }
 
