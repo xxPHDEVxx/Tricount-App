@@ -207,4 +207,8 @@ public class Tricount extends Model {
                 new Params("id", id));
         Assert.isTrue(c == 1, "Something went wrong");
     }
+    public static List<Tricount> getById(int id) {
+        return queryList(Tricount.class, "select tricount from subscriptions where user=:id",
+                new Params("id", id));
+    }
 }

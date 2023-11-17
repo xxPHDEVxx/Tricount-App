@@ -5,8 +5,6 @@ import tgpr.framework.Model;
 
 import tgpr.tricount.controller.*;
 
-
-
 public class TricountApp {
     public final static String DATABASE_SCRIPT_FILE = "/database/tgpr-2324-a04.sql";
 

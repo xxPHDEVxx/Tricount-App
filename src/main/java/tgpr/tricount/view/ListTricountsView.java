@@ -29,7 +29,6 @@ public class ListTricountsView extends BasicWindow {
     private TextBox textBoxFiltre = new TextBox();
 
     public ListTricountsView (ListTricountsController controller, List<Tricount> listTricounts) {
-        //super("Tricount");
         this.listTricounts = listTricounts;
         this.controller = controller;
 
@@ -42,7 +41,6 @@ public class ListTricountsView extends BasicWindow {
 
         Panel filtre = new Panel().setLayoutManager(new GridLayout(2));
         Label labelFiltre = new Label("Filtrer : ");
-        //TextBox textBoxFiltre = new TextBox();
         filtre.addComponent(labelFiltre);
         filtre.addComponent(textBoxFiltre);
         textBoxFiltre.takeFocus().setTextChangeListener((txt, byUser) -> this.controller.reloadData(txt));                       //ajout listener
@@ -53,7 +51,6 @@ public class ListTricountsView extends BasicWindow {
         this.tricountContainer = new Panel(gridTricount).setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
         this.paginator = new Paginator(this, 12,this::pageChanged);
         loadTricountContainer(0, listTricounts);
-        //this.tricountContainer.withBorder(Borders.singleLine());
         mainPanel.addComponent(this.tricountContainer);
 
 
@@ -61,8 +58,6 @@ public class ListTricountsView extends BasicWindow {
         bottom.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.Fill));
         Button newButton = new Button("Create a new Tricount", () -> controller.addTricount()).addTo(bottom); //ajouter action sur le button
 
-        //this.paginator.setCount(this.listTricounts.size());
-        //this.paginator.addTo(bottom).setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.End));
         bottom.addComponent(this.paginator.setLayoutData(LinearLayout.createLayoutData(LinearLayout.Alignment.End)));
         mainPanel.addComponent(bottom);
 
