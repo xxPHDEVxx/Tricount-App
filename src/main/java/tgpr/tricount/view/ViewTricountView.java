@@ -19,10 +19,12 @@ import tgpr.tricount.model.Repartition;
 import tgpr.tricount.model.Security;
 import tgpr.tricount.model.Tricount;
 
+import javax.print.attribute.DateTimeSyntax;
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -42,6 +44,8 @@ public class ViewTricountView extends DialogWindow {
         this.tricount = tricount;
         this.controller = controller;
         DecimalFormat decimalFormat = new DecimalFormat("#0.00");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         Panel root = new Panel().setLayoutManager(new LinearLayout(Direction.VERTICAL));
         Panel description = new Panel();
@@ -56,7 +60,9 @@ public class ViewTricountView extends DialogWindow {
         new Label("Created by:").addTo(description);
         new Label(tricount.getCreator().getFullName()).setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);
         new Label("Date:").addTo(description);
-        new Label(tricount.getCreatedAt().toString().replace("T", "  ")).setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);
+        LocalDateTime tricountDate = tricount.getCreatedAt();
+        new Label(tricountDate.format(dateTimeFormatter))
+                .setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);
 
         new Label("Total Expense:").addTo(description);
         new Label(decimalFormat.format(controller.getMyExpenses(tricount).get(0)) + " €").setForegroundColor(TextColor.ANSI.BLACK_BRIGHT).addTo(description);
@@ -75,14 +81,11 @@ public class ViewTricountView extends DialogWindow {
                 new ColumnSpec<>("Operation", Operation::getTitle).setWidth(30),
                 new ColumnSpec<>("Amount", Operation::getAmount).setFormat("%.2f €").setWidth(10).alignRight(),
                 new ColumnSpec<>("Paid By", Operation::getInitiator).setWidth(10),
-                new ColumnSpec<>("Date", operation -> {
-                    LocalDate date = operation.getOperationDate();
-                    return date.getDayOfMonth() + "/" + date.getMonthValue() + "/" + date.getYear();
-                })
+                new ColumnSpec<>("Date", operation -> operation.getOperationDate().format(dateFormatter))
         );
-        List<Operation> operations = tricount.getOperations();
-        for (int i = operations.size(); i > 0; i--) {
-            tbl.add(operations.get(i - 1));
+        List<Operation> operations = tricount.getOperationsOrderedByDate();
+        for (Operation value : operations) {
+            tbl.add(value);
         }
 
         tbl.setSelectAction(() -> {
