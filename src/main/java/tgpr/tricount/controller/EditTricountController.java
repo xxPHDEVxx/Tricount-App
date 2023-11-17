@@ -3,15 +3,10 @@ package tgpr.tricount.controller;
 import com.googlecode.lanterna.gui2.Window;
 import tgpr.framework.Controller;
 import tgpr.framework.ErrorList;
-import tgpr.framework.Tools;
 import tgpr.tricount.model.*;
 import tgpr.tricount.view.EditTricountView;
-import tgpr.tricount.view.ViewTemplatesView;
-import tgpr.tricount.controller.ListTricountsController;
-import tgpr.tricount.view.ViewTricountView;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 public class EditTricountController extends Controller {
