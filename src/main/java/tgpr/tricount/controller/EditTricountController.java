@@ -3,15 +3,10 @@ package tgpr.tricount.controller;
 import com.googlecode.lanterna.gui2.Window;
 import tgpr.framework.Controller;
 import tgpr.framework.ErrorList;
-import tgpr.framework.Tools;
 import tgpr.tricount.model.*;
 import tgpr.tricount.view.EditTricountView;
-import tgpr.tricount.view.ViewTemplatesView;
-import tgpr.tricount.controller.ListTricountsController;
-import tgpr.tricount.view.ViewTricountView;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 public class EditTricountController extends Controller {
@@ -20,12 +15,14 @@ public class EditTricountController extends Controller {
     private Integer idTricount;
     private LocalDateTime createdAt;
     private final boolean isNew;
+    private boolean delete;
     public ListTricountsController listTricountController;
 
     public EditTricountController(Tricount tricount, ListTricountsController listTricountController){
         this.tricount = tricount;
         this.idTricount = tricount.getId();
         this.createdAt = tricount.getCreatedAt();
+        this.delete = false;
         this.listTricountController=listTricountController;
 
         isNew = tricount == null;
@@ -74,11 +71,13 @@ public class EditTricountController extends Controller {
         return view;
     }
 
+    public boolean isDelete() {return delete;}
     public void delete() {
         if (askConfirmation("You're about to delete this tricount.\n" +
                 "Do you confirm ! ", "Delete tricount")) {
             if (Security.isAdmin() || Security.getLoggedUserId() == tricount.getCreatorId()) {
                 tricount.delete();
+                delete = true;
                 this.listTricountController.fetchTricounts();
                 this.listTricountController.reloadData("");
                 view.close();

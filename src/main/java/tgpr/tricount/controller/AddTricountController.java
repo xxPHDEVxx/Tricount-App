@@ -23,8 +23,9 @@ public class AddTricountController extends Controller {
         int id = tricount.save().getId();
         Subscription sub = new Subscription(id, tricount.getCreatorId());
         sub.save();
+        this.listTricountController.fetchTricounts();
+        this.listTricountController.reloadData("");
         view.close();
-        Controller.navigateTo(new EditTricountController(tricount, listTricountController));
     }
 
     public ErrorList validate(String title, String description) {
@@ -33,6 +34,8 @@ public class AddTricountController extends Controller {
         if (!description.isBlank())
             errors.add(TricountValidator.isValidDescription(description));
 
+        var tric = new Tricount(title, description, Security.getLoggedUserId());
+        errors.addAll(TricountValidator.validate(tric, -1));
         return errors;
     }
 }

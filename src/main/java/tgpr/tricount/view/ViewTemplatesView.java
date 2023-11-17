@@ -137,7 +137,7 @@ public class ViewTemplatesView extends DialogWindow {
 
     }
     public void delete(){
-        controller.delete();
+        controller.delete(tmpTable.getSelected());
     }
 
 }

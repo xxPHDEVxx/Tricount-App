@@ -63,7 +63,12 @@ public class ViewTricountController extends Controller {
     }
 
     public void editTricount() {
-        Controller.navigateTo(new EditTricountController(tricount, listTricountController));
+        Controller edit = new EditTricountController(tricount, listTricountController);
+        navigateTo(edit);
+        if(((EditTricountController) edit).isDelete()) {
+            view.close();
+            return;
+        }
         refresh(tricount);
     }
 

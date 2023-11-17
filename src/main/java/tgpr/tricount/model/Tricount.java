@@ -49,6 +49,11 @@ public class Tricount extends Model {
                 new Params("id", id));
     }
 
+    public List<Operation> getOperationsOrderedByDate() {
+        return queryList(Operation.class, "select * from operations where tricount=:id ORDER BY operations.operation_date",
+                new Params("id", id));
+    }
+
     public List<Subscription> getSubscriptions() {
         return queryList(Subscription.class, "select * from subscriptions s where tricount=:id",
                 new Params("id", id));
