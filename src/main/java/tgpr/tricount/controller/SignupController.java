@@ -20,7 +20,7 @@ public class SignupController extends Controller {
     public ErrorList validate(String mail, String fullname, String iban, String password, String confirmpassword) {
         var errors = new ErrorList();
 
-        errors.add(ProfileValidator.isValidMail(mail));
+        errors.add(ProfileValidator.isValidMail(mail, -1));
         errors.add(ProfileValidator.isValidFullname(fullname));
         errors.add(ProfileValidator.isValidIban(iban));
         errors.add(ProfileValidator.isValidPassword(password).toString(), User.Fields.Password);

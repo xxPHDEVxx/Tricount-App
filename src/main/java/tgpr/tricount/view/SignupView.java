@@ -16,8 +16,8 @@ public class SignupView extends DialogWindow {
     private final TextBox txtMail = new TextBox();
     private final TextBox txtFullName = new TextBox();
     private final TextBox txtIBAN = new TextBox();
-    private final TextBox txtPassword = new TextBox();
-    private final TextBox txtConfirmPassword = new TextBox();
+    private final TextBox txtPassword = new TextBox().setMask('*');
+    private final TextBox txtConfirmPassword = new TextBox().setMask('*');
     private final Button buttonSignup = new Button("Signup", this::signup);
     private final Button buttonClose = new Button("Close", () -> {Controller.navigateTo(new LoginController());});
     private final Label errMail = new Label("");
@@ -104,12 +104,8 @@ public class SignupView extends DialogWindow {
         buttonSignup.setEnabled(enabled);
     }
     private void signup() {
-
-        if (User.getByMail(txtMail.getText()) == null){
             User user = new User(txtMail.getText(), Tools.hash(txtPassword.getText()),txtFullName.getText(), User.Role.User, txtIBAN.getText());
             user.save();
-        }
-        else
-            errMail.setText("Mail already used");
+            this.close();
     }
 }
