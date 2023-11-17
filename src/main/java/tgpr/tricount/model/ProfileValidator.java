@@ -9,7 +9,14 @@ public class ProfileValidator {
             return new Error("Mail required", User.Fields.Mail);
         if (!Pattern.matches("^(.+)@(.+)$", mail))
             return new Error("invalid Mail format", User.Fields.Mail);
+        if (isEmailAlreadyInUse(mail))
+            return new Error("Mail already in use", User.Fields.Mail);
         return Error.NOERROR;
+    }
+
+    public static boolean isEmailAlreadyInUse(String email) {
+        User existingUser = User.getByMail(email);
+        return existingUser != null;
     }
 
     public static Error isValidFullname(String fullname) {
