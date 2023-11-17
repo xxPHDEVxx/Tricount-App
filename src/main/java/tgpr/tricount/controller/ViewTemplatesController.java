@@ -1,9 +1,11 @@
 package tgpr.tricount.controller;
 
+import com.googlecode.lanterna.gui2.CheckBoxList;
 import com.googlecode.lanterna.gui2.Window;
 import tgpr.framework.Controller;
 import tgpr.tricount.model.Operation;
 import tgpr.tricount.model.Template;
+import tgpr.tricount.model.TemplateItem;
 import tgpr.tricount.model.Tricount;
 import tgpr.tricount.view.ViewTemplatesView;
 
@@ -40,9 +42,19 @@ public class ViewTemplatesController extends Controller {
     }
     public void delete(Template template){
         if (askConfirmation("Voulez-vous vraiment supprimer ce template ? ","Confirmation")){
-            template.delete();
-            view.refresh();
+            if(template!=null){
+                template.delete();
+                view.refresh();
+            }
+            else
+                view.refresh();
         }
     }
+    public void save(TemplateItem templateItem){
+        showMessage("La template a été sauvegardée!","Ok");
+        templateItem.save();
+        view.refresh();
+    }
+
 }
 

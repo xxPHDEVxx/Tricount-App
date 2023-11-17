@@ -20,14 +20,15 @@ import java.util.List;
 
 public class ViewTemplatesView extends DialogWindow {
     private final ViewTemplatesController controller;
-    private final ObjectTable<Template> tmpTable;
+    private ObjectTable<Template> tmpTable;
     private final Label errRepartitions = new Label("");
+    private final Label lblNoTemplates= new Label("Pas encore de templates!").setForegroundColor(TextColor.ANSI.RED);
+    private Template template;
+    private ObjectTable.SelectionChangeListener listener;
     private final CheckBoxList<TemplateItem> tmpItem = new CheckBoxList<>();
-
 
     public ViewTemplatesView(ViewTemplatesController controller) {
         super("Tricount Repartition Templates");
-
         this.controller = controller;
 
         setHints(List.of(Hint.CENTERED));
@@ -37,53 +38,60 @@ public class ViewTemplatesView extends DialogWindow {
         Panel root = new Panel().setLayoutManager(new LinearLayout(Direction.VERTICAL));
         Panel panelGrid = new Panel().asGridPanel(1);
 
-        //création de l'objectTable templates
-        tmpTable = new ObjectTable<>(
-                new ColumnSpec<>("Templates:", Template::getTitle)
-        );
-        tmpTable.addTo(root);
+        //création du panel Templates
+        createTemplatePanel().addTo(root);
 
         new EmptySpace().addTo(root);
 
-        //création de la checkboxlist repartition
-        Label labelRepartitions = new Label("Repartition:").addTo(root);
-        labelRepartitions.addStyle(SGR.BOLD).addStyle(SGR.UNDERLINE);
+        panelGrid.addTo(root);
+        createButtonsPanel().addTo(root);
+        setComponent(root);
+        refresh();
+    }
 
-        var templates = controller.getTemplates();
-        for (var temp : getTemplatesItem()) {
+    private Panel createTemplatePanel(){
+        Panel panel = new Panel();
+        tmpTable = new ObjectTable<>(
+                new ColumnSpec<>("Templates:", Template::getTitle)
+        ).addTo(panel);
+
+        Label labelRepartitions = new Label("Repartition:").addTo(panel);
+        labelRepartitions.addStyle(SGR.BOLD).addStyle(SGR.UNDERLINE);
+        tmpTable.addSelectionChangeListener(listener).addTo(panel);
+
+        tmpTable.getPosition();
+
+        for (var temp : TemplateItem.getAll()) {
             tmpItem.addItem(temp, temp.getWeight() > 0);
             tmpItem.setChecked(temp, true);
         }
-
         tmpItem.addListener((idx, isChecked) -> {
-        }).addTo(root);
-        panelGrid.addEmpty();
-        errRepartitions.addTo(panelGrid).setForegroundColor(TextColor.ANSI.RED);
+
+        }).addTo(panel);
+
+        errRepartitions.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
 
         addKeyboardListener(
                 tmpItem,
                 this::handleWeightKeyStroke);
 
-        new EmptySpace().addTo(root);
-        //création panel grid pour les boutons
-        Panel panelButtons = new Panel().asGridPanel(5);
-        Button btnNew = new Button("New",this::addTemplate).addTo(panelButtons);
-        Button btnEditTitle = new Button("Edit Title",this::editTemplate).addTo(panelButtons);
-        Button btnDelete = new Button("Delete",this::delete).addTo(panelButtons);
-        Button btnSave = new Button("Save").addTo(panelButtons);
-        new Button("Close", this::close).addTo(panelButtons);
 
-        panelGrid.addTo(root);
-        panelButtons.addTo(root);
-        setComponent(root);
-        refresh();
+        return panel;
     }
-
+    private Panel createButtonsPanel(){
+        Panel panelButtons = new Panel().asGridPanel(5);
+        new Button("New",this::addTemplate).addTo(panelButtons);
+        new Button("Edit Title",this::editTemplate).addTo(panelButtons);
+        new Button("Delete",this::delete).addTo(panelButtons);
+        new Button("Save",this::save).addTo(panelButtons);
+        new Button("Close", this::close).addTo(panelButtons);
+        return panelButtons;
+    }
     public void refresh() {
+
         tmpTable.clear();
         var templates = controller.getTemplates();
         tmpTable.add(templates);
-
     }
     public List<TemplateItem> getTemplatesItem(){
         List<TemplateItem> tmpItem = new ArrayList<>();
@@ -125,19 +133,16 @@ public class ViewTemplatesView extends DialogWindow {
         }
         return true;
     }
-    private void add(){
-
+    private void save() {
+        controller.save(tmpItem.getSelectedItem());
     }
     public void addTemplate(){
         controller.addTemplate();
-
     }
     public void editTemplate(){
        controller.editTemplate(tmpTable.getSelected());
-
     }
     public void delete(){
         controller.delete(tmpTable.getSelected());
     }
-
 }
