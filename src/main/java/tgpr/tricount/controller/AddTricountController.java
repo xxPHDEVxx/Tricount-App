@@ -34,6 +34,8 @@ public class AddTricountController extends Controller {
         if (!description.isBlank())
             errors.add(TricountValidator.isValidDescription(description));
 
+        var tric = new Tricount(title, description, Security.getLoggedUserId());
+        errors.addAll(TricountValidator.validate(tric, -1));
         return errors;
     }
 }
