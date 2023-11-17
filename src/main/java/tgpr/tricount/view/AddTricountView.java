@@ -63,7 +63,13 @@ public class AddTricountView extends DialogWindow {
     }
 
     private void create() {
-        Tricount tricount = new Tricount(txtTitle.getText(), txtDesc.getText(), Security.getLoggedUserId());
+        Tricount tricount = new Tricount();
+        if(txtDesc.getText().isEmpty()){
+            tricount = new Tricount(txtTitle.getText(), Security.getLoggedUserId());
+        }
+        else {
+            tricount = new Tricount(txtTitle.getText(), txtDesc.getText(), Security.getLoggedUserId());
+        }
         controller.createTricount(tricount);
     }
 
