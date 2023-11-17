@@ -4,12 +4,12 @@
 
 ### Liste des utilisateurs et mots de passe
 
-  * login, password, role
-  * A compléter...
+  * Login et mdp d'origine 
+  * Signup opérationnel
 
 ### Liste des bugs connus
 
-  * bug 1
+  * Afficher moins de 3 tricounts : les cartes de tricount sont trop larges.
   * bug 2
   * ...
 
@@ -17,4 +17,7 @@
 
 ### Divers
 
-...
+Martin  1 Login
+        2 Logout
+        3 List_Tricounts
+        20 Signup
