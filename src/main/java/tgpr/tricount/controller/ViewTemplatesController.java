@@ -36,10 +36,10 @@ public class ViewTemplatesController extends Controller {
     public void editTemplate(Template template){
         navigateTo(new AddTemplateController(null, getTricount().getId(),template));
     }
-    public void delete(){
+    public void delete(Template template){
         if (askConfirmation("Voulez-vous vraiment supprimer ce template ? ","Confirmation")){
-            //template.delete();
-            view.close();
+            template.delete();
+            view.refresh();
         }
     }
 }
