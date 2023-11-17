@@ -33,6 +33,8 @@ public class ListTricountsController extends Controller {
     }
     public List<Tricount> fetchTricounts(){
         listTricounts=Tricount.getAll();
+        listTricounts  = listTricounts.stream()
+                .filter(tricount -> tricount.getParticipants().contains(Security.getLoggedUser())).collect(Collectors.toList());
         return listTricounts;
     }
 

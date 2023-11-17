@@ -25,4 +25,22 @@ public class ProfileValidator {
             return new Error("Invalid format. \nFormat : BE95000415698547", User.Fields.Iban);
         return Error.NOERROR;
     }
+    public static Error isValidPassword(String password){
+        if(password == null || password.isBlank())
+            return new Error("password is required");
+        if(!Pattern.matches("^.{8,}$", password))
+            return new Error("minimum 8 chars");
+        if(!Pattern.matches("^(?=.*[A-Z]).*$", password))
+            return new Error("missing an uppercase char");
+        if(!Pattern.matches("^(?=.*[0-9]).*$", password))
+            return new Error("missing a number char ");
+        if(!Pattern.matches( "^(?=.*[^A-Za-z0-9]).*$", password))
+            return new Error("missing a digit char");
+        return Error.NOERROR;
+    }
+    public static Error isValidConfirmPassword(String password, String confirmpassword){
+        if(!password.equals(confirmpassword))
+            return new Error(("password doesnt match"));
+        return Error.NOERROR;
+    }
 }

@@ -27,7 +27,7 @@ public class LoginController extends Controller {
             var member = User.checkCredentials(pseudo, password);
             if (member != null) {
                 Security.login(member);
-                Tricount tricount = Tricount.getByKey(4);
+                //Tricount tricount = Tricount.getByKey(4);
                 navigateTo(new ListTricountsController());
             } else
                 showError(new Error("invalid credentials"));
