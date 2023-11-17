@@ -44,5 +44,11 @@ public class ViewTemplatesController extends Controller {
             view.refresh();
         }
     }
+    public void save(Template template){
+        showMessage("La template a été sauvegardée!","Ok");
+        template.save();
+        view.refresh();
+    }
+
 }
 

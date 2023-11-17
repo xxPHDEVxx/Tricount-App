@@ -20,14 +20,16 @@ import java.util.List;
 
 public class ViewTemplatesView extends DialogWindow {
     private final ViewTemplatesController controller;
-    private final ObjectTable<Template> tmpTable;
+    private ObjectTable<Template> tmpTable;
     private final Label errRepartitions = new Label("");
+    private final Label lblNoTemplates= new Label("Pas encore de templates!");
+    private Template template;
     private final CheckBoxList<TemplateItem> tmpItem = new CheckBoxList<>();
+
 
 
     public ViewTemplatesView(ViewTemplatesController controller) {
         super("Tricount Repartition Templates");
-
         this.controller = controller;
 
         setHints(List.of(Hint.CENTERED));
@@ -37,11 +39,8 @@ public class ViewTemplatesView extends DialogWindow {
         Panel root = new Panel().setLayoutManager(new LinearLayout(Direction.VERTICAL));
         Panel panelGrid = new Panel().asGridPanel(1);
 
-        //création de l'objectTable templates
-        tmpTable = new ObjectTable<>(
-                new ColumnSpec<>("Templates:", Template::getTitle)
-        );
-        tmpTable.addTo(root);
+        //création du panel Templates
+        createTemplatePanel().addTo(root);
 
         new EmptySpace().addTo(root);
 
@@ -49,6 +48,27 @@ public class ViewTemplatesView extends DialogWindow {
         Label labelRepartitions = new Label("Repartition:").addTo(root);
         labelRepartitions.addStyle(SGR.BOLD).addStyle(SGR.UNDERLINE);
 
+        createRepartionsPanel().addTo(root);
+
+        new EmptySpace().addTo(root);
+
+        panelGrid.addTo(root);
+        createButtonsPanel().addTo(root);
+        setComponent(root);
+        refresh();
+    }
+
+    private Panel createTemplatePanel(){
+        Panel panel = new Panel();
+        tmpTable = new ObjectTable<>(
+                new ColumnSpec<>("Templates:", Template::getTitle)
+        ).addTo(panel);
+        //tmpTable.addSelectionChangeListener();
+        //lblNoTemplates.setForegroundColor(TextColor.ANSI.RED).addTo(panel);
+        return panel;
+    }
+    private Panel createRepartionsPanel(){
+        Panel panel = new Panel();
         var templates = controller.getTemplates();
         for (var temp : getTemplatesItem()) {
             tmpItem.addItem(temp, temp.getWeight() > 0);
@@ -56,34 +76,34 @@ public class ViewTemplatesView extends DialogWindow {
         }
 
         tmpItem.addListener((idx, isChecked) -> {
-        }).addTo(root);
-        panelGrid.addEmpty();
-        errRepartitions.addTo(panelGrid).setForegroundColor(TextColor.ANSI.RED);
+        }).addTo(panel);
+
+        errRepartitions.addTo(panel).setForegroundColor(TextColor.ANSI.RED);
 
         addKeyboardListener(
                 tmpItem,
                 this::handleWeightKeyStroke);
-
-        new EmptySpace().addTo(root);
-        //création panel grid pour les boutons
-        Panel panelButtons = new Panel().asGridPanel(5);
-        Button btnNew = new Button("New",this::addTemplate).addTo(panelButtons);
-        Button btnEditTitle = new Button("Edit Title",this::editTemplate).addTo(panelButtons);
-        Button btnDelete = new Button("Delete",this::delete).addTo(panelButtons);
-        Button btnSave = new Button("Save").addTo(panelButtons);
-        new Button("Close", this::close).addTo(panelButtons);
-
-        panelGrid.addTo(root);
-        panelButtons.addTo(root);
-        setComponent(root);
-        refresh();
+        return panel;
     }
 
-    public void refresh() {
-        tmpTable.clear();
-        var templates = controller.getTemplates();
-        tmpTable.add(templates);
 
+    private Panel createButtonsPanel(){
+        Panel panelButtons = new Panel().asGridPanel(5);
+        new Button("New",this::addTemplate).addTo(panelButtons);
+        new Button("Edit Title",this::editTemplate).addTo(panelButtons);
+        new Button("Delete",this::delete).addTo(panelButtons);
+        new Button("Save",this::save).addTo(panelButtons);
+        new Button("Close", this::close).addTo(panelButtons);
+        return panelButtons;
+    }
+    public void refresh() {
+        if(template!=null)
+            lblNoTemplates.setForegroundColor(TextColor.ANSI.RED);
+        else {
+            tmpTable.clear();
+            var templates = controller.getTemplates();
+            tmpTable.add(templates);
+        }
     }
     public List<TemplateItem> getTemplatesItem(){
         List<TemplateItem> tmpItem = new ArrayList<>();
@@ -138,6 +158,9 @@ public class ViewTemplatesView extends DialogWindow {
     }
     public void delete(){
         controller.delete(tmpTable.getSelected());
+    }
+    public void save(){
+        controller.save(tmpTable.getSelected());
     }
 
 }
