@@ -24,8 +24,15 @@ public class ProfileController extends Controller {
     }
     public void editProfile() {
         navigateTo(new EditProfileController(user));
+        user.reload();
+        refresh();
     }
     public void changePasswrd() {
         navigateTo(new ChangePasswordController());
+    }
+
+    public void refresh(){
+        view.close();
+        navigateTo(new ProfileController());
     }
 }

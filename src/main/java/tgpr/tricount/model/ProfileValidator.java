@@ -29,7 +29,7 @@ public class ProfileValidator {
 
     public static Error isValidIban(String iban) {
         if (!Pattern.matches("^BE\\d{14}$", iban) && !iban.isBlank())
-            return new Error("Invalid format. \nFormat : BE95000415698547", User.Fields.Iban);
+            return new Error("Invalid format. \nFormat : BE99 9999 9999 9999 \nWithout spaces", User.Fields.Iban);
         return Error.NOERROR;
     }
 }
