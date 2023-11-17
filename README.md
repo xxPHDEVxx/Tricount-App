@@ -17,7 +17,33 @@
 
 ### Divers
 
-Martin  1 Login
-        2 Logout
-        3 List_Tricounts
-        20 Signup
+BENAISSA Rayan
+        edit profile
+        edit opération
+        delete operation
+        apply template
+HAMMANI Jamila
+        edit tricount
+        add participant
+        delete participant
+        delete tricount
+HAMOUCH Aouatif
+        add operation
+        view operation
+        add template
+        change password
+LE Chi Tai
+        view template
+        edit template
+        delete template
+VANHORLE Nicolas
+        view tricount
+        add tricount
+        profile
+        view balance
+WESTER Martin Driss J.
+        login
+        logout
+        list tricount
+        signup
+
