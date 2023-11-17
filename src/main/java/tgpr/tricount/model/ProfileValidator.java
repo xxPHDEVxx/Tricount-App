@@ -4,19 +4,19 @@ import tgpr.framework.Error;
 import java.util.regex.Pattern;
 public class ProfileValidator {
 
-    public static Error isValidMail(String mail) {
+    public static Error isValidMail(String mail, int userId) {
         if(mail == null || mail.isBlank())
             return new Error("Mail required", User.Fields.Mail);
         if (!Pattern.matches("^(.+)@(.+)$", mail))
             return new Error("invalid Mail format", User.Fields.Mail);
-        if (isEmailAlreadyInUse(mail))
+        if (isEmailAlreadyInUse(mail, userId))
             return new Error("Mail already in use", User.Fields.Mail);
         return Error.NOERROR;
     }
 
-    public static boolean isEmailAlreadyInUse(String email) {
+    public static boolean isEmailAlreadyInUse(String email, int userIdToExclude) {
         User existingUser = User.getByMail(email);
-        return existingUser != null;
+        return existingUser != null && existingUser.getId() != userIdToExclude;
     }
 
     public static Error isValidFullname(String fullname) {
