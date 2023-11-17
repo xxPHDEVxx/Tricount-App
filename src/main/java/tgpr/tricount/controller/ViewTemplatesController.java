@@ -24,6 +24,7 @@ public class ViewTemplatesController extends Controller {
     }
     public void addTemplate(){
         navigateTo(new AddTemplateController(null, getTricount().getId(),null));
+        view.refresh();
     }
     @Override
     public Window getView() {
@@ -35,6 +36,7 @@ public class ViewTemplatesController extends Controller {
 
     public void editTemplate(Template template){
         navigateTo(new AddTemplateController(null, getTricount().getId(),template));
+        view.refresh();
     }
     public void delete(Template template){
         if (askConfirmation("Voulez-vous vraiment supprimer ce template ? ","Confirmation")){
