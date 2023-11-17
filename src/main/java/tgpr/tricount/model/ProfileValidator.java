@@ -4,12 +4,19 @@ import tgpr.framework.Error;
 import java.util.regex.Pattern;
 public class ProfileValidator {
 
-    public static Error isValidMail(String mail) {
+    public static Error isValidMail(String mail, int userId) {
         if(mail == null || mail.isBlank())
             return new Error("Mail required", User.Fields.Mail);
         if (!Pattern.matches("^(.+)@(.+)$", mail))
             return new Error("invalid Mail format", User.Fields.Mail);
+        if (isEmailAlreadyInUse(mail, userId))
+            return new Error("Mail already in use", User.Fields.Mail);
         return Error.NOERROR;
+    }
+
+    public static boolean isEmailAlreadyInUse(String email, int userIdToExclude) {
+        User existingUser = User.getByMail(email);
+        return existingUser != null && existingUser.getId() != userIdToExclude;
     }
 
     public static Error isValidFullname(String fullname) {
@@ -22,7 +29,7 @@ public class ProfileValidator {
 
     public static Error isValidIban(String iban) {
         if (!Pattern.matches("^BE\\d{14}$", iban) && !iban.isBlank())
-            return new Error("Invalid format. \nFormat : BE95000415698547", User.Fields.Iban);
+            return new Error("Invalid format. \nFormat : BE99 9999 9999 9999 \nWithout spaces", User.Fields.Iban);
         return Error.NOERROR;
     }
 }
