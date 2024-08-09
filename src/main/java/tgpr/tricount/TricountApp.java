@@ -6,7 +6,7 @@ import tgpr.framework.Model;
 import tgpr.tricount.controller.*;
 
 public class TricountApp {
-    public final static String DATABASE_SCRIPT_FILE = "/database/tgpr-2324-a04.sql";
+    public final static String DATABASE_SCRIPT_FILE = "/database/tricount-database.sql";
 
     public static void main(String[] args) {
         if (!Model.checkDb(DATABASE_SCRIPT_FILE))
