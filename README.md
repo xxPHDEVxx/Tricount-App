@@ -23,7 +23,7 @@ Le projet **Tricount** est une application de gestion des dépenses entre utilis
 1. Clonez le dépôt GitHub du projet :
 
     ```bash
-    git clone https://github.com/votre-utilisateur/votre-projet-tricount.git
+    git clone https://github.com/xxPHDEVxx/votre-projet-tricount.git
     cd votre-projet-tricount
     ```
 
